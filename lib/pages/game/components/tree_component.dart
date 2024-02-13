@@ -3,53 +3,62 @@ import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:humanity_vs_nature/extensions/sprite_component_extension.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
-import 'package:humanity_vs_nature/pages/game/components/city_component.dart';
-import 'package:humanity_vs_nature/pages/game/simulation_game_mode.dart';
+import 'package:humanity_vs_nature/pages/game/models/spot.dart';
+import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
 class TreeComponent extends SpriteComponent
-    with TapCallbacks, CollisionCallbacks, HasGameRef<SimulationGameMode> {
+    with TapCallbacks, HasGameRef<SimulationGame> {
+  TreeComponent({bool isMature = false}) {
+    if (isMature) {
+      _phase = _TreePhase.mature;
+    }
+  }
+
   static const double radius = 10;
 
-  Vector2 velocity = Vector2.zero();
-  double hp = 30;
+  _TreePhase _phase = _TreePhase.sapling;
+  late double hp;
+  late double needCO2toNextPhase;
 
   bool get isAlive => hp > 0;
 
+  bool get isMature => _phase == _TreePhase.mature;
+
+  Spot get spot => Spot(position, radius);
+
   @override
   FutureOr<void> onLoad() async {
-    sprite = await getSpriteFromAsset(Assets.spritesTree);
+    await _updateTreeAccordingToCurrentPhase();
+    add(CircleHitbox());
     anchor = Anchor.center;
-    add(CircleHitbox(radius: radius));
     return super.onLoad();
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    position += velocity;
-    velocity *= 0.5;
-    if (velocity.length < 1) {
-      velocity = Vector2.zero();
-    } else if (isOutOfScreen(game.size)) {
-      game.removeTree(this);
+
+    // If the tree is still growing
+    if (_phase != _TreePhase.mature) {
+      if (needCO2toNextPhase > 0) {
+        // Try to get some CO2
+        final gasVolume = game.gasSystem.aTreeWantsSomeCO2(position, dt);
+        needCO2toNextPhase -= gasVolume;
+      } else {
+        // Grow up to next phase
+        _phase =
+            _phase == _TreePhase.sapling ? _TreePhase.young : _TreePhase.mature;
+        _updateTreeAccordingToCurrentPhase();
+      }
     }
   }
 
-  @override
-  void onCollisionStart(
-      Set<Vector2> intersectionPoints, PositionComponent other) {
-    super.onCollisionStart(intersectionPoints, other);
-    final collisionVector = position - other.position;
-
-    if (other is TreeComponent) {
-      other.velocity += collisionVector * -0.1;
-      velocity = collisionVector * 0.2;
-    } else if (other is CityComponent) {
-      velocity = collisionVector * 0.5;
-    }
+  Future<void> _updateTreeAccordingToCurrentPhase() async {
+    hp = _phase.hp;
+    needCO2toNextPhase = _phase.volumeCO2toNextPhase;
+    sprite = await getSpriteFromAsset(_phase.spritePath);
   }
 
   @override
@@ -64,4 +73,16 @@ class TreeComponent extends SpriteComponent
       game.removeTree(this);
     }
   }
+}
+
+enum _TreePhase {
+  sapling(5, 10, Assets.spritesTreeSapling),
+  young(20, 30, Assets.spritesTreeSmall),
+  mature(30, 0, Assets.spritesTree);
+
+  const _TreePhase(this.hp, this.volumeCO2toNextPhase, this.spritePath);
+
+  final double hp;
+  final double volumeCO2toNextPhase;
+  final String spritePath;
 }

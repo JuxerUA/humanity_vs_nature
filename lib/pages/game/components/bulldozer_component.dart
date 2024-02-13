@@ -7,11 +7,11 @@ import 'package:flame/events.dart';
 import 'package:humanity_vs_nature/extensions/sprite_component_extension.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
 import 'package:humanity_vs_nature/pages/game/components/tree_component.dart';
-import 'package:humanity_vs_nature/pages/game/simulation_game_mode.dart';
+import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
 class BulldozerComponent extends SpriteComponent
-    with TapCallbacks, CollisionCallbacks, HasGameRef<SimulationGameMode> {
+    with TapCallbacks, CollisionCallbacks, HasGameRef<SimulationGame> {
   BulldozerComponent({
     required this.base,
   });
@@ -76,6 +76,9 @@ class BulldozerComponent extends SpriteComponent
     super.onCollisionStart(intersectionPoints, other);
     if (other is TreeComponent) {
       targetTree = other;
+    } else if (other is BulldozerComponent) {
+      final collisionVector = position - other.position;
+      position += collisionVector * 0.1;
     }
   }
 
@@ -90,7 +93,7 @@ class BulldozerComponent extends SpriteComponent
 
   void _updateTargetTree() {
     if (targetTree == null || targetTree?.isMounted == false) {
-      final tree = game.findFreeNearestTree(position);
+      final tree = game.findFreeMatureNearestTree(position);
       targetTree = tree != targetTree && tree?.isMounted == true ? tree : null;
       _state = _State.stop;
     }

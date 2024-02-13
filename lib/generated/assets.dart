@@ -6,5 +6,7 @@ class Assets {
   static const String spritesCity = 'assets/sprites/city.png';
   static const String spritesFarm = 'assets/sprites/farm.png';
   static const String spritesTree = 'assets/sprites/tree.png';
+  static const String spritesTreeSapling = 'assets/sprites/tree_sapling.png';
+  static const String spritesTreeSmall = 'assets/sprites/tree_small.png';
 
 }

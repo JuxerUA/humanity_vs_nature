@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 
-extension ContextExt on SpriteComponent {
+extension ContextExt on PositionComponent {
   void setRandomPosition(Vector2 screenSize) {
     final random = Random();
     final randomX = random.nextDouble() * (screenSize.x - size.x);

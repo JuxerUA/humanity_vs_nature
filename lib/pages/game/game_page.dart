@@ -1,6 +1,6 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:humanity_vs_nature/pages/game/simulation_game_mode.dart';
+import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -16,7 +16,7 @@ class _GamePageState extends State<GamePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GameWidget(
-        game: SimulationGameMode(),
+        game: SimulationGame(),
         backgroundBuilder: (context) => Container(color: Colors.lightGreen),
       ),
     );

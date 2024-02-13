@@ -22,17 +22,52 @@ class _MainMenuPageState extends State<MainMenuPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Play simulation mode button
-            ElevatedButton(
-              onPressed: () => context.pushNamed(GamePage.routeName),
-              child: const Text('Play Simulation'),
+            // Logo
+            const Center(
+              child: SizedBox(
+                height: 150,
+                width: 220,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'HUMANITY',
+                      style: TextStyle(
+                        fontSize: 24,
+                        height: 0.5,
+                        color: Colors.orange,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                    Text(
+                      'VS',
+                      style: TextStyle(
+                        fontSize: 150,
+                        height: 0.5,
+                        //color: Colors.deepOrange,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      'NATURE',
+                      style: TextStyle(
+                        fontSize: 24,
+                        height: 0.5,
+                        color: Colors.lime,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 80),
 
-            // Play arcade mode button
+            // Start button
             ElevatedButton(
               onPressed: () => context.pushNamed(GamePage.routeName),
-              child: const Text('Play Arcade'),
+              child: const Text('Start'),
             ),
             const SizedBox(height: 20),
 
