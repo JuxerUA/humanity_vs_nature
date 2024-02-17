@@ -14,6 +14,7 @@ import 'package:humanity_vs_nature/pages/game/components/farm_component.dart';
 import 'package:humanity_vs_nature/pages/game/components/field_component.dart';
 import 'package:humanity_vs_nature/pages/game/components/tree_component.dart';
 import 'package:humanity_vs_nature/pages/game/gas/gas_system.dart';
+import 'package:humanity_vs_nature/pages/game/models/dot.dart';
 import 'package:humanity_vs_nature/pages/game/models/dot_type.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
 
@@ -34,21 +35,21 @@ class SimulationGame extends FlameGame
   late int dotsCountY;
 
   final gasSystem = GasSystem();
-  final textCO2 = TextComponent(text: 'CO2: 0')
-    ..position = Vector2(15, 40);
-  final textCH4 = TextComponent(text: 'CH4: 0')
-    ..position = Vector2(160, 40);
+  final textCO2 = TextComponent(text: 'CO2: 0')..position = Vector2(15, 40);
+  final textCH4 = TextComponent(text: 'CH4: 0')..position = Vector2(160, 40);
   final fieldsLayer = PositionComponent();
 
   var _timeForSpawnTree = 0.0;
   Vector2? _positionForSpawnTree;
 
-  DotType dotType(Point<int> dot) => dots[dot.x][dot.y];
+  DotType dotType(Dot dot) => dots[dot.x][dot.y];
 
-  bool fieldCanReplaceDot(Point<int> dot) {
+  bool fieldCanReplaceDot(Dot dot) {
     final type = dotType(dot);
-    return type == DotType.none || type == DotType.tree ||
-        type == DotType.fieldPartial || type == DotType.fieldFull;
+    return type == DotType.none ||
+        type == DotType.tree ||
+        type == DotType.fieldPartial ||
+        type == DotType.fieldFull;
   }
 
   @override
@@ -59,7 +60,7 @@ class SimulationGame extends FlameGame
     dotsCountY = size.y ~/ dotSpacing;
     dots = List.generate(
       dotsCountX,
-          (_) => List<DotType>.filled(dotsCountY, DotType.none),
+      (_) => List<DotType>.filled(dotsCountY, DotType.none),
     );
 
     // Spawn default mature trees
@@ -72,16 +73,14 @@ class SimulationGame extends FlameGame
           size.y * random.nextDouble(),
         );
       } while (!isSpotFree(position, TreeComponent.radius));
-      trees.add(TreeComponent(isMature: true)
-        ..position = position);
+      trees.add(TreeComponent(isMature: true)..position = position);
     }
     await addAll(trees);
     for (final tree in trees) {
       markDotsForSpot(tree.spot, DotType.tree);
     }
 
-    final city1 = CityComponent()
-      ..position = Vector2(size.x / 2, size.y / 4);
+    final city1 = CityComponent()..position = Vector2(size.x / 2, size.y / 4);
     final city2 = CityComponent()
       ..position = Vector2(size.x / 2, size.y / 4 * 3);
     cities.addAll([city1, city2]);
@@ -111,18 +110,20 @@ class SimulationGame extends FlameGame
     _positionForSpawnTree = event.canvasPosition;
   }
 
-  void debugDot(Point<int> dot, [
+  void debugDot(
+    Dot dot, [
     double radius = 1,
     Color color = Colors.white,
   ]) {
     debugPoint(
-      Vector2(dot.x.toDouble(), dot.y.toDouble()) * dotSpacing,
+      dot.position,
       radius,
       color,
     );
   }
 
-  void debugPoint(Vector2 position, [
+  void debugPoint(
+    Vector2 position, [
     double radius = 1,
     Color color = Colors.white,
   ]) {
@@ -130,17 +131,16 @@ class SimulationGame extends FlameGame
       CircleComponent()
         ..position = (position - Vector2(radius / 2, radius / 2))
         ..radius = radius
-        ..paint = (Paint()
-          ..color = color),
+        ..paint = (Paint()..color = color),
     );
   }
 
-  bool isEmptyDot(Point<int> point) {
-    return !(point.x < 0 ||
-        point.x >= dotsCountX ||
-        point.y < 0 ||
-        point.y >= dotsCountY ||
-        dots[point.x][point.y] != DotType.none);
+  bool isEmptyDot(Dot dot) {
+    return !(dot.x < 0 ||
+        dot.x >= dotsCountX ||
+        dot.y < 0 ||
+        dot.y >= dotsCountY ||
+        dots[dot.x][dot.y] != DotType.none);
   }
 
   void _trySpawnTree(double dt) {
@@ -153,7 +153,7 @@ class SimulationGame extends FlameGame
     }
   }
 
-  List<Point<int>> markDotsForSpot(Spot spot, DotType type) {
+  List<Dot> markDotsForSpot(Spot spot, DotType type) {
     final radius2 = spot.radius * spot.radius;
 
     final firstDotX = max(
@@ -173,34 +173,34 @@ class SimulationGame extends FlameGame
       ((spot.position.y + spot.radius) / dotSpacing).floor(),
     );
 
-    final points = <Point<int>>[];
+    final markedDots = <Dot>[];
     for (var x = firstDotX; x <= lastDotX; x++) {
       for (var y = firstDotY; y <= lastDotY; y++) {
         final dotPosition = Vector2(x.toDouble(), y.toDouble()) * dotSpacing;
         final distance2 = dotPosition.distanceToSquared(spot.position);
         if (distance2 <= radius2) {
           dots[x][y] = type;
-          points.add(Point<int>(x, y));
+          markedDots.add(Dot(x, y));
           //addDebugPoint(dotPosition);
         }
       }
     }
 
-    return points;
+    return markedDots;
   }
 
-  List<Point<int>> markDotsForField(FieldComponent field) {
+  List<Dot> markDotsForField(FieldComponent field) {
     var firstDotX = dotsCountX;
     var lastDotX = 0;
     var firstDotY = dotsCountY;
     var lastDotY = 0;
 
-    for (final point in field.points) {
-      if (point.x < firstDotX) firstDotX = point.x;
-      if (point.x > lastDotX) lastDotX = point.x;
-      if (point.y < firstDotY) firstDotY = point.y;
-      if (point.y > lastDotY) lastDotY = point.y;
-      debugDot(point, 2, Colors.blueAccent);
+    for (final dot in field.dots) {
+      if (dot.x < firstDotX) firstDotX = dot.x;
+      if (dot.x > lastDotX) lastDotX = dot.x;
+      if (dot.y < firstDotY) firstDotY = dot.y;
+      if (dot.y > lastDotY) lastDotY = dot.y;
+      debugDot(dot, 2, Colors.blueAccent);
     }
 
     firstDotX = max(0, firstDotX);
@@ -209,13 +209,13 @@ class SimulationGame extends FlameGame
     lastDotY = min(dotsCountY - 1, lastDotY);
 
     /// Finding all the field's dots
-    final points = <Point<int>>[];
+    final markedDots = <Dot>[];
     for (var x = firstDotX; x <= lastDotX; x++) {
       for (var y = firstDotY; y <= lastDotY; y++) {
-        final point = Point<int>(x, y);
-        if (field.containsDot(point)) {
-          points.add(point);
-          if (fieldCanReplaceDot(point)) {
+        final dot = Dot(x, y);
+        if (field.containsDot(dot)) {
+          markedDots.add(dot);
+          if (fieldCanReplaceDot(dot)) {
             dots[x][y] = DotType.fieldFull;
           }
           //debugDot(point, 1, Colors.pink);
@@ -225,28 +225,28 @@ class SimulationGame extends FlameGame
     }
 
     /// Setting some dots like fieldPartial
-    for (final point in points) {
-      if (isEmptyDot(Point<int>(point.x - 1, point.y)) ||
-          isEmptyDot(Point<int>(point.x + 1, point.y)) ||
-          isEmptyDot(Point<int>(point.x, point.y - 1)) ||
-          isEmptyDot(Point<int>(point.x, point.y + 1))) {
-        dots[point.x][point.y] = DotType.fieldPartial;
-        debugDot(point, 2, Colors.deepOrange);
+    for (final dot in markedDots) {
+      if (isEmptyDot(dot.leftDot) ||
+          isEmptyDot(dot.rightDot) ||
+          isEmptyDot(dot.topDot) ||
+          isEmptyDot(dot.bottomDot)) {
+        dots[dot.x][dot.y] = DotType.fieldPartial;
+        debugDot(dot, 2, Colors.deepOrange);
       } else {
         //dots[point.x][point.y] = DotType.fieldFull;
-        debugDot(point, 2, Colors.black);
+        debugDot(dot, 2, Colors.black);
       }
       //debugDot(point, 1, Colors.red);
     }
 
-    return points;
+    return markedDots;
   }
 
   void expandForest(Vector2 position) {
     final tree = findNearestMatureTree(position);
     if (tree != null) {
       final spawnPosition =
-      findNearestFreeSpot(tree.position, TreeComponent.radius, 35);
+          findNearestFreeSpot(tree.position, TreeComponent.radius, 35);
       if (spawnPosition != null) {
         _addTree(spawnPosition);
       }
@@ -290,7 +290,7 @@ class SimulationGame extends FlameGame
 
   void addCombine(CityComponent owner) {
     final targetPlace =
-    findNearestFreeSpot(owner.position, FarmComponent.requiredSpotRadius);
+        findNearestFreeSpot(owner.position, FarmComponent.requiredSpotRadius);
     if (targetPlace != null) {
       final combine = CombineComponent(owner: owner, targetPlace: targetPlace)
         ..position = owner.position;
@@ -300,8 +300,7 @@ class SimulationGame extends FlameGame
   }
 
   void addFarm(Vector2 position, CityComponent owner) {
-    final farm = FarmComponent(owner: owner)
-      ..position = position;
+    final farm = FarmComponent(owner: owner)..position = position;
     farms.add(farm);
     add(farm);
     final points = markDotsForSpot(farm.spot, DotType.farm);
@@ -312,16 +311,13 @@ class SimulationGame extends FlameGame
     const baseRadius = FarmComponent.radius * 1.2;
     const maxRandomLength = FarmComponent.radius * 0.4;
     double extraLength() => baseRadius + maxRandomLength * random.nextDouble();
-    final fieldVectors = <Vector2>[
+    final fieldPositions = <Vector2>[
       Vector2(position.x - extraLength(), position.y - extraLength()),
       Vector2(position.x + extraLength(), position.y - extraLength()),
       Vector2(position.x + extraLength(), position.y + extraLength()),
       Vector2(position.x - extraLength(), position.y + extraLength()),
     ];
-    addField(fieldVectors
-        .map((e) =>
-        Point((e.x / dotSpacing).round(), (e.y / dotSpacing).round()))
-        .toList());
+    addField(fieldPositions.map(Dot.fromPosition).toList());
 
     // if (points.isEmpty) return;
     // final pointsCenter = Vector2(
@@ -336,20 +332,20 @@ class SimulationGame extends FlameGame
     // final fourFarthestExtremePoints =
     //     findFarthestPoints(extremePoints.toList(), 4);
     //
-    // final finalFiledPoints = <Point<int>>[];
+    // final finalFiledPoints = <Dot>[];
     // for (final point in fourFarthestExtremePoints) {
     //   final directionVector = point.toVector2() - pointsCenter
     //     ..clampLength(FarmComponent.radius / dotSpacing,
     //         FarmComponent.radius / dotSpacing);
     //   final endPosition = point.toVector2() + directionVector;
     //   finalFiledPoints
-    //       .add(Point<int>(endPosition.x.round(), endPosition.y.round()));
+    //       .add(Dot(endPosition.x.round(), endPosition.y.round()));
     // }
     // addField(finalFiledPoints);
   }
 
-  List<Point<int>> findFarthestPoints(List<Point<int>> points, int count) {
-    double calculateAverageDistance(List<Point<int>> points) {
+  List<Dot> findFarthestPoints(List<Dot> dots, int count) {
+    double calculateAverageDistance(List<Dot> points) {
       var totalDistance = 0.0;
 
       for (var i = 0; i < points.length; i++) {
@@ -361,19 +357,14 @@ class SimulationGame extends FlameGame
       return totalDistance / (points.length * (points.length - 1) / 2);
     }
 
-    var farthestPoints = <Point<int>>[];
+    var farthestPoints = <Dot>[];
     var maxAverageDistance = 0.0;
 
-    for (var i = 0; i < points.length; i++) {
-      for (var j = i + 1; j < points.length; j++) {
-        for (var k = j + 1; k < points.length; k++) {
-          for (var l = k + 1; l < points.length; l++) {
-            final combination = <Point<int>>[
-              points[i],
-              points[j],
-              points[k],
-              points[l]
-            ];
+    for (var i = 0; i < dots.length; i++) {
+      for (var j = i + 1; j < dots.length; j++) {
+        for (var k = j + 1; k < dots.length; k++) {
+          for (var l = k + 1; l < dots.length; l++) {
+            final combination = <Dot>[dots[i], dots[j], dots[k], dots[l]];
             final averageDistance = calculateAverageDistance(combination);
 
             if (averageDistance > maxAverageDistance) {
@@ -388,26 +379,21 @@ class SimulationGame extends FlameGame
     return farthestPoints;
   }
 
-  void addField(List<Point<int>> points) {
+  void addField(List<Dot> dots) {
     /// Calculate field position
     var minX = size.x.ceil();
     var minY = size.y.ceil();
-    for (final point in points) {
-      if (point.x < minX) minX = point.x;
-      if (point.y < minY) minY = point.y;
+    for (final dot in dots) {
+      if (dot.x < minX) minX = dot.x;
+      if (dot.y < minY) minY = dot.y;
     }
     // todo maybe move to the FieldComponent constructor
     final position = Vector2(minX * dotSpacing, minY * dotSpacing);
 
     /// Create field
     final field = FieldComponent(
-      points
-          .map((e) =>
-          Vector2(
-              e.x * dotSpacing - position.x, e.y * dotSpacing - position.y))
-          .toList(),
-    )
-      ..position = position;
+      dots.map((e) => e.position - position).toList(),
+    )..position = position;
     fields.add(field);
     fieldsLayer.add(field);
     markDotsForField(field);
@@ -428,7 +414,7 @@ class SimulationGame extends FlameGame
     //todo
   }
 
-  Point<int>? findNearestDotForField(Vector2 position) {
+  Dot? findNearestDotForField(Vector2 position) {
     bool checkDot(int x, int y) {
       if (x >= 0 && x < dotsCountX && y >= 0 && y < dotsCountY) {
         final dot = dots[x][y];
@@ -443,35 +429,35 @@ class SimulationGame extends FlameGame
     var bottomY = topY + 1;
 
     for (var level = 0; level < 30; level++) {
-      final dotsOnTheLevel = <Point<int>>[];
+      final dotsOnTheLevel = <Dot>[];
 
       for (var x = leftX; x < rightX; x++) {
         if (checkDot(x, topY)) {
-          dotsOnTheLevel.add(Point(x, topY));
+          dotsOnTheLevel.add(Dot(x, topY));
         }
       }
 
       for (var y = topY; y < bottomY; y++) {
         if (checkDot(rightX, y)) {
-          dotsOnTheLevel.add(Point(rightX, y));
+          dotsOnTheLevel.add(Dot(rightX, y));
         }
       }
 
       for (var x = rightX; x > leftX; x--) {
         if (checkDot(x, bottomY)) {
-          dotsOnTheLevel.add(Point(x, bottomY));
+          dotsOnTheLevel.add(Dot(x, bottomY));
         }
       }
 
       for (var y = bottomY; y > topY; y--) {
         if (checkDot(leftX, y)) {
-          dotsOnTheLevel.add(Point(leftX, y));
+          dotsOnTheLevel.add(Dot(leftX, y));
         }
       }
 
       if (dotsOnTheLevel.isNotEmpty) {
         final fieldPartDots = dotsOnTheLevel
-            .where((e) => dots[e.x][e.y] == DotType.fieldPartial)
+            .where((e) => dotType(e) == DotType.fieldPartial)
             .toList();
         return fieldPartDots.isNotEmpty
             ? fieldPartDots.random()
@@ -509,7 +495,8 @@ class SimulationGame extends FlameGame
     markDotsForSpot(farm.spot, DotType.none);
   }
 
-  TreeComponent? findNearestTree(Vector2 targetPosition, [
+  TreeComponent? findNearestTree(
+    Vector2 targetPosition, [
     List<TreeComponent>? treeList,
   ]) {
     TreeComponent? nearestTree;
@@ -544,10 +531,11 @@ class SimulationGame extends FlameGame
         findNearestTree(targetPosition, reservedTrees);
   }
 
-  Vector2? findNearestFreeSpot(Vector2 targetPosition,
-      double objectRadius, [
-        double? maxDistance,
-      ]) {
+  Vector2? findNearestFreeSpot(
+    Vector2 targetPosition,
+    double objectRadius, [
+    double? maxDistance,
+  ]) {
     final stepSize = objectRadius / 10;
     final searchRadius = maxDistance ?? objectRadius * 10;
 

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:humanity_vs_nature/pages/game/models/dot.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
 class FieldComponent extends PolygonComponent with HasGameRef<SimulationGame> {
@@ -54,8 +55,8 @@ class FieldComponent extends PolygonComponent with HasGameRef<SimulationGame> {
   // absolute area (not by dotSpacing)
   late final double area;
 
-  List<Point<int>> get points => vertices
-      .map((e) => Point<int>(
+  List<Dot> get dots => vertices
+      .map((e) => Dot(
             ((e.x + position.x) / SimulationGame.dotSpacing).round(),
             ((e.y + position.y) / SimulationGame.dotSpacing).round(),
           ))
