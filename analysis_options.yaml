@@ -13,7 +13,7 @@ linter:
 
     # Style rules.
     - always_declare_return_types # DO declare method return types. When declaring a method or function always specify a return type. Declaring return types for functions helps improve your codebase by allowing the analyzer to more adequately check your code for errors that could occur during runtime.
-    - always_put_control_body_on_new_line # DO separate the control structure expression from its statement.
+    # - always_put_control_body_on_new_line # DO separate the control structure expression from its statement.
     - always_put_required_named_parameters_first # DO specify @required on named parameter before other named parameters.
     - always_require_non_null_named_parameters # DO specify @required on named parameters without a default value on which an assert(param != null) is done.
     # - always_specify_types # DO specify type annotations. # Conflicts with omit_local_variable_types, which is more useful.

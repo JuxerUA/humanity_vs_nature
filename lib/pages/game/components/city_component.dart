@@ -13,10 +13,17 @@ class CityComponent extends SpriteComponent
     with TapCallbacks, HasGameRef<SimulationGame> {
   static const double radius = 50;
   static const double maxBulldozerSpawnTime = 50;
+  static const double maxCombineSpawnTime = 120;
   static const double gasSpawnTime = 0.1;
 
   var _timeForSpawnBulldozer = 0.0;
   var _timeForSpawnGas = 0.0;
+  var _timeForSpawnCombine = 0.0;
+
+  var _population = 0;
+  var _populationWisdom = 0;
+
+  final textPopulation = TextComponent();
 
   Spot get spot => Spot(position, radius);
 
@@ -25,6 +32,9 @@ class CityComponent extends SpriteComponent
     sprite = await getSpriteFromAsset(Assets.spritesCity);
     anchor = Anchor.center;
     add(CircleHitbox(radius: 50));
+    _population = Random().nextInt(50) + 50;
+    _populationWisdom = 1;
+    textPopulation.position = size / 2;
     return super.onLoad();
   }
 
@@ -33,6 +43,7 @@ class CityComponent extends SpriteComponent
     super.update(dt);
     _trySpawnBulldozer(dt);
     _trySpawnGas(dt);
+    _trySpawnCombine(dt);
   }
 
   void _trySpawnBulldozer(double dt) {
@@ -55,6 +66,14 @@ class CityComponent extends SpriteComponent
       final gasPosition =
           position + (Vector2.random() - Vector2.all(0.5)) * radius;
       game.gasSystem.addGas(gasPosition);
+    }
+  }
+
+  void _trySpawnCombine(double dt) {
+    _timeForSpawnCombine -= dt;
+    if (_timeForSpawnCombine < 0) {
+      _timeForSpawnCombine = Random().nextDouble() * maxCombineSpawnTime;
+      game.addCombine(this);
     }
   }
 }

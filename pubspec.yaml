@@ -13,8 +13,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flame: 1.14.0
+  flame: 1.15.0
   rive: 0.12.4
+  flame_rive: 1.9.11
 
 dev_dependencies:
   flutter_test:
@@ -27,6 +28,7 @@ flutter:
   assets:
     - assets/
     - assets/sprites/
+    - assets/rive/
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

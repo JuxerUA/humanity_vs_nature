@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
@@ -26,6 +27,8 @@ class TreeComponent extends SpriteComponent
 
   bool get isMature => _phase == _TreePhase.mature;
 
+  bool get isSapling => _phase == _TreePhase.sapling;
+
   Spot get spot => Spot(position, radius);
 
   @override
@@ -48,8 +51,15 @@ class TreeComponent extends SpriteComponent
         needCO2toNextPhase -= gasVolume;
       } else {
         // Grow up to next phase
-        _phase =
-            _phase == _TreePhase.sapling ? _TreePhase.young : _TreePhase.mature;
+        if (_phase == _TreePhase.sapling) {
+          _phase = _TreePhase.young;
+        } else {
+          _phase = _TreePhase.mature;
+          final saplingCount = Random().nextInt(3);
+          for (var i = 0; i < saplingCount; i++) {
+            game.expandForest(position);
+          }
+        }
         _updateTreeAccordingToCurrentPhase();
       }
     }
@@ -76,8 +86,8 @@ class TreeComponent extends SpriteComponent
 }
 
 enum _TreePhase {
-  sapling(5, 10, Assets.spritesTreeSapling),
-  young(20, 30, Assets.spritesTreeSmall),
+  sapling(2, 10, Assets.spritesTreeSapling),
+  young(15, 30, Assets.spritesTreeSmall),
   mature(30, 0, Assets.spritesTree);
 
   const _TreePhase(this.hp, this.volumeCO2toNextPhase, this.spritePath);
