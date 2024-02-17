@@ -6,5 +6,6 @@ enum DotType {
   farm,
   city;
 
-  bool get isGoodDotForField => this == DotType.none || this == DotType.fieldPartial;
+  bool get isGoodDotForField =>
+      this == DotType.none || this == DotType.fieldPartial;
 }

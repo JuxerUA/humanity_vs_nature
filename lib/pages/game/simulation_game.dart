@@ -30,7 +30,7 @@ class SimulationGame extends FlameGame
   final List<BulldozerComponent> bulldozers = [];
   final List<CombineComponent> combines = [];
 
-  late List<List<DotType>> dots;
+  late List<List<DotType>> _dots;
   late int dotsCountX;
   late int dotsCountY;
 
@@ -42,10 +42,14 @@ class SimulationGame extends FlameGame
   var _timeForSpawnTree = 0.0;
   Vector2? _positionForSpawnTree;
 
-  DotType dotType(Dot dot) => dots[dot.x][dot.y];
+  DotType getDotType(Dot dot) => _dots[dot.x][dot.y];
+
+  void setDotType(Dot dot, DotType type) => _dots[dot.x][dot.y] = type;
+
+  void setDotTypeByXY(int x, int y, DotType type) => _dots[x][y] = type;
 
   bool fieldCanReplaceDot(Dot dot) {
-    final type = dotType(dot);
+    final type = getDotType(dot);
     return type == DotType.none ||
         type == DotType.tree ||
         type == DotType.fieldPartial ||
@@ -58,7 +62,7 @@ class SimulationGame extends FlameGame
 
     dotsCountX = size.x ~/ dotSpacing;
     dotsCountY = size.y ~/ dotSpacing;
-    dots = List.generate(
+    _dots = List.generate(
       dotsCountX,
       (_) => List<DotType>.filled(dotsCountY, DotType.none),
     );
@@ -140,7 +144,7 @@ class SimulationGame extends FlameGame
         dot.x >= dotsCountX ||
         dot.y < 0 ||
         dot.y >= dotsCountY ||
-        dots[dot.x][dot.y] != DotType.none);
+        getDotType(dot) != DotType.none);
   }
 
   void _trySpawnTree(double dt) {
@@ -179,7 +183,7 @@ class SimulationGame extends FlameGame
         final dotPosition = Vector2(x.toDouble(), y.toDouble()) * dotSpacing;
         final distance2 = dotPosition.distanceToSquared(spot.position);
         if (distance2 <= radius2) {
-          dots[x][y] = type;
+          setDotTypeByXY(x, y, type);
           markedDots.add(Dot(x, y));
           //addDebugPoint(dotPosition);
         }
@@ -216,7 +220,7 @@ class SimulationGame extends FlameGame
         if (field.containsDot(dot)) {
           markedDots.add(dot);
           if (fieldCanReplaceDot(dot)) {
-            dots[x][y] = DotType.fieldFull;
+            setDotType(dot, DotType.fieldFull);
           }
           //debugDot(point, 1, Colors.pink);
         } //else
@@ -230,7 +234,7 @@ class SimulationGame extends FlameGame
           isEmptyDot(dot.rightDot) ||
           isEmptyDot(dot.topDot) ||
           isEmptyDot(dot.bottomDot)) {
-        dots[dot.x][dot.y] = DotType.fieldPartial;
+        setDotType(dot, DotType.fieldPartial);
         debugDot(dot, 2, Colors.deepOrange);
       } else {
         //dots[point.x][point.y] = DotType.fieldFull;
@@ -415,10 +419,12 @@ class SimulationGame extends FlameGame
   }
 
   Dot? findNearestDotForField(Vector2 position) {
-    bool checkDot(int x, int y) {
-      if (x >= 0 && x < dotsCountX && y >= 0 && y < dotsCountY) {
-        final dot = dots[x][y];
-        return dot.isGoodDotForField;
+    bool checkDot(Dot dot) {
+      if (dot.x >= 0 &&
+          dot.x < dotsCountX &&
+          dot.y >= 0 &&
+          dot.y < dotsCountY) {
+        return getDotType(dot).isGoodDotForField;
       }
       return false;
     }
@@ -432,32 +438,36 @@ class SimulationGame extends FlameGame
       final dotsOnTheLevel = <Dot>[];
 
       for (var x = leftX; x < rightX; x++) {
-        if (checkDot(x, topY)) {
-          dotsOnTheLevel.add(Dot(x, topY));
+        final dot = Dot(x, topY);
+        if (checkDot(dot)) {
+          dotsOnTheLevel.add(dot);
         }
       }
 
       for (var y = topY; y < bottomY; y++) {
-        if (checkDot(rightX, y)) {
-          dotsOnTheLevel.add(Dot(rightX, y));
+        final dot = Dot(rightX, y);
+        if (checkDot(dot)) {
+          dotsOnTheLevel.add(dot);
         }
       }
 
       for (var x = rightX; x > leftX; x--) {
-        if (checkDot(x, bottomY)) {
-          dotsOnTheLevel.add(Dot(x, bottomY));
+        final dot = Dot(x, bottomY);
+        if (checkDot(dot)) {
+          dotsOnTheLevel.add(dot);
         }
       }
 
       for (var y = bottomY; y > topY; y--) {
-        if (checkDot(leftX, y)) {
-          dotsOnTheLevel.add(Dot(leftX, y));
+        final dot = Dot(leftX, y);
+        if (checkDot(dot)) {
+          dotsOnTheLevel.add(dot);
         }
       }
 
       if (dotsOnTheLevel.isNotEmpty) {
         final fieldPartDots = dotsOnTheLevel
-            .where((e) => dotType(e) == DotType.fieldPartial)
+            .where((dot) => getDotType(dot) == DotType.fieldPartial)
             .toList();
         return fieldPartDots.isNotEmpty
             ? fieldPartDots.random()
