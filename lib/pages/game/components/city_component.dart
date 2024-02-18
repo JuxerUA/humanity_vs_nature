@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flame/math.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
@@ -32,7 +32,7 @@ class CityComponent extends SpriteComponent
     sprite = await getSpriteFromAsset(Assets.spritesCity);
     anchor = Anchor.center;
     add(CircleHitbox(radius: 50));
-    _population = Random().nextInt(50) + 50;
+    _population = randomFallback.nextInt(50) + 50;
     _populationWisdom = 1;
     textPopulation.position = size / 2;
     return super.onLoad();
@@ -49,10 +49,11 @@ class CityComponent extends SpriteComponent
   void _trySpawnBulldozer(double dt) {
     _timeForSpawnBulldozer -= dt;
     if (_timeForSpawnBulldozer < 0) {
-      _timeForSpawnBulldozer = Random().nextDouble() * maxBulldozerSpawnTime;
+      _timeForSpawnBulldozer =
+          randomFallback.nextDouble() * maxBulldozerSpawnTime;
 
       // The ratio of bulldozers to mature trees is no more than 1 to 5
-      if (game.treesModule.trees.where((tree) => tree.isMature).length >
+      if (game.treeModule.trees.where((tree) => tree.isMature).length >
           game.bulldozers.length * 5) {
         game.addBulldozer(this);
       }
@@ -72,7 +73,7 @@ class CityComponent extends SpriteComponent
   void _trySpawnCombine(double dt) {
     _timeForSpawnCombine -= dt;
     if (_timeForSpawnCombine < 0) {
-      _timeForSpawnCombine = Random().nextDouble() * maxCombineSpawnTime;
+      _timeForSpawnCombine = randomFallback.nextDouble() * maxCombineSpawnTime;
       game.addCombine(this);
     }
   }

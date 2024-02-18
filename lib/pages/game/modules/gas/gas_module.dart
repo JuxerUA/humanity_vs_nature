@@ -1,9 +1,10 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
+import 'package:flame/math.dart';
 import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/pages/game/modules/gas/gas_unit.dart';
-import 'package:humanity_vs_nature/pages/game/modules/trees/tree_component.dart';
+import 'package:humanity_vs_nature/pages/game/modules/tree/tree_component.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
 export 'gas_unit.dart';
@@ -83,7 +84,7 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
   }
 
   void addGas(Vector2 position) {
-    final velocity = Vector2(Random().nextDouble() - 0.5, -10);
+    final velocity = Vector2(randomFallback.nextDouble() - 0.5, -10);
     final gasUnit = GasUnit(position, velocity);
     totalCO2created += gasUnit.volume;
     units.add(gasUnit);

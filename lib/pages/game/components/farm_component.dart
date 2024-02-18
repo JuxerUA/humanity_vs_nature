@@ -25,7 +25,7 @@ class FarmComponent extends SpriteComponent
   @override
   FutureOr<void> onLoad() async {
     sprite = await getSpriteFromAsset(Assets.spritesFarm);
-    anchor = Anchor.center;
+    anchor = Anchor.bottomCenter;
     size *= 0.7;
     add(CircleHitbox());
     return super.onLoad();

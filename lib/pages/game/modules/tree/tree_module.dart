@@ -1,27 +1,26 @@
-import 'dart:math';
-
 import 'package:flame/components.dart';
+import 'package:flame/math.dart';
 import 'package:humanity_vs_nature/extensions/sprite_component_extension.dart';
 import 'package:humanity_vs_nature/pages/game/models/dot_type.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
-import 'package:humanity_vs_nature/pages/game/modules/trees/tree_component.dart';
+import 'package:humanity_vs_nature/pages/game/modules/tree/tree_component.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
-class TreesModule extends Component with HasGameRef<SimulationGame> {
+class TreeModule extends Component with HasGameRef<SimulationGame> {
   final List<TreeComponent> _trees = [];
 
   List<TreeComponent> get trees => _trees;
+
   Iterable<Spot> get spots => _trees.map((e) => e.spot);
 
   /// Spawn initial mature trees
   Future<void> spawnInitialTrees() async {
-    final random = Random();
     for (var i = 0; i < 4; i++) {
       late Vector2 position;
       do {
         position = Vector2(
-          game.size.x * random.nextDouble(),
-          game.size.y * random.nextDouble(),
+          game.size.x * randomFallback.nextDouble(),
+          game.size.y * randomFallback.nextDouble(),
         );
       } while (!game.isSpotFree(position, TreeComponent.radius));
       trees.add(TreeComponent(isMature: true)..position = position);

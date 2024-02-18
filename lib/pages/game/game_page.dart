@@ -12,12 +12,21 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
+  final _simulationGame = SimulationGame();
+  final _grassColor = Colors.lightGreen;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: GameWidget(
-        game: SimulationGame(),
-        backgroundBuilder: (context) => Container(color: Colors.lightGreen),
+        game: _simulationGame,
+        backgroundBuilder: (context) => Container(color: _grassColor),
+      ),
+      backgroundColor: _grassColor,
+      bottomNavigationBar: ElevatedButton(
+        onPressed: () =>
+            setState(() => _simulationGame.paused = !_simulationGame.paused),
+        child: Text(_simulationGame.paused ? 'Resume' : 'Pause'),
       ),
     );
   }

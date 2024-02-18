@@ -1,9 +1,10 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flame/math.dart';
+import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
@@ -35,7 +36,7 @@ class TreeComponent extends SpriteComponent
   FutureOr<void> onLoad() async {
     await _updateTreeAccordingToCurrentPhase();
     add(CircleHitbox());
-    anchor = Anchor.center;
+    anchor = Anchor.bottomCenter;
     return super.onLoad();
   }
 
@@ -55,9 +56,9 @@ class TreeComponent extends SpriteComponent
           _phase = _TreePhase.young;
         } else {
           _phase = _TreePhase.mature;
-          final saplingCount = Random().nextInt(3);
+          final saplingCount = randomFallback.nextInt(3);
           for (var i = 0; i < saplingCount; i++) {
-            game.treesModule.expandForest(position);
+            game.treeModule.expandForest(position);
           }
         }
         _updateTreeAccordingToCurrentPhase();
@@ -74,13 +75,13 @@ class TreeComponent extends SpriteComponent
   @override
   void onTapDown(TapDownEvent event) {
     super.onTapDown(event);
-    game.treesModule.expandForest(position);
+    game.treeModule.expandForest(position);
   }
 
   void doDamage(double damageValue) {
     hp -= damageValue;
     if (hp <= 0 && isMounted) {
-      game.treesModule.removeTree(this);
+      game.treeModule.removeTree(this);
     }
   }
 }
