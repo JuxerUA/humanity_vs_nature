@@ -158,6 +158,14 @@ class SimulationGame extends FlameGame
   }
 
   List<Dot> markDotsForSpot(Spot spot, DotType type) {
+    final dots = getDotsForSpot(spot);
+    for (final dot in dots) {
+      setDotType(dot, type);
+    }
+    return dots;
+  }
+
+  List<Dot> getDotsForSpot(Spot spot) {
     final radius2 = spot.radius * spot.radius;
 
     final firstDotX = max(
@@ -177,20 +185,18 @@ class SimulationGame extends FlameGame
       ((spot.position.y + spot.radius) / dotSpacing).floor(),
     );
 
-    final markedDots = <Dot>[];
+    final spotDots = <Dot>[];
     for (var x = firstDotX; x <= lastDotX; x++) {
       for (var y = firstDotY; y <= lastDotY; y++) {
         final dotPosition = Vector2(x.toDouble(), y.toDouble()) * dotSpacing;
         final distance2 = dotPosition.distanceToSquared(spot.position);
         if (distance2 <= radius2) {
-          setDotTypeByXY(x, y, type);
-          markedDots.add(Dot(x, y));
-          //addDebugPoint(dotPosition);
+          spotDots.add(Dot(x, y));
         }
       }
     }
 
-    return markedDots;
+    return spotDots;
   }
 
   List<Dot> markDotsForField(FieldComponent field) {
@@ -199,12 +205,11 @@ class SimulationGame extends FlameGame
     var firstDotY = dotsCountY;
     var lastDotY = 0;
 
-    for (final dot in field.dots) {
+    for (final dot in field.vertexDots) {
       if (dot.x < firstDotX) firstDotX = dot.x;
       if (dot.x > lastDotX) lastDotX = dot.x;
       if (dot.y < firstDotY) firstDotY = dot.y;
       if (dot.y > lastDotY) lastDotY = dot.y;
-      debugDot(dot, 2, Colors.blueAccent);
     }
 
     firstDotX = max(0, firstDotX);
@@ -222,25 +227,19 @@ class SimulationGame extends FlameGame
           if (fieldCanReplaceDot(dot)) {
             setDotType(dot, DotType.fieldFull);
           }
-          //debugDot(point, 1, Colors.pink);
-        } //else
-        //debugDot(point);
+        }
       }
     }
 
-    /// Setting some dots like fieldPartial
+    /// Setting fieldPartial dots
     for (final dot in markedDots) {
-      if (isEmptyDot(dot.leftDot) ||
-          isEmptyDot(dot.rightDot) ||
-          isEmptyDot(dot.topDot) ||
-          isEmptyDot(dot.bottomDot)) {
+      if (field.isEdgeDot(dot) &&
+          (isEmptyDot(dot.leftDot) ||
+              isEmptyDot(dot.rightDot) ||
+              isEmptyDot(dot.topDot) ||
+              isEmptyDot(dot.bottomDot))) {
         setDotType(dot, DotType.fieldPartial);
-        debugDot(dot, 2, Colors.deepOrange);
-      } else {
-        //dots[point.x][point.y] = DotType.fieldFull;
-        debugDot(dot, 2, Colors.black);
       }
-      //debugDot(point, 1, Colors.red);
     }
 
     return markedDots;
@@ -409,7 +408,7 @@ class SimulationGame extends FlameGame
       return;
     }
 
-    final firstDotPos = Vector2(firstDot.x * 10, firstDot.y * 10);
+    final firstDotPos = firstDot.position;
     var directionVector = firstDotPos - ownerSpot.position
       ..clampLength(20, 50);
     directionVector += (Vector2.random() - Vector2.random()) * 10;
@@ -429,9 +428,9 @@ class SimulationGame extends FlameGame
       return false;
     }
 
-    var leftX = position.x ~/ 10;
+    var leftX = position.x ~/ dotSpacing;
     var rightX = leftX + 1;
-    var topY = position.y ~/ 10;
+    var topY = position.y ~/ dotSpacing;
     var bottomY = topY + 1;
 
     for (var level = 0; level < 30; level++) {
@@ -592,8 +591,11 @@ class SimulationGame extends FlameGame
       }
     }
 
-    /// Check dots
-    // TODO
+    /// Check fields by dots
+    final dots = getDotsForSpot(Spot(position, radius));
+    for (final dot in dots) {
+      if (getDotType(dot).isField) return false;
+    }
 
     return true;
   }

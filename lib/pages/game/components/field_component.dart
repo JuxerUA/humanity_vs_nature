@@ -55,29 +55,38 @@ class FieldComponent extends PolygonComponent with HasGameRef<SimulationGame> {
   // absolute area (not by dotSpacing)
   late final double area;
 
-  List<Dot> get dots => vertices
-      .map((e) => Dot(
-            ((e.x + position.x) / SimulationGame.dotSpacing).round(),
-            ((e.y + position.y) / SimulationGame.dotSpacing).round(),
-          ))
-      .toList();
+  List<Dot> get vertexDots =>
+      vertices.map((e) => Dot.fromPosition(e + position)).toList();
 
-  bool containsDot(Point<int> point) {
+  /// If the dot is placed on the one of the filed edges
+  bool isEdgeDot(Dot dot) {
     if (vertices.length != 4) return false;
 
     final p1 = vertices[0] + position;
     final p2 = vertices[1] + position;
     final p3 = vertices[2] + position;
     final p4 = vertices[3] + position;
-    final p = Vector2(point.x * SimulationGame.dotSpacing,
-        point.y * SimulationGame.dotSpacing);
+    final p = dot.position;
 
-    print('containsDot');
-    print('p1 $p1');
-    print('p2 $p2');
-    print('p3 $p3');
-    print('p4 $p4');
-    print('p $p');
+    bool arePointsCollinear(Vector2 a, Vector2 b, Vector2 p) =>
+        ((b.y - a.y) * (p.x - a.x) - (b.x - a.x) * (p.y - a.y)).abs() < 0.0001;
+
+    if (arePointsCollinear(p1, p2, p)) return true;
+    if (arePointsCollinear(p2, p3, p)) return true;
+    if (arePointsCollinear(p3, p4, p)) return true;
+    if (arePointsCollinear(p4, p1, p)) return true;
+    return false;
+  }
+
+  /// If the dot is inside the field area
+  bool containsDot(Dot dot) {
+    if (vertices.length != 4) return false;
+
+    final p1 = vertices[0] + position;
+    final p2 = vertices[1] + position;
+    final p3 = vertices[2] + position;
+    final p4 = vertices[3] + position;
+    final p = dot.position;
 
     bool isPointInTriangle(Vector2 p, Vector2 a, Vector2 b, Vector2 c) {
       final b1 = ((p.x - b.x) * (a.y - b.y) - (a.x - b.x) * (p.y - b.y)) <= 0.0;
