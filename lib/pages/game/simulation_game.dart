@@ -6,24 +6,22 @@ import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:humanity_vs_nature/extensions/sprite_component_extension.dart';
 import 'package:humanity_vs_nature/pages/game/components/bulldozer_component.dart';
 import 'package:humanity_vs_nature/pages/game/components/city_component.dart';
 import 'package:humanity_vs_nature/pages/game/components/combine_component.dart';
 import 'package:humanity_vs_nature/pages/game/components/farm_component.dart';
 import 'package:humanity_vs_nature/pages/game/components/field_component.dart';
-import 'package:humanity_vs_nature/pages/game/components/tree_component.dart';
-import 'package:humanity_vs_nature/pages/game/gas/gas_system.dart';
 import 'package:humanity_vs_nature/pages/game/models/dot.dart';
 import 'package:humanity_vs_nature/pages/game/models/dot_type.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
+import 'package:humanity_vs_nature/pages/game/modules/gas/gas_module.dart';
+import 'package:humanity_vs_nature/pages/game/modules/trees/trees_module.dart';
 
 class SimulationGame extends FlameGame
     with HasCollisionDetection, TapCallbacks {
   static const double maxTreeSpawnTime = 20;
   static const double dotSpacing = 10;
 
-  final List<TreeComponent> trees = [];
   final List<CityComponent> cities = [];
   final List<FarmComponent> farms = [];
   final List<FieldComponent> fields = [];
@@ -34,7 +32,9 @@ class SimulationGame extends FlameGame
   late int dotsCountX;
   late int dotsCountY;
 
-  final gasSystem = GasSystem();
+  final gasModule = GasModule();
+  final treesModule = TreesModule();
+
   final textCO2 = TextComponent(text: 'CO2: 0')..position = Vector2(15, 40);
   final textCH4 = TextComponent(text: 'CH4: 0')..position = Vector2(160, 40);
   final fieldsLayer = PositionComponent();
@@ -59,6 +59,7 @@ class SimulationGame extends FlameGame
   @override
   FutureOr<void> onLoad() async {
     add(fieldsLayer);
+    add(treesModule);
 
     dotsCountX = size.x ~/ dotSpacing;
     dotsCountY = size.y ~/ dotSpacing;
@@ -67,22 +68,7 @@ class SimulationGame extends FlameGame
       (_) => List<DotType>.filled(dotsCountY, DotType.none),
     );
 
-    // Spawn default mature trees
-    final random = Random();
-    for (var i = 0; i < 4; i++) {
-      late Vector2 position;
-      do {
-        position = Vector2(
-          size.x * random.nextDouble(),
-          size.y * random.nextDouble(),
-        );
-      } while (!isSpotFree(position, TreeComponent.radius));
-      trees.add(TreeComponent(isMature: true)..position = position);
-    }
-    await addAll(trees);
-    for (final tree in trees) {
-      markDotsForSpot(tree.spot, DotType.tree);
-    }
+    await treesModule.spawnInitialTrees();
 
     final city1 = CityComponent()..position = Vector2(size.x / 2, size.y / 4);
     final city2 = CityComponent()
@@ -91,7 +77,7 @@ class SimulationGame extends FlameGame
     await addAll(cities);
     markDotsForSpot(city1.spot, DotType.city);
     markDotsForSpot(city2.spot, DotType.city);
-    add(gasSystem);
+    add(gasModule);
     add(textCO2);
     add(textCH4);
 
@@ -152,7 +138,7 @@ class SimulationGame extends FlameGame
     if (_timeForSpawnTree < 0) {
       _timeForSpawnTree = Random().nextDouble() * maxTreeSpawnTime;
       //todo add constraints
-      _addTree(_positionForSpawnTree);
+      treesModule.addTree(_positionForSpawnTree);
       _positionForSpawnTree = null;
     }
   }
@@ -243,45 +229,6 @@ class SimulationGame extends FlameGame
     }
 
     return markedDots;
-  }
-
-  void expandForest(Vector2 position) {
-    final tree = findNearestMatureTree(position);
-    if (tree != null) {
-      final spawnPosition =
-          findNearestFreeSpot(tree.position, TreeComponent.radius, 35);
-      if (spawnPosition != null) {
-        _addTree(spawnPosition);
-      }
-    }
-  }
-
-  TreeComponent? findNearestMatureTree(Vector2 position) {
-    TreeComponent? nearestMatureTree;
-    var nearestDistance = double.infinity;
-    for (final tree in trees) {
-      if (tree.isMature) {
-        final distance = (tree.position - position).length2;
-        if (distance < nearestDistance) {
-          nearestMatureTree = tree;
-          nearestDistance = distance;
-        }
-      }
-    }
-    return nearestMatureTree;
-  }
-
-  void _addTree(Vector2? position) {
-    final tree = TreeComponent();
-    final treePosition = position;
-    if (treePosition != null) {
-      tree.position = treePosition;
-    } else {
-      tree.setRandomPosition(size);
-    }
-    trees.add(tree);
-    add(tree);
-    markDotsForSpot(tree.spot, DotType.tree);
   }
 
   void addBulldozer(PositionComponent owner) {
@@ -492,52 +439,10 @@ class SimulationGame extends FlameGame
     combines.remove(combine);
   }
 
-  void removeTree(TreeComponent tree) {
-    remove(tree);
-    trees.remove(tree);
-    markDotsForSpot(tree.spot, DotType.none);
-  }
-
   void removeFarm(FarmComponent farm) {
     remove(farm);
     farms.remove(farm);
     markDotsForSpot(farm.spot, DotType.none);
-  }
-
-  TreeComponent? findNearestTree(
-    Vector2 targetPosition, [
-    List<TreeComponent>? treeList,
-  ]) {
-    TreeComponent? nearestTree;
-    var minDistance = double.infinity;
-
-    final list = treeList ?? trees;
-    for (final tree in list) {
-      final distance = tree.position.distanceTo(targetPosition);
-
-      if (distance < minDistance) {
-        minDistance = distance;
-        nearestTree = tree;
-      }
-    }
-
-    return nearestTree;
-  }
-
-  TreeComponent? findFreeMatureNearestTree(Vector2 targetPosition) {
-    final reservedTrees = <TreeComponent>[];
-    for (final bulldozer in bulldozers) {
-      final targetTree = bulldozer.targetTree;
-      if (targetTree != null) {
-        reservedTrees.add(targetTree);
-      }
-    }
-
-    final freeMatureTrees = trees
-        .where((tree) => tree.isMature && !reservedTrees.contains(tree))
-        .toList();
-    return findNearestTree(targetPosition, freeMatureTrees) ??
-        findNearestTree(targetPosition, reservedTrees);
   }
 
   Vector2? findNearestFreeSpot(
@@ -582,7 +487,7 @@ class SimulationGame extends FlameGame
     final spots = [
       ...cities.map((e) => e.spot),
       ...farms.map((e) => e.spot),
-      ...trees.map((e) => e.spot),
+      ...treesModule.spots,
     ];
     for (final spot in spots) {
       //todo maybe should use distanceToSquared for additional optimisation

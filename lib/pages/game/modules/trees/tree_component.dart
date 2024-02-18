@@ -47,7 +47,7 @@ class TreeComponent extends SpriteComponent
     if (_phase != _TreePhase.mature) {
       if (needCO2toNextPhase > 0) {
         // Try to get some CO2
-        final gasVolume = game.gasSystem.aTreeWantsSomeCO2(position, dt);
+        final gasVolume = game.gasModule.aTreeWantsSomeCO2(position, dt);
         needCO2toNextPhase -= gasVolume;
       } else {
         // Grow up to next phase
@@ -57,7 +57,7 @@ class TreeComponent extends SpriteComponent
           _phase = _TreePhase.mature;
           final saplingCount = Random().nextInt(3);
           for (var i = 0; i < saplingCount; i++) {
-            game.expandForest(position);
+            game.treesModule.expandForest(position);
           }
         }
         _updateTreeAccordingToCurrentPhase();
@@ -74,13 +74,13 @@ class TreeComponent extends SpriteComponent
   @override
   void onTapDown(TapDownEvent event) {
     super.onTapDown(event);
-    game.expandForest(position);
+    game.treesModule.expandForest(position);
   }
 
   void doDamage(double damageValue) {
     hp -= damageValue;
     if (hp <= 0 && isMounted) {
-      game.removeTree(this);
+      game.treesModule.removeTree(this);
     }
   }
 }

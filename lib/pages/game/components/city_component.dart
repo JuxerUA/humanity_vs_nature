@@ -52,7 +52,7 @@ class CityComponent extends SpriteComponent
       _timeForSpawnBulldozer = Random().nextDouble() * maxBulldozerSpawnTime;
 
       // The ratio of bulldozers to mature trees is no more than 1 to 5
-      if (game.trees.where((tree) => tree.isMature).length >
+      if (game.treesModule.trees.where((tree) => tree.isMature).length >
           game.bulldozers.length * 5) {
         game.addBulldozer(this);
       }
@@ -65,7 +65,7 @@ class CityComponent extends SpriteComponent
       _timeForSpawnGas = gasSpawnTime;
       final gasPosition =
           position + (Vector2.random() - Vector2.all(0.5)) * radius;
-      game.gasSystem.addGas(gasPosition);
+      game.gasModule.addGas(gasPosition);
     }
   }
 

@@ -2,11 +2,13 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
-import 'package:humanity_vs_nature/pages/game/components/tree_component.dart';
-import 'package:humanity_vs_nature/pages/game/gas/gas_unit.dart';
+import 'package:humanity_vs_nature/pages/game/modules/gas/gas_unit.dart';
+import 'package:humanity_vs_nature/pages/game/modules/trees/tree_component.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
-class GasSystem extends Component with HasGameRef<SimulationGame> {
+export 'gas_unit.dart';
+
+class GasModule extends Component with HasGameRef<SimulationGame> {
   final List<GasUnit> units = [];
   int updateIndex = 0;
   double currentBiggestGasVolume = GasUnit.defaultVolume;

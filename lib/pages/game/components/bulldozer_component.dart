@@ -5,8 +5,8 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:humanity_vs_nature/extensions/sprite_component_extension.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
-import 'package:humanity_vs_nature/pages/game/components/tree_component.dart';
 import 'package:humanity_vs_nature/pages/game/mixins/vehicle.dart';
+import 'package:humanity_vs_nature/pages/game/modules/trees/tree_component.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
@@ -88,7 +88,7 @@ class BulldozerComponent extends SpriteComponent
 
   void _updateTargetTree() {
     if (targetTree == null || targetTree?.isMounted == false) {
-      final tree = game.findFreeMatureNearestTree(position);
+      final tree = game.treesModule.findFreeMatureNearestTree(position);
       targetTree = tree != targetTree && tree?.isMounted == true ? tree : null;
       state = VehicleState.stop;
     }
