@@ -46,6 +46,12 @@ class CityComponent extends SpriteComponent
     _trySpawnCombine(dt);
   }
 
+  @override
+  void onTapDown(TapDownEvent event) {
+    super.onTapDown(event);
+    game.showPauseMenu();
+  }
+
   void _trySpawnBulldozer(double dt) {
     _timeForSpawnBulldozer -= dt;
     if (_timeForSpawnBulldozer < 0) {
@@ -54,8 +60,8 @@ class CityComponent extends SpriteComponent
 
       // The ratio of bulldozers to mature trees is no more than 1 to 5
       if (game.treeModule.trees.where((tree) => tree.isMature).length >
-          game.bulldozers.length * 5) {
-        game.addBulldozer(this);
+          game.bulldozerModule.bulldozers.length * 5) {
+        game.bulldozerModule.addBulldozer(this);
       }
     }
   }
@@ -74,7 +80,7 @@ class CityComponent extends SpriteComponent
     _timeForSpawnCombine -= dt;
     if (_timeForSpawnCombine < 0) {
       _timeForSpawnCombine = randomFallback.nextDouble() * maxCombineSpawnTime;
-      game.addCombine(this);
+      game.combineModule.addCombine(this);
     }
   }
 }

@@ -7,34 +7,34 @@ import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/math.dart';
 import 'package:flutter/material.dart';
-import 'package:humanity_vs_nature/pages/game/components/bulldozer_component.dart';
-import 'package:humanity_vs_nature/pages/game/components/city_component.dart';
-import 'package:humanity_vs_nature/pages/game/components/combine_component.dart';
-import 'package:humanity_vs_nature/pages/game/components/farm_component.dart';
 import 'package:humanity_vs_nature/pages/game/models/dot.dart';
 import 'package:humanity_vs_nature/pages/game/models/dot_type.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
+import 'package:humanity_vs_nature/pages/game/modules/bulldozer/bulldozer_module.dart';
+import 'package:humanity_vs_nature/pages/game/modules/city/city_module.dart';
+import 'package:humanity_vs_nature/pages/game/modules/combine/combine_module.dart';
+import 'package:humanity_vs_nature/pages/game/modules/farm/farm_module.dart';
 import 'package:humanity_vs_nature/pages/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/pages/game/modules/field/field_module.dart';
 import 'package:humanity_vs_nature/pages/game/modules/gas/gas_module.dart';
 import 'package:humanity_vs_nature/pages/game/modules/tree/tree_module.dart';
+import 'package:humanity_vs_nature/pages/overlays/pause_menu_overlay.dart';
 
 class SimulationGame extends FlameGame
     with HasCollisionDetection, TapCallbacks {
   static const double maxTreeSpawnTime = 20;
   static const double dotSpacing = 10;
 
-  final List<CityComponent> cities = [];
-  final List<FarmComponent> farms = [];
-  final List<BulldozerComponent> bulldozers = [];
-  final List<CombineComponent> combines = [];
-
   late List<List<DotType>> _dots;
   late int dotsCountX;
   late int dotsCountY;
 
+  final cityModule = CityModule();
   final fieldModule = FieldModule();
   final treeModule = TreeModule();
+  final farmModule = FarmModule();
+  final bulldozerModule = BulldozerModule();
+  final combineModule = CombineModule();
   final gasModule = GasModule();
 
   final textCO2 = TextComponent(text: 'CO2: 0')..position = Vector2(15, 40);
@@ -63,18 +63,15 @@ class SimulationGame extends FlameGame
     dotsCountY = size.y ~/ dotSpacing;
     _dots = List.generate(
       dotsCountX,
-          (_) => List<DotType>.filled(dotsCountY, DotType.none),
+      (_) => List<DotType>.filled(dotsCountY, DotType.none),
     );
 
+    add(cityModule);
     add(fieldModule);
-    final city1 = CityComponent()..position = Vector2(size.x / 2, size.y / 4);
-    final city2 = CityComponent()
-      ..position = Vector2(size.x / 2, size.y / 4 * 3);
-    cities.addAll([city1, city2]);
-    await addAll(cities);
-    markDotsForSpot(city1.spot, DotType.city);
-    markDotsForSpot(city2.spot, DotType.city);
     add(treeModule);
+    add(farmModule);
+    add(bulldozerModule);
+    add(combineModule);
 
     await treeModule.spawnInitialTrees();
     add(gasModule);
@@ -98,6 +95,10 @@ class SimulationGame extends FlameGame
     super.onTapDown(event);
     _timeForSpawnTree /= 2;
     _positionForSpawnTree = event.canvasPosition;
+  }
+
+  void showPauseMenu() {
+    overlays.add(PauseMenuOverlay.overlayName);
   }
 
   void addDebugDot(
@@ -231,47 +232,6 @@ class SimulationGame extends FlameGame
     return markedDots;
   }
 
-  void addBulldozer(PositionComponent owner) {
-    final bulldozer = BulldozerComponent(base: owner)
-      ..position = owner.position;
-    bulldozers.add(bulldozer);
-    add(bulldozer);
-  }
-
-  void removeBulldozer(BulldozerComponent bulldozer) {
-    remove(bulldozer);
-    bulldozers.remove(bulldozer);
-  }
-
-  void addCombine(CityComponent owner) {
-    final targetPlace =
-        findNearestFreeSpot(owner.position, FarmComponent.requiredSpotRadius);
-    if (targetPlace != null) {
-      final combine = CombineComponent(owner: owner, targetPlace: targetPlace)
-        ..position = owner.position;
-      combines.add(combine);
-      add(combine);
-    }
-  }
-
-  void removeCombine(CombineComponent combine) {
-    remove(combine);
-    combines.remove(combine);
-  }
-
-  void addFarm(Vector2 position, CityComponent owner) {
-    final farm = FarmComponent(owner: owner)..position = position;
-    farms.add(farm);
-    add(farm);
-    fieldModule.addFirstFarmField(position);
-  }
-
-  void removeFarm(FarmComponent farm) {
-    remove(farm);
-    farms.remove(farm);
-    markDotsForSpot(farm.spot, DotType.none);
-  }
-
   Vector2? findNearestFreeSpot(
     Vector2 targetPosition,
     double objectRadius, [
@@ -312,8 +272,8 @@ class SimulationGame extends FlameGame
 
     /// Check other spots
     final spots = [
-      ...cities.map((e) => e.spot),
-      ...farms.map((e) => e.spot),
+      ...cityModule.spots,
+      ...farmModule.spots,
       ...treeModule.spots,
     ];
     for (final spot in spots) {

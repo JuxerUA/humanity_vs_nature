@@ -1,10 +1,10 @@
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/math.dart';
-import 'package:humanity_vs_nature/pages/game/components/farm_component.dart';
 import 'package:humanity_vs_nature/pages/game/models/dot.dart';
 import 'package:humanity_vs_nature/pages/game/models/dot_type.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
+import 'package:humanity_vs_nature/pages/game/modules/farm/farm_component.dart';
 import 'package:humanity_vs_nature/pages/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
@@ -21,82 +21,23 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
 
   DotType getDotType(Dot dot) => game.getDotType(dot);
 
+  /// Making the first farm's field of random shape
   void addFirstFarmField(Vector2 fieldPosition) {
-    // Making the first farm's field of random shape
-    // - the field must cover all the farm dots, but not to replace them
-    final random = randomFallback;
     const baseRadius = FarmComponent.radius * 1.2;
     const maxRandomLength = FarmComponent.radius * 0.4;
-    double extraLength() => baseRadius + maxRandomLength * random.nextDouble();
+    double extraLength() =>
+        baseRadius + maxRandomLength * randomFallback.nextDouble();
     final fieldPositions = <Vector2>[
       Vector2(fieldPosition.x - extraLength(), fieldPosition.y - extraLength()),
       Vector2(fieldPosition.x + extraLength(), fieldPosition.y - extraLength()),
       Vector2(fieldPosition.x + extraLength(), fieldPosition.y + extraLength()),
       Vector2(fieldPosition.x - extraLength(), fieldPosition.y + extraLength()),
     ];
-    addField(fieldPositions.map(Dot.fromPosition).toList());
 
-    // if (points.isEmpty) return;
-    // final pointsCenter = Vector2(
-    //   points.map((e) => e.x).reduce((value, e) => value + e) / points.length,
-    //   points.map((e) => e.y).reduce((value, e) => value + e) / points.length,
-    // );
-    // final pointsWithDistance2 = points
-    //     .map((e) => (e, e.toVector2().distanceToSquared(pointsCenter)))
-    //     .toList()
-    //   ..sort((a, b) => b.$2.compareTo(a.$2));
-    // final extremePoints = pointsWithDistance2.map((e) => e.$1).take(6);
-    // final fourFarthestExtremePoints =
-    //     findFarthestPoints(extremePoints.toList(), 4);
-    //
-    // final finalFiledPoints = <Dot>[];
-    // for (final point in fourFarthestExtremePoints) {
-    //   final directionVector = point.toVector2() - pointsCenter
-    //     ..clampLength(FarmComponent.radius / dotSpacing,
-    //         FarmComponent.radius / dotSpacing);
-    //   final endPosition = point.toVector2() + directionVector;
-    //   finalFiledPoints
-    //       .add(Dot(endPosition.x.round(), endPosition.y.round()));
-    // }
-    // addField(finalFiledPoints);
+    addField(fieldPositions.map(Dot.fromPosition).toList(), isGroundOnly: true);
   }
 
-  List<Dot> findFarthestPoints(List<Dot> dots, int count) {
-    double calculateAverageDistance(List<Dot> points) {
-      var totalDistance = 0.0;
-
-      for (var i = 0; i < points.length; i++) {
-        for (var j = i + 1; j < points.length; j++) {
-          totalDistance += points[i].distanceTo(points[j]);
-        }
-      }
-
-      return totalDistance / (points.length * (points.length - 1) / 2);
-    }
-
-    var farthestPoints = <Dot>[];
-    var maxAverageDistance = 0.0;
-
-    for (var i = 0; i < dots.length; i++) {
-      for (var j = i + 1; j < dots.length; j++) {
-        for (var k = j + 1; k < dots.length; k++) {
-          for (var l = k + 1; l < dots.length; l++) {
-            final combination = <Dot>[dots[i], dots[j], dots[k], dots[l]];
-            final averageDistance = calculateAverageDistance(combination);
-
-            if (averageDistance > maxAverageDistance) {
-              maxAverageDistance = averageDistance;
-              farthestPoints = combination;
-            }
-          }
-        }
-      }
-    }
-
-    return farthestPoints;
-  }
-
-  void addField(List<Dot> dots) {
+  void addField(List<Dot> dots, {bool isGroundOnly = false}) {
     /// Calculate field position
     var minX = game.size.x.ceil();
     var minY = game.size.y.ceil();
@@ -110,34 +51,103 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
     /// Create field
     final field = FieldComponent(
       dots.map((e) => e.position - position).toList(),
+      isGroundOnly: isGroundOnly,
     )..position = position;
-    fields.add(field);
+    _fields.add(field);
     add(field);
     game.markDotsForField(field);
   }
 
   void expandField(Spot ownerSpot) {
-    final firstDot = findNearestDotForField(ownerSpot.position);
-    if (firstDot == null) {
-      return;
-    }
+    final firstDot = findNearestDotOfType(
+      ownerSpot.position,
+      DotType.fieldPartial,
+    );
+    if (firstDot == null) return;
 
-    final firstDotPos = firstDot.position;
-    var directionVector = firstDotPos - ownerSpot.position
-      ..clampLength(20, 50);
-    directionVector += (Vector2.random() - Vector2.random()) * 10;
-    final oppositePos = firstDotPos + directionVector;
-    final oppositeDot = findNearestDotForField(oppositePos);
-    //todo
+    const fieldRadius = 40.0;
+    const offset = fieldRadius * 0.7;
+
+    final firstDotPosition = firstDot.position;
+    final directionVector = firstDotPosition - ownerSpot.position
+      ..clampLength(offset, offset);
+    final centerPosition = firstDotPosition + directionVector;
+
+    final partialFieldDotsInTheArea = game
+        .getDotsForSpot(Spot(centerPosition, fieldRadius))
+        .where((dot) => getDotType(dot) == DotType.fieldPartial)
+        .toList()
+      ..removeWhere((dot) => dot.x == firstDot.x && dot.y == firstDot.y);
+
+    // if (partialFieldDotsInTheArea.length > 2) {
+    //   //TODO remake, we should use 2 dots farthest of firstDot
+    //   final fieldDots = findFourFarthestDots(partialFieldDotsInTheArea);
+    //   addField(fieldDots);
+    // }
+
+    /// TODO how it should work:
+    /// we have the first dor, nice
+    /// then we should find another dot in the some specific distance (around it) from the first one
+    /// it should be partial field dot
+    /// if we can't find a partial field dot, we should take a dot in the specific
+    /// distance as much close to the owner position as possible
+    /// when we have the two dots we should check all rest dots trying to find a
+    /// triangle around specific area and it shouldn't cover any other field's dots
+    /// (maybe if we can't find right dot we should use random free dot)
+    /// then, when we have triangle we need to check the triangle area
+    /// if it less then some specific area - we should try to find extra triangle
+    /// (part of square)
+
+    if (partialFieldDotsInTheArea.length > 1) {
+      final secondDot = partialFieldDotsInTheArea.random();
+      partialFieldDotsInTheArea.remove(secondDot);
+      final thirdDot = partialFieldDotsInTheArea.random();
+      addField([firstDot, secondDot, thirdDot]);
+    }
   }
 
-  Dot? findNearestDotForField(Vector2 position) {
+  List<Dot> findFourFarthestDots(List<Dot> dots) {
+    double calculateAverageDistance(List<Dot> dots) {
+      var totalDistance = 0.0;
+
+      for (var i = 0; i < dots.length; i++) {
+        for (var j = i + 1; j < dots.length; j++) {
+          totalDistance += dots[i].squaredDistanceTo(dots[j]);
+        }
+      }
+
+      return totalDistance / (dots.length * (dots.length - 1) / 2);
+    }
+
+    var farthestDots = <Dot>[];
+    var maxAverageDistance = 0.0;
+
+    for (var i = 0; i < dots.length; i++) {
+      for (var j = i + 1; j < dots.length; j++) {
+        for (var k = j + 1; k < dots.length; k++) {
+          for (var l = k + 1; l < dots.length; l++) {
+            final combination = <Dot>[dots[i], dots[j], dots[k], dots[l]];
+            final averageDistance = calculateAverageDistance(combination);
+
+            if (averageDistance > maxAverageDistance) {
+              maxAverageDistance = averageDistance;
+              farthestDots = combination;
+            }
+          }
+        }
+      }
+    }
+
+    return farthestDots;
+  }
+
+  Dot? findNearestDotOfType(Vector2 position, DotType type) {
     bool checkDot(Dot dot) {
       if (dot.x >= 0 &&
           dot.x < dotsCountX &&
           dot.y >= 0 &&
           dot.y < dotsCountY) {
-        return getDotType(dot).isGoodDotForField;
+        return getDotType(dot) == type;
       }
       return false;
     }
@@ -179,12 +189,7 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
       }
 
       if (dotsOnTheLevel.isNotEmpty) {
-        final fieldPartDots = dotsOnTheLevel
-            .where((dot) => getDotType(dot) == DotType.fieldPartial)
-            .toList();
-        return fieldPartDots.isNotEmpty
-            ? fieldPartDots.random()
-            : dotsOnTheLevel.random();
+        return dotsOnTheLevel.random();
       } else {
         leftX -= 1;
         rightX += 1;

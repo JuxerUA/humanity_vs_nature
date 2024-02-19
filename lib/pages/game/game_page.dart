@@ -1,6 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
+import 'package:humanity_vs_nature/pages/overlays/pause_menu_overlay.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -21,6 +22,10 @@ class _GamePageState extends State<GamePage> {
       body: GameWidget(
         game: _simulationGame,
         backgroundBuilder: (context) => Container(color: _grassColor),
+        overlayBuilderMap: {
+          PauseMenuOverlay.overlayName: (context, game) =>
+              const PauseMenuOverlay(),
+        },
       ),
       backgroundColor: _grassColor,
       bottomNavigationBar: ElevatedButton(

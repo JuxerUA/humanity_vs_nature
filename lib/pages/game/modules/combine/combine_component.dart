@@ -4,8 +4,8 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:humanity_vs_nature/extensions/sprite_component_extension.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
-import 'package:humanity_vs_nature/pages/game/components/city_component.dart';
 import 'package:humanity_vs_nature/pages/game/mixins/vehicle.dart';
+import 'package:humanity_vs_nature/pages/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
@@ -38,12 +38,12 @@ class CombineComponent extends SpriteComponent
     super.update(dt);
 
     if (isOutOfScreen(game.size)) {
-      game.removeCombine(this);
+      game.combineModule.removeCombine(this);
     }
 
     if (isReturningToBase) {
       if (position.distanceTo(owner.position) < workingDistance) {
-        game.removeCombine(this);
+        game.combineModule.removeCombine(this);
       } else {
         goToPosition(owner.position, workingDistance, dt);
       }
@@ -53,9 +53,9 @@ class CombineComponent extends SpriteComponent
     final target = targetPlace;
     if (target != null) {
       if (position.distanceTo(target) < workingDistance) {
-        game.addFarm(target, owner);
+        game.farmModule.addFarm(target, owner);
         targetPlace = null;
-        game.removeCombine(this);
+        game.combineModule.removeCombine(this);
       } else {
         goToPosition(target, workingDistance, dt);
       }
@@ -67,7 +67,7 @@ class CombineComponent extends SpriteComponent
     super.onTapDown(event);
     hp -= 1;
     if (hp < 1) {
-      game.removeCombine(this);
+      game.combineModule.removeCombine(this);
     }
   }
 }

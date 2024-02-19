@@ -23,10 +23,10 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
           game.size.y * randomFallback.nextDouble(),
         );
       } while (!game.isSpotFree(position, TreeComponent.radius));
-      trees.add(TreeComponent(isMature: true)..position = position);
+      _trees.add(TreeComponent(isMature: true)..position = position);
     }
-    await addAll(trees);
-    for (final tree in trees) {
+    await addAll(_trees);
+    for (final tree in _trees) {
       game.markDotsForSpot(tree.spot, DotType.tree);
     }
   }
@@ -39,14 +39,14 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
     } else {
       tree.setRandomPosition(game.size);
     }
-    trees.add(tree);
+    _trees.add(tree);
     add(tree);
     game.markDotsForSpot(tree.spot, DotType.tree);
   }
 
   void removeTree(TreeComponent tree) {
     remove(tree);
-    trees.remove(tree);
+    _trees.remove(tree);
     game.markDotsForSpot(tree.spot, DotType.none);
   }
 
@@ -68,7 +68,7 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
     TreeComponent? nearestTree;
     var minDistance = double.infinity;
 
-    final list = treeList ?? trees;
+    final list = treeList ?? _trees;
     for (final tree in list) {
       final distance = tree.position.distanceTo(targetPosition);
 
@@ -84,7 +84,7 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
   TreeComponent? findNearestMatureTree(Vector2 position) {
     TreeComponent? nearestMatureTree;
     var nearestDistance = double.infinity;
-    for (final tree in trees) {
+    for (final tree in _trees) {
       if (tree.isMature) {
         final distance = (tree.position - position).length2;
         if (distance < nearestDistance) {
@@ -98,14 +98,14 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
 
   TreeComponent? findFreeMatureNearestTree(Vector2 targetPosition) {
     final reservedTrees = <TreeComponent>[];
-    for (final bulldozer in game.bulldozers) {
+    for (final bulldozer in game.bulldozerModule.bulldozers) {
       final targetTree = bulldozer.targetTree;
       if (targetTree != null) {
         reservedTrees.add(targetTree);
       }
     }
 
-    final freeMatureTrees = trees
+    final freeMatureTrees = _trees
         .where((tree) => tree.isMature && !reservedTrees.contains(tree))
         .toList();
     return findNearestTree(targetPosition, freeMatureTrees) ??

@@ -10,7 +10,7 @@ import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 export 'gas_unit.dart';
 
 class GasModule extends Component with HasGameRef<SimulationGame> {
-  final List<GasUnit> units = [];
+  final List<GasUnit> _units = [];
   int updateIndex = 0;
   double currentBiggestGasVolume = GasUnit.defaultVolume;
   double totalCO2created = 0;
@@ -18,28 +18,28 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
 
   @override
   void render(Canvas canvas) {
-    for (final particle in units) {
+    for (final particle in _units) {
       particle.render(canvas);
     }
   }
 
   @override
   void update(double dt) {
-    if (units.isEmpty) {
+    if (_units.isEmpty) {
       return;
     }
 
-    for (final unit in units) {
+    for (final unit in _units) {
       unit.update(dt, game);
     }
 
     final maxLength =
         sqrt(game.size.x * game.size.x + game.size.y * game.size.y);
-    for (var i = 0; i < units.length; i++) {
-      final particleI = units[i];
+    for (var i = 0; i < _units.length; i++) {
+      final particleI = _units[i];
       var resultVector = Vector2.zero();
-      for (var j = i + 1; j < units.length; j++) {
-        final particleJ = units[j];
+      for (var j = i + 1; j < _units.length; j++) {
+        final particleJ = _units[j];
 
         final direction = particleJ.position - particleI.position;
         // todo try to optimize the calculations with length2
@@ -57,8 +57,8 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
 
     if (totalCO2absorbedByTheOcean < totalCO2created * 0.3) {
       var minClearance = double.infinity;
-      var minClearanceUnit = units.first;
-      for (final unit in units) {
+      var minClearanceUnit = _units.first;
+      for (final unit in _units) {
         final unitPosition = unit.position;
 
         final leftClearance = unitPosition.x;
@@ -87,27 +87,27 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
     final velocity = Vector2(randomFallback.nextDouble() - 0.5, -10);
     final gasUnit = GasUnit(position, velocity);
     totalCO2created += gasUnit.volume;
-    units.add(gasUnit);
+    _units.add(gasUnit);
     unitSynthesis();
     updateTexts();
   }
 
   void removeGasUnit(GasUnit gasUnit) {
-    units.remove(gasUnit);
+    _units.remove(gasUnit);
     unitDecomposition();
     updateTexts();
   }
 
   void unitSynthesis() {
-    if (units.length > 100) {
+    if (_units.length > 100) {
       var minValue = double.infinity;
-      var particle1 = units[0];
-      var particle2 = units[1];
+      var particle1 = _units[0];
+      var particle2 = _units[1];
 
-      for (var i = 0; i < units.length; i++) {
-        for (var j = i + 1; j < units.length; j++) {
-          final particleI = units[i];
-          final particleJ = units[j];
+      for (var i = 0; i < _units.length; i++) {
+        for (var j = i + 1; j < _units.length; j++) {
+          final particleI = _units[i];
+          final particleJ = _units[j];
 
           final direction = particleJ.position - particleI.position;
           final value =
@@ -122,13 +122,13 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
 
       if (particle1.volume > particle2.volume) {
         particle1.addVolume(particle2.volume);
-        units.remove(particle2);
+        _units.remove(particle2);
         if (particle1.volume > currentBiggestGasVolume) {
           currentBiggestGasVolume = particle1.volume;
         }
       } else {
         particle2.addVolume(particle1.volume);
-        units.remove(particle1);
+        _units.remove(particle1);
         if (particle2.volume > currentBiggestGasVolume) {
           currentBiggestGasVolume = particle2.volume;
         }
@@ -137,12 +137,12 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
   }
 
   void unitDecomposition() {
-    if (units.length < 100) {
-      var biggestUnit = units[0];
+    if (_units.length < 100) {
+      var biggestUnit = _units[0];
       var firstBiggestGasVolume = 0.0;
       var secondBiggestGasVolume = 0.0;
-      for (var i = 0; i < units.length; i++) {
-        final unit = units[i];
+      for (var i = 0; i < _units.length; i++) {
+        final unit = _units[i];
         if (unit.volume > firstBiggestGasVolume) {
           secondBiggestGasVolume = firstBiggestGasVolume;
           firstBiggestGasVolume = unit.volume;
@@ -158,7 +158,7 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
         biggestUnit.position - biggestUnit.velocity,
         -biggestUnit.velocity,
       )..volume = biggestUnit.volume;
-      units.add(newUnit);
+      _units.add(newUnit);
 
       currentBiggestGasVolume = biggestUnit.volume > secondBiggestGasVolume
           ? biggestUnit.volume
@@ -167,7 +167,7 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
   }
 
   void updateTexts() {
-    final volumeCO2 = units
+    final volumeCO2 = _units
         .map((e) => e.volume)
         .reduce((value, element) => value += element)
         .round();
@@ -181,8 +181,8 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
     final topSide = position.y - attractionDistance;
     final bottomSide = position.y + attractionDistance;
 
-    for (var i = 0; i < units.length; i++) {
-      final unit = units[i];
+    for (var i = 0; i < _units.length; i++) {
+      final unit = _units[i];
       if (unit.position.x > leftSide &&
           unit.position.x < rightSide &&
           unit.position.y > topSide &&

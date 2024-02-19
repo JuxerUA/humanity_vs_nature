@@ -7,7 +7,9 @@ import 'package:humanity_vs_nature/pages/game/models/dot.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
 class FieldComponent extends PolygonComponent with HasGameRef<SimulationGame> {
-  FieldComponent(super.vertices) {
+  FieldComponent(List<Vector2> vertices, {this.isGroundOnly = false})
+      : super(vertices) {
+    vertexCount = vertices.length;
     paint = Paint()
       ..color = _generateRandomFieldColor()
       ..style = PaintingStyle.fill;
@@ -52,6 +54,10 @@ class FieldComponent extends PolygonComponent with HasGameRef<SimulationGame> {
     area = triangleArea + triangleArea2;
   }
 
+  final bool isGroundOnly;
+
+  late final int vertexCount;
+
   // absolute area (not by dotSpacing)
   late final double area;
 
@@ -60,33 +66,33 @@ class FieldComponent extends PolygonComponent with HasGameRef<SimulationGame> {
 
   /// If the dot is placed on the one of the filed edges
   bool isEdgeDot(Dot dot) {
-    if (vertices.length != 4) return false;
-
-    final p1 = vertices[0] + position;
-    final p2 = vertices[1] + position;
-    final p3 = vertices[2] + position;
-    final p4 = vertices[3] + position;
-    final p = dot.position;
+    if (vertexCount < 3) return false;
 
     bool arePointsCollinear(Vector2 a, Vector2 b, Vector2 p) =>
         ((b.y - a.y) * (p.x - a.x) - (b.x - a.x) * (p.y - a.y)).abs() < 0.0001;
 
-    if (arePointsCollinear(p1, p2, p)) return true;
-    if (arePointsCollinear(p2, p3, p)) return true;
-    if (arePointsCollinear(p3, p4, p)) return true;
-    if (arePointsCollinear(p4, p1, p)) return true;
+    final p1 = vertices[0] + position;
+    final p2 = vertices[1] + position;
+    final p3 = vertices[2] + position;
+    final p = dot.position;
+    if (vertexCount == 3) {
+      if (arePointsCollinear(p1, p2, p)) return true;
+      if (arePointsCollinear(p2, p3, p)) return true;
+      if (arePointsCollinear(p3, p1, p)) return true;
+    } else if (vertexCount == 4) {
+      final p4 = vertices[3] + position;
+      if (arePointsCollinear(p1, p2, p)) return true;
+      if (arePointsCollinear(p2, p3, p)) return true;
+      if (arePointsCollinear(p3, p4, p)) return true;
+      if (arePointsCollinear(p4, p1, p)) return true;
+    }
+
     return false;
   }
 
   /// If the dot is inside the field area
   bool containsDot(Dot dot) {
-    if (vertices.length != 4) return false;
-
-    final p1 = vertices[0] + position;
-    final p2 = vertices[1] + position;
-    final p3 = vertices[2] + position;
-    final p4 = vertices[3] + position;
-    final p = dot.position;
+    if (vertexCount < 3) return false;
 
     bool isPointInTriangle(Vector2 p, Vector2 a, Vector2 b, Vector2 c) {
       final b1 = ((p.x - b.x) * (a.y - b.y) - (a.x - b.x) * (p.y - b.y)) <= 0.0;
@@ -102,10 +108,25 @@ class FieldComponent extends PolygonComponent with HasGameRef<SimulationGame> {
           isPointInTriangle(p, p1, p3, p4);
     }
 
-    return isPointInsideConvexQuadrilateral(p, p1, p2, p3, p4);
+    final p1 = vertices[0] + position;
+    final p2 = vertices[1] + position;
+    final p3 = vertices[2] + position;
+
+    final p = dot.position;
+
+    if (vertexCount == 3) {
+      return isPointInTriangle(p, p1, p2, p3);
+    } else if (vertexCount == 4) {
+      final p4 = vertices[3] + position;
+      return isPointInsideConvexQuadrilateral(p, p1, p2, p3, p4);
+    }
+
+    return false;
   }
 
   Color _generateRandomFieldColor() {
+    if (isGroundOnly) return Colors.brown;
+
     final colors = [
       Colors.green,
       Colors.green,
