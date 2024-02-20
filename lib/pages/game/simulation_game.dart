@@ -7,6 +7,7 @@ import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/math.dart';
 import 'package:flutter/material.dart';
+import 'package:humanity_vs_nature/extensions/iterable_extension.dart';
 import 'package:humanity_vs_nature/pages/game/models/dot.dart';
 import 'package:humanity_vs_nature/pages/game/models/dot_type.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
@@ -47,8 +48,6 @@ class SimulationGame extends FlameGame
 
   void setDotType(Dot dot, DotType type) => _dots[dot.x][dot.y] = type;
 
-  void setDotTypeByXY(int x, int y, DotType type) => _dots[x][y] = type;
-
   bool fieldCanReplaceDot(Dot dot) {
     final type = getDotType(dot);
     return type == DotType.none ||
@@ -66,8 +65,8 @@ class SimulationGame extends FlameGame
       (_) => List<DotType>.filled(dotsCountY, DotType.none),
     );
 
-    add(cityModule);
     add(fieldModule);
+    add(cityModule);
     add(treeModule);
     add(farmModule);
     add(bulldozerModule);
@@ -186,13 +185,13 @@ class SimulationGame extends FlameGame
     return spotDots;
   }
 
-  List<Dot> markDotsForField(FieldComponent field) {
+  List<Dot> getDotsForField(List<Dot> vertexDots) {
     var firstDotX = dotsCountX;
     var lastDotX = 0;
     var firstDotY = dotsCountY;
     var lastDotY = 0;
 
-    for (final dot in field.vertexDots) {
+    for (final dot in vertexDots) {
       if (dot.x < firstDotX) firstDotX = dot.x;
       if (dot.x > lastDotX) lastDotX = dot.x;
       if (dot.y < firstDotY) firstDotY = dot.y;
@@ -205,31 +204,41 @@ class SimulationGame extends FlameGame
     lastDotY = min(dotsCountY - 1, lastDotY);
 
     /// Finding all the field's dots
-    final markedDots = <Dot>[];
+    final fieldDots = <Dot>[];
     for (var x = firstDotX; x <= lastDotX; x++) {
       for (var y = firstDotY; y <= lastDotY; y++) {
         final dot = Dot(x, y);
-        if (field.containsDot(dot)) {
-          markedDots.add(dot);
-          if (fieldCanReplaceDot(dot)) {
-            setDotType(dot, DotType.fieldFull);
-          }
+        if (vertexDots.thisAreaContainsDot(dot)) {
+          fieldDots.add(dot);
         }
       }
     }
 
+    return fieldDots;
+  }
+
+  List<Dot> markDotsForField(FieldComponent field) {
+    final fieldDots = getDotsForField(field.vertexDots);
+
+    for (final dot in fieldDots) {
+      if (fieldCanReplaceDot(dot)) {
+        setDotType(dot, DotType.fieldFull);
+      }
+    }
+
     /// Setting fieldPartial dots
-    for (final dot in markedDots) {
+    for (final dot in fieldDots) {
       if (field.isEdgeDot(dot) &&
           (isEmptyDot(dot.leftDot) ||
               isEmptyDot(dot.rightDot) ||
               isEmptyDot(dot.topDot) ||
               isEmptyDot(dot.bottomDot))) {
         setDotType(dot, DotType.fieldPartial);
-      }
+        //addDebugDot(dot, 2, Colors.black);
+      }// else addDebugDot(dot, 2, Colors.white);
     }
 
-    return markedDots;
+    return fieldDots;
   }
 
   Vector2? findNearestFreeSpot(
