@@ -3,6 +3,7 @@ class Assets {
   Assets._();
 
   static const String riveTest = 'assets/rive/test.riv';
+  static const String riveWater = 'assets/rive/water.riv';
   static const String spritesBulldozer = 'assets/sprites/bulldozer.png';
   static const String spritesCity = 'assets/sprites/city.png';
   static const String spritesCombine = 'assets/sprites/combine.png';

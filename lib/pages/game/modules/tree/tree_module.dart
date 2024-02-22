@@ -1,7 +1,8 @@
+import 'dart:async';
+
 import 'package:flame/components.dart';
 import 'package:flame/math.dart';
-import 'package:humanity_vs_nature/extensions/sprite_component_extension.dart';
-import 'package:humanity_vs_nature/pages/game/models/dot_type.dart';
+import 'package:humanity_vs_nature/pages/game/models/block_type.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
 import 'package:humanity_vs_nature/pages/game/modules/tree/tree_component.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
@@ -13,8 +14,13 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
 
   Iterable<Spot> get spots => _trees.map((e) => e.spot);
 
+  @override
+  FutureOr<void> onLoad() async {
+    spawnInitialTrees();
+  }
+
   /// Spawn initial mature trees
-  Future<void> spawnInitialTrees() async {
+  void spawnInitialTrees() {
     for (var i = 0; i < 4; i++) {
       late Vector2 position;
       do {
@@ -25,36 +31,30 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
       } while (!game.isSpotFree(position, TreeComponent.radius));
       _trees.add(TreeComponent(isMature: true)..position = position);
     }
-    await addAll(_trees);
+    addAll(_trees);
     for (final tree in _trees) {
-      game.markDotsForSpot(tree.spot, DotType.tree);
+      game.matrix.markBlocksForSpot(tree.spot, BlockType.tree);
     }
   }
 
-  void addTree(Vector2? position) {
-    final tree = TreeComponent();
-    final treePosition = position;
-    if (treePosition != null) {
-      tree.position = treePosition;
-    } else {
-      tree.setRandomPosition(game.size);
-    }
+  void addTree(Vector2 position) {
+    final tree = TreeComponent()..position = position;
     _trees.add(tree);
     add(tree);
-    game.markDotsForSpot(tree.spot, DotType.tree);
+    game.matrix.markBlocksForSpot(tree.spot, BlockType.tree);
   }
 
   void removeTree(TreeComponent tree) {
     remove(tree);
     _trees.remove(tree);
-    game.markDotsForSpot(tree.spot, DotType.none);
+    game.matrix.markBlocksForSpot(tree.spot, BlockType.empty);
   }
 
   void expandForest(Vector2 position) {
     final tree = findNearestMatureTree(position);
     if (tree != null) {
       final spawnPosition =
-          game.findNearestFreeSpot(tree.position, TreeComponent.radius, 35);
+          game.getNearestFreeSpot(tree.position, TreeComponent.radius, 35);
       if (spawnPosition != null) {
         addTree(spawnPosition);
       }

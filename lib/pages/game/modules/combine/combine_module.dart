@@ -10,7 +10,7 @@ class CombineModule extends Component with HasGameRef<SimulationGame> {
   List<CombineComponent> get combines => _combines;
 
   void addCombine(CityComponent owner) {
-    final targetPlace = game.findNearestFreeSpot(
+    final targetPlace = game.getNearestFreeSpot(
         owner.position, FarmComponent.requiredSpotRadius);
     if (targetPlace != null) {
       final combine = CombineComponent(owner: owner, targetPlace: targetPlace)

@@ -15,8 +15,8 @@ class FarmComponent extends SpriteComponent
   FarmComponent({required this.owner});
 
   static const double radius = 25;
-  static const double requiredSpotRadius = 100;
-  static const double maxExpandFieldsTime = 10;
+  static const double requiredSpotRadius = 50;
+  static const double maxExpandFieldsTime = 1;
 
   var _timeForExpandFields = 5.0;
 
@@ -45,7 +45,7 @@ class FarmComponent extends SpriteComponent
     _timeForExpandFields -= dt;
     if (_timeForExpandFields < 0) {
       _timeForExpandFields = randomFallback.nextDouble() * maxExpandFieldsTime;
-      game.fieldModule.expandField(spot);
+      game.fieldModule.expandField(spot, requiredSpotRadius * 2);
     }
   }
 

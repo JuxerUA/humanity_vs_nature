@@ -49,7 +49,7 @@ class CityComponent extends SpriteComponent
   @override
   void onTapDown(TapDownEvent event) {
     super.onTapDown(event);
-    game.showPauseMenu();
+    //game.showPauseMenu();
   }
 
   void _trySpawnBulldozer(double dt) {

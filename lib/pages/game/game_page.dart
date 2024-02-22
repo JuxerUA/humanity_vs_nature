@@ -22,6 +22,10 @@ class _GamePageState extends State<GamePage> {
       body: GameWidget(
         game: _simulationGame,
         backgroundBuilder: (context) => Container(color: _grassColor),
+        loadingBuilder: (context) => Container(
+          color: Colors.orange,
+          child: const Center(child: Text('Loading...')),
+        ),
         overlayBuilderMap: {
           PauseMenuOverlay.overlayName: (context, game) =>
               const PauseMenuOverlay(),
