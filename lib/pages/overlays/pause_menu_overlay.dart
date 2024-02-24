@@ -33,12 +33,15 @@ class PauseMenuOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: 100,
-        height: 300,
-        color: Colors.black12,
-        child: const Center(child: Text('PAUSE')),
+    return Container(
+      color: Colors.black87,
+      child: Center(
+        child: Container(
+          width: 200,
+          height: 300,
+          color: Colors.orange,
+          child: const Center(child: Text('PAUSE')),
+        ),
       ),
     );
   }

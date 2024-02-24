@@ -19,17 +19,19 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GameWidget(
-        game: _simulationGame,
-        backgroundBuilder: (context) => Container(color: _grassColor),
-        loadingBuilder: (context) => Container(
-          color: Colors.orange,
-          child: const Center(child: Text('Loading...')),
+      body: SafeArea(
+        child: GameWidget(
+          game: _simulationGame,
+          backgroundBuilder: (context) => Container(color: _grassColor),
+          loadingBuilder: (context) => Container(
+            color: Colors.orange,
+            child: const Center(child: Text('Loading...')),
+          ),
+          overlayBuilderMap: {
+            PauseMenuOverlay.overlayName: (context, game) =>
+                const PauseMenuOverlay(),
+          },
         ),
-        overlayBuilderMap: {
-          PauseMenuOverlay.overlayName: (context, game) =>
-              const PauseMenuOverlay(),
-        },
       ),
       backgroundColor: _grassColor,
       bottomNavigationBar: ElevatedButton(

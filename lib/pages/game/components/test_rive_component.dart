@@ -1,8 +1,8 @@
-import 'package:flame/game.dart';
 import 'package:flame_rive/flame_rive.dart';
+import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
 class TestRiveComponent extends RiveComponent {
-  TestRiveComponent(Artboard artboard) : super(artboard: artboard);
+  TestRiveComponent() : super(artboard: SimulationGame.waterArtboard);
 
   late final StateMachineController? ctrlRedToGreen;
   SMINumber? progressInputRTG;
@@ -15,8 +15,8 @@ class TestRiveComponent extends RiveComponent {
     // final controller = StateMachineController(StateMachine());
     // artboard.addController(controller);
 
-    ctrlRedToGreen = StateMachineController.fromArtboard(
-        artboard, 'State Machine 1');
+    ctrlRedToGreen =
+        StateMachineController.fromArtboard(artboard, 'State Machine 1');
     if (ctrlRedToGreen != null) {
       progressInputRTG = ctrlRedToGreen!.inputs.first as SMINumber;
       artboard.addController(ctrlRedToGreen!);

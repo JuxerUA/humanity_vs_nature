@@ -4,10 +4,10 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/math.dart';
 import 'package:humanity_vs_nature/extensions/point_extension.dart';
-import 'package:humanity_vs_nature/pages/game/models/block_type.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
 import 'package:humanity_vs_nature/pages/game/modules/farm/farm_component.dart';
 import 'package:humanity_vs_nature/pages/game/modules/field/field_component.dart';
+import 'package:humanity_vs_nature/pages/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
 class FieldModule extends Component with HasGameRef<SimulationGame> {
@@ -23,13 +23,14 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
 
   int get blocksCountY => game.matrix.lengthY;
 
-  void addField(Vector2 position, Vector2 size) {
+  FieldComponent addField(Vector2 position, Vector2 size) {
     final field = FieldComponent()
       ..position = game.matrix.correctPositionForMatrix(position)
       ..size = size;
     _fields.add(field);
     add(field);
     game.matrix.markBlocksForField(field, BlockType.field);
+    return field;
   }
 
   void removeField(FieldComponent field) {
@@ -54,7 +55,7 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
     );
   }
 
-  void expandField(Spot ownerSpot, double maxRadius) {
+  FieldComponent? expandField(Spot ownerSpot, double maxRadius) {
     final availableFieldConfigurations = [
       const Point<int>(2, 2),
       const Point<int>(2, 3),
@@ -90,10 +91,11 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
         final position =
             game.matrix.tryToPlaceFieldInBlock(fieldConfiguration, block);
         if (position != null) {
-          addField(position, fieldConfiguration.toVector2() * blockSize);
-          return;
+          return addField(position, fieldConfiguration.toVector2() * blockSize);
         }
       }
     }
+
+    return null;
   }
 }

@@ -6,8 +6,9 @@ import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/math.dart';
+import 'package:flame_rive/flame_rive.dart';
 import 'package:flutter/material.dart';
-import 'package:humanity_vs_nature/pages/game/models/block_type.dart';
+import 'package:humanity_vs_nature/pages/game/components/test_rive_component.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
 import 'package:humanity_vs_nature/pages/game/modules/bulldozer/bulldozer_module.dart';
 import 'package:humanity_vs_nature/pages/game/modules/city/city_module.dart';
@@ -15,6 +16,7 @@ import 'package:humanity_vs_nature/pages/game/modules/combine/combine_module.dar
 import 'package:humanity_vs_nature/pages/game/modules/farm/farm_module.dart';
 import 'package:humanity_vs_nature/pages/game/modules/field/field_module.dart';
 import 'package:humanity_vs_nature/pages/game/modules/gas/gas_module.dart';
+import 'package:humanity_vs_nature/pages/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/pages/game/modules/matrix/blocks_matrix.dart';
 import 'package:humanity_vs_nature/pages/game/modules/tree/tree_component.dart';
 import 'package:humanity_vs_nature/pages/game/modules/tree/tree_module.dart';
@@ -26,6 +28,8 @@ class SimulationGame extends FlameGame
   static const double blockSize = 10;
 
   late BlocksMatrix matrix;
+
+  static late final Artboard waterArtboard;
 
   final cityModule = CityModule();
   final fieldModule = FieldModule();
@@ -46,19 +50,24 @@ class SimulationGame extends FlameGame
     matrix = BlocksMatrix(size);
 
     add(fieldModule);
-    add(cityModule);
     add(treeModule);
-    add(farmModule);
     add(bulldozerModule);
     add(combineModule);
+    add(farmModule);
+    add(cityModule);
     add(gasModule);
     add(textCO2);
     add(textCH4);
 
-    // final skillsArtboard = await loadArtboard(RiveFile.asset(Assets.riveWater));
-    // add(TestRiveComponent(skillsArtboard)
+    // waterArtboard = await loadArtboard(RiveFile.asset(Assets.riveWater));
+    //
+    // add(TestRiveComponent()
     //   ..position = Vector2.zero()
-    //   ..size = size);
+    //   ..size = Vector2(size.x, size.y / 2));
+    //
+    // add(TestRiveComponent()
+    //   ..position = Vector2(0, size.y / 2)
+    //   ..size = Vector2(size.x, size.y / 2));
 
     return super.onLoad();
   }
@@ -70,18 +79,30 @@ class SimulationGame extends FlameGame
   }
 
   @override
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
+  }
+
+  @override
   void onTapDown(TapDownEvent event) {
     super.onTapDown(event);
     _timeForSpawnTree /= 2;
     _preferredPositionForSpawnTree = event.canvasPosition;
+
+    add(TestRiveComponent()
+      ..position = Vector2(0, size.y / 2)
+      ..size = Vector2(size.x, size.y / 4));
   }
 
   void showPauseMenu() {
     overlays.add(PauseMenuOverlay.overlayName);
   }
 
-  void addDebugBlock(Block block,
-      [BlockType? type, Color color = Colors.white]) {
+  void addDebugBlock(
+    Block block, [
+    BlockType? type,
+    Color color = Colors.white,
+  ]) {
     add(
       RectangleComponent()
         ..position = matrix.getPosition(block)
@@ -163,6 +184,12 @@ class SimulationGame extends FlameGame
       return false;
     }
 
+    /// Check fields by blocks
+    final blocks = matrix.getBlocksForSpot(Spot(position, radius));
+    for (final block in blocks) {
+      if (matrix.getBlockType(block) == BlockType.field) return false;
+    }
+
     /// Check other spots
     final spots = [
       ...cityModule.spots,
@@ -174,12 +201,6 @@ class SimulationGame extends FlameGame
       if (position.distanceToSquared(spot.position) < distance * distance) {
         return false;
       }
-    }
-
-    /// Check fields by blocks
-    final blocks = matrix.getBlocksForSpot(Spot(position, radius));
-    for (final block in blocks) {
-      if (matrix.getBlockType(block) == BlockType.field) return false;
     }
 
     return true;

@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:humanity_vs_nature/pages/game/models/block_type.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
 import 'package:humanity_vs_nature/pages/game/modules/field/field_component.dart';
+import 'package:humanity_vs_nature/pages/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
 class BlocksMatrix {

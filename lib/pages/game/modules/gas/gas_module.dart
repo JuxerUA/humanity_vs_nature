@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/math.dart';
 import 'package:flutter/material.dart';
+import 'package:humanity_vs_nature/pages/game/modules/gas/gas_type.dart';
 import 'package:humanity_vs_nature/pages/game/modules/gas/gas_unit.dart';
 import 'package:humanity_vs_nature/pages/game/modules/tree/tree_component.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
@@ -10,55 +11,52 @@ import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 export 'gas_unit.dart';
 
 class GasModule extends Component with HasGameRef<SimulationGame> {
-  final List<GasUnit> _units = [];
-  int updateIndex = 0;
-  double currentBiggestGasVolume = GasUnit.defaultVolume;
+  static const expectedNumberOfCO2units = 100;
+  static const expectedNumberOfCH4units = 20;
+
+  final List<GasUnit> _unitsCO2 = [];
+  final List<GasUnit> _unitsCH4 = [];
+
+  double currentBiggestCO2Volume = GasUnit.defaultVolume;
+  double currentBiggestCH4Volume = GasUnit.defaultVolume;
+  double maxScreenLengthSquartedForDistribution = 0; //todo
+
   double totalCO2created = 0;
   double totalCO2absorbedByTheOcean = 0;
+  double totalCH4created = 0;
+  double totalCH4convertedToCO2 = 0;
 
   @override
   void render(Canvas canvas) {
-    for (final particle in _units) {
-      particle.render(canvas);
+    for (final unit in _unitsCO2) {
+      unit.render(canvas);
+    }
+    for (final unit in _unitsCH4) {
+      unit.render(canvas);
     }
   }
 
   @override
   void update(double dt) {
-    if (_units.isEmpty) {
+    if (_unitsCO2.isEmpty) {
       return;
     }
 
-    for (final unit in _units) {
+    for (final unit in _unitsCO2) {
       unit.update(dt, game);
     }
 
-    final maxLength =
-        sqrt(game.size.x * game.size.x + game.size.y * game.size.y);
-    for (var i = 0; i < _units.length; i++) {
-      final particleI = _units[i];
-      var resultVector = Vector2.zero();
-      for (var j = i + 1; j < _units.length; j++) {
-        final particleJ = _units[j];
-
-        final direction = particleJ.position - particleI.position;
-        // todo try to optimize the calculations with length2
-        final length = direction.length;
-        if (length < 50) {
-          final intensity = (maxLength - length) / maxLength;
-          resultVector += direction * intensity;
-        }
-      }
-
-      particleI.velocity -= (resultVector..clampLength(0, 10)) *
-          (particleI.volume / currentBiggestGasVolume) *
-          dt;
+    for (final unit in _unitsCH4) {
+      unit.update(dt, game);
     }
+
+    gasDistribution(_unitsCO2, currentBiggestCO2Volume, dt);
+    gasDistribution(_unitsCH4, currentBiggestCH4Volume, dt);
 
     if (totalCO2absorbedByTheOcean < totalCO2created * 0.3) {
       var minClearance = double.infinity;
-      var minClearanceUnit = _units.first;
-      for (final unit in _units) {
+      var minClearanceUnit = _unitsCO2.first;
+      for (final unit in _unitsCO2) {
         final unitPosition = unit.position;
 
         final leftClearance = unitPosition.x;
@@ -76,38 +74,77 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
       }
 
       if (minClearance < 0) {
-        totalCO2absorbedByTheOcean += getAUnitOfGasVolume(minClearanceUnit);
-        game.textCH4.text =
-            '${totalCO2absorbedByTheOcean.round()}/${totalCO2created.round()}';
+        totalCO2absorbedByTheOcean += _getSomeGasFromTheUnit(minClearanceUnit);
       }
     }
   }
 
-  void addGas(Vector2 position) {
+  void gasDistribution(List<GasUnit> units, double biggestVolume, double dt) {
+    //todo
+    final maxLength =
+        sqrt(game.size.x * game.size.x + game.size.y * game.size.y);
+    for (var i = 0; i < units.length; i++) {
+      final unitI = units[i];
+      var resultVector = Vector2.zero();
+      for (var j = i + 1; j < units.length; j++) {
+        final unitJ = units[j];
+
+        final direction = unitJ.position - unitI.position;
+        final length = direction.length;
+        if (length < 50) {
+          final intensity = (maxLength - length) / maxLength;
+          resultVector += direction * intensity;
+        }
+      }
+
+      unitI.velocity -= (resultVector..clampLength(0, 10)) *
+          (unitI.volume / biggestVolume) *
+          dt;
+    }
+  }
+
+  void addCO2(Vector2 position, [double volume = GasUnit.defaultVolume]) {
     final velocity = Vector2(randomFallback.nextDouble() - 0.5, -10);
-    final gasUnit = GasUnit(position, velocity);
+    final gasUnit = GasUnit(GasType.co2, position, velocity)..volume = volume;
+    _unitsCO2.add(gasUnit);
     totalCO2created += gasUnit.volume;
-    _units.add(gasUnit);
-    unitSynthesis();
-    updateTexts();
+    unitSynthesis(_unitsCO2, expectedNumberOfCO2units, GasType.co2);
+    updateCO2Text();
+  }
+
+  void addCH4(Vector2 position, [double volume = GasUnit.defaultVolume]) {
+    final velocity = Vector2(randomFallback.nextDouble() - 0.5, -5);
+    final gasUnit = GasUnit(GasType.ch4, position, velocity)..volume = volume;
+    _unitsCH4.add(gasUnit);
+    totalCH4created += gasUnit.volume;
+    unitSynthesis(_unitsCH4, expectedNumberOfCH4units, GasType.ch4);
+    updateCH4Text();
   }
 
   void removeGasUnit(GasUnit gasUnit) {
-    _units.remove(gasUnit);
-    unitDecomposition();
-    updateTexts();
+    final type = gasUnit.type;
+    switch (type) {
+      case GasType.co2:
+        _unitsCO2.remove(gasUnit);
+        unitDecomposition(_unitsCO2, expectedNumberOfCO2units, type);
+        updateCO2Text();
+      case GasType.ch4:
+        _unitsCH4.remove(gasUnit);
+        unitDecomposition(_unitsCH4, expectedNumberOfCH4units, type);
+        updateCH4Text();
+    }
   }
 
-  void unitSynthesis() {
-    if (_units.length > 100) {
+  void unitSynthesis(List<GasUnit> units, int expectedNumber, GasType type) {
+    if (units.length > expectedNumber) {
       var minValue = double.infinity;
-      var particle1 = _units[0];
-      var particle2 = _units[1];
+      var particle1 = units[0];
+      var particle2 = units[1];
 
-      for (var i = 0; i < _units.length; i++) {
-        for (var j = i + 1; j < _units.length; j++) {
-          final particleI = _units[i];
-          final particleJ = _units[j];
+      for (var i = 0; i < units.length; i++) {
+        for (var j = i + 1; j < units.length; j++) {
+          final particleI = units[i];
+          final particleJ = units[j];
 
           final direction = particleJ.position - particleI.position;
           final value =
@@ -122,27 +159,24 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
 
       if (particle1.volume > particle2.volume) {
         particle1.addVolume(particle2.volume);
-        _units.remove(particle2);
-        if (particle1.volume > currentBiggestGasVolume) {
-          currentBiggestGasVolume = particle1.volume;
-        }
+        units.remove(particle2);
+        updateBiggestGasVolume(type, particle1.volume);
       } else {
         particle2.addVolume(particle1.volume);
-        _units.remove(particle1);
-        if (particle2.volume > currentBiggestGasVolume) {
-          currentBiggestGasVolume = particle2.volume;
-        }
+        units.remove(particle1);
+        updateBiggestGasVolume(type, particle2.volume);
       }
     }
   }
 
-  void unitDecomposition() {
-    if (_units.length < 100) {
-      var biggestUnit = _units[0];
+  void unitDecomposition(
+      List<GasUnit> units, int expectedNumber, GasType type) {
+    if (units.length < expectedNumber) {
+      var biggestUnit = units[0];
       var firstBiggestGasVolume = 0.0;
       var secondBiggestGasVolume = 0.0;
-      for (var i = 0; i < _units.length; i++) {
-        final unit = _units[i];
+      for (var i = 0; i < units.length; i++) {
+        final unit = units[i];
         if (unit.volume > firstBiggestGasVolume) {
           secondBiggestGasVolume = firstBiggestGasVolume;
           firstBiggestGasVolume = unit.volume;
@@ -155,23 +189,46 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
         ..volume /= 2;
 
       final newUnit = GasUnit(
+        type,
         biggestUnit.position - biggestUnit.velocity,
         -biggestUnit.velocity,
       )..volume = biggestUnit.volume;
-      _units.add(newUnit);
+      units.add(newUnit);
 
-      currentBiggestGasVolume = biggestUnit.volume > secondBiggestGasVolume
-          ? biggestUnit.volume
-          : secondBiggestGasVolume;
+      updateBiggestGasVolume(
+        type,
+        max(biggestUnit.volume, secondBiggestGasVolume),
+      );
     }
   }
 
-  void updateTexts() {
-    final volumeCO2 = _units
+  void updateBiggestGasVolume(GasType type, double volume) {
+    switch (type) {
+      case GasType.co2:
+        if (volume > currentBiggestCO2Volume) {
+          currentBiggestCO2Volume = volume;
+        }
+      case GasType.ch4:
+        if (volume > currentBiggestCH4Volume) {
+          currentBiggestCH4Volume = volume;
+        }
+    }
+  }
+
+  void updateCO2Text() {
+    final volumeCO2 = _unitsCO2
         .map((e) => e.volume)
         .reduce((value, element) => value += element)
         .round();
     game.textCO2.text = 'CO2: $volumeCO2';
+  }
+
+  void updateCH4Text() {
+    final volumeCH4 = _unitsCH4
+        .map((e) => e.volume)
+        .reduce((value, element) => value += element)
+        .round();
+    game.textCH4.text = 'CH4: $volumeCH4';
   }
 
   double aTreeWantsSomeCO2(Vector2 position, double dt) {
@@ -181,8 +238,8 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
     final topSide = position.y - attractionDistance;
     final bottomSide = position.y + attractionDistance;
 
-    for (var i = 0; i < _units.length; i++) {
-      final unit = _units[i];
+    for (var i = 0; i < _unitsCO2.length; i++) {
+      final unit = _unitsCO2[i];
       if (unit.position.x > leftSide &&
           unit.position.x < rightSide &&
           unit.position.y > topSide &&
@@ -191,7 +248,7 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
         final length = direction.normalize();
         unit.velocity += direction * 5 * dt;
         if (length < TreeComponent.radius) {
-          return getAUnitOfGasVolume(unit);
+          return _getSomeGasFromTheUnit(unit);
         }
       }
     }
@@ -199,7 +256,7 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
     return 0;
   }
 
-  double getAUnitOfGasVolume(GasUnit gasUnit) {
+  double _getSomeGasFromTheUnit(GasUnit gasUnit) {
     if (gasUnit.volume > 1) {
       gasUnit.volume -= 1;
       return 1;

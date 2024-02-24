@@ -49,7 +49,7 @@ class CityComponent extends SpriteComponent
   @override
   void onTapDown(TapDownEvent event) {
     super.onTapDown(event);
-    //game.showPauseMenu();
+    game.showPauseMenu();
   }
 
   void _trySpawnBulldozer(double dt) {
@@ -72,7 +72,7 @@ class CityComponent extends SpriteComponent
       _timeForSpawnGas = gasSpawnTime;
       final gasPosition =
           position + (Vector2.random() - Vector2.all(0.5)) * radius;
-      game.gasModule.addGas(gasPosition);
+      game.gasModule.addCO2(gasPosition);
     }
   }
 

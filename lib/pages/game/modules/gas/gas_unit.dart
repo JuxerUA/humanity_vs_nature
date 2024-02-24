@@ -2,19 +2,22 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:humanity_vs_nature/pages/game/modules/gas/gas_type.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
 class GasUnit {
-  GasUnit(this.position, this.velocity) {
+  GasUnit(this.type, this.position, this.velocity) {
     _updateRadius();
   }
 
   static const defaultVolume = 1.0;
 
+  GasType type;
   Vector2 position;
   Vector2 velocity;
+
   double _volume = defaultVolume;
-  double radius = 1;
+  double _radius = 1;
 
   double get volume => _volume;
 
@@ -26,8 +29,8 @@ class GasUnit {
   void render(Canvas canvas) {
     canvas.drawCircle(
       position.toOffset(),
-      radius,
-      Paint()..color = Colors.indigo,
+      _radius,
+      Paint()..color = type.color,
     );
   }
 
@@ -61,5 +64,5 @@ class GasUnit {
     _updateRadius();
   }
 
-  void _updateRadius() => radius = sqrt(_volume / pi);
+  void _updateRadius() => _radius = sqrt(_volume / pi);
 }

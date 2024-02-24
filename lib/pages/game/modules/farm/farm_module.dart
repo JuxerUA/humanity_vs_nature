@@ -1,8 +1,8 @@
 import 'package:flame/components.dart';
-import 'package:humanity_vs_nature/pages/game/models/block_type.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
 import 'package:humanity_vs_nature/pages/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/pages/game/modules/farm/farm_component.dart';
+import 'package:humanity_vs_nature/pages/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
 class FarmModule extends Component with HasGameRef<SimulationGame> {
