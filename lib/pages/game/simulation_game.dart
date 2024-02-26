@@ -5,10 +5,8 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
-import 'package:flame/math.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:flutter/material.dart';
-import 'package:humanity_vs_nature/pages/game/components/test_rive_component.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
 import 'package:humanity_vs_nature/pages/game/modules/bulldozer/bulldozer_module.dart';
 import 'package:humanity_vs_nature/pages/game/modules/city/city_module.dart';
@@ -18,19 +16,22 @@ import 'package:humanity_vs_nature/pages/game/modules/field/field_module.dart';
 import 'package:humanity_vs_nature/pages/game/modules/gas/gas_module.dart';
 import 'package:humanity_vs_nature/pages/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/pages/game/modules/matrix/blocks_matrix.dart';
-import 'package:humanity_vs_nature/pages/game/modules/tree/tree_component.dart';
 import 'package:humanity_vs_nature/pages/game/modules/tree/tree_module.dart';
+import 'package:humanity_vs_nature/pages/game/playing_field.dart';
+import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/pause_menu_overlay.dart';
 
 class SimulationGame extends FlameGame
-    with HasCollisionDetection, TapCallbacks {
-  static const double maxTreeSpawnTime = 20;
+    with HasCollisionDetection, TapCallbacks, DragCallbacks {
   static const double blockSize = 10;
 
   late BlocksMatrix matrix;
 
+  Vector2 worldSize = Vector2(600, 600);
+
   static late final Artboard waterArtboard;
 
+  final playingField = PlayingField();
   final cityModule = CityModule();
   final fieldModule = FieldModule();
   final treeModule = TreeModule();
@@ -42,56 +43,46 @@ class SimulationGame extends FlameGame
   final textCO2 = TextComponent(text: 'CO2: 0')..position = Vector2(15, 40);
   final textCH4 = TextComponent(text: 'CH4: 0')..position = Vector2(160, 40);
 
-  var _timeForSpawnTree = 0.0;
-  Vector2? _preferredPositionForSpawnTree;
-
   @override
   FutureOr<void> onLoad() async {
-    matrix = BlocksMatrix(size);
+    matrix = BlocksMatrix(worldSize);
 
-    add(fieldModule);
-    add(treeModule);
-    add(bulldozerModule);
-    add(combineModule);
-    add(farmModule);
-    add(cityModule);
-    add(gasModule);
+    world
+      ..add(playingField)
+      ..add(fieldModule)
+      ..add(treeModule)
+      ..add(bulldozerModule)
+      ..add(combineModule)
+      ..add(farmModule)
+      ..add(cityModule)
+      ..add(gasModule);
+
+    //todo
     add(textCO2);
     add(textCH4);
+
+    overlays.add(GameInterfaceOverlay.overlayName);
+
+    // camera.world = world;
+    //camera.setBounds(Rectangle.fromLTRB(0, 0, 10, 10));
 
     // waterArtboard = await loadArtboard(RiveFile.asset(Assets.riveWater));
     //
     // add(TestRiveComponent()
     //   ..position = Vector2.zero()
-    //   ..size = Vector2(size.x, size.y / 2));
+    //   ..size = Vector2(worldSize.x, worldSize.y / 2));
     //
     // add(TestRiveComponent()
-    //   ..position = Vector2(0, size.y / 2)
-    //   ..size = Vector2(size.x, size.y / 2));
+    //   ..position = Vector2(0, worldSize.y / 2)
+    //   ..size = Vector2(worldSize.x, worldSize.y / 2));
 
     return super.onLoad();
   }
 
   @override
-  void update(double dt) {
-    super.update(dt);
-    _trySpawnTree(dt);
-  }
-
-  @override
-  void onGameResize(Vector2 size) {
-    super.onGameResize(size);
-  }
-
-  @override
-  void onTapDown(TapDownEvent event) {
-    super.onTapDown(event);
-    _timeForSpawnTree /= 2;
-    _preferredPositionForSpawnTree = event.canvasPosition;
-
-    add(TestRiveComponent()
-      ..position = Vector2(0, size.y / 2)
-      ..size = Vector2(size.x, size.y / 4));
+  void onDragUpdate(DragUpdateEvent event) {
+    super.onDragUpdate(event);
+    camera.moveBy(event.localDelta.inverted());
   }
 
   void showPauseMenu() {
@@ -126,26 +117,6 @@ class SimulationGame extends FlameGame
     );
   }
 
-  void _trySpawnTree(double dt) {
-    _timeForSpawnTree -= dt;
-    if (_timeForSpawnTree < 0) {
-      _timeForSpawnTree = randomFallback.nextDouble() * maxTreeSpawnTime;
-      final targetPosition = _preferredPositionForSpawnTree ??
-          Vector2(
-            size.x * randomFallback.nextDouble(),
-            size.y * randomFallback.nextDouble(),
-          );
-      final treePosition = getNearestFreeSpot(
-        targetPosition,
-        TreeComponent.radius,
-      );
-      if (treePosition != null) {
-        treeModule.addTree(treePosition);
-      }
-      _preferredPositionForSpawnTree = null;
-    }
-  }
-
   Vector2? getNearestFreeSpot(
     Vector2 targetPosition,
     double objectRadius, [
@@ -178,9 +149,9 @@ class SimulationGame extends FlameGame
     /// Check playing field boards
     final smallerRadius = radius * 0.6;
     if (position.x - smallerRadius < 0 ||
-        position.x + smallerRadius > size.x ||
+        position.x + smallerRadius > worldSize.x ||
         position.y - smallerRadius < 0 ||
-        position.y + smallerRadius > size.y) {
+        position.y + smallerRadius > worldSize.y) {
       return false;
     }
 

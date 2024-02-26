@@ -36,7 +36,9 @@ class BulldozerComponent extends SpriteComponent
   void update(double dt) {
     super.update(dt);
 
-    if (isOutOfScreen(game.size)) game.bulldozerModule.removeBulldozer(this);
+    if (isOutOfScreen(game.worldSize)) {
+      game.bulldozerModule.removeBulldozer(this);
+    }
 
     if (isReturningToBase) {
       if (position.distanceTo(base.position) < workingDistance) {
@@ -80,8 +82,8 @@ class BulldozerComponent extends SpriteComponent
   }
 
   @override
-  void onTapDown(TapDownEvent event) {
-    super.onTapDown(event);
+  void onTapUp(TapUpEvent event) {
+    super.onTapUp(event);
     hp -= 1;
     if (hp < 1) game.bulldozerModule.removeBulldozer(this);
   }

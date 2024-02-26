@@ -66,7 +66,8 @@ class _MainMenuPageState extends State<MainMenuPage> {
 
             // Start button
             ElevatedButton(
-              onPressed: () => context.pushNamed(GamePage.routeName),
+              onPressed: () =>
+                  context.pushNamedAndRemoveAll(GamePage.routeName),
               child: const Text('Start'),
             ),
             const SizedBox(height: 20),

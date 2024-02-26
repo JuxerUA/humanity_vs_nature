@@ -37,7 +37,7 @@ class CombineComponent extends SpriteComponent
   void update(double dt) {
     super.update(dt);
 
-    if (isOutOfScreen(game.size)) {
+    if (isOutOfScreen(game.worldSize)) {
       game.combineModule.removeCombine(this);
     }
 
@@ -63,8 +63,8 @@ class CombineComponent extends SpriteComponent
   }
 
   @override
-  void onTapDown(TapDownEvent event) {
-    super.onTapDown(event);
+  void onTapUp(TapUpEvent event) {
+    super.onTapUp(event);
     hp -= 1;
     if (hp < 1) {
       game.combineModule.removeCombine(this);

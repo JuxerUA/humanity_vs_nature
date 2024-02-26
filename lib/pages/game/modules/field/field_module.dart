@@ -23,8 +23,12 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
 
   int get blocksCountY => game.matrix.lengthY;
 
-  FieldComponent addField(Vector2 position, Vector2 size) {
-    final field = FieldComponent()
+  FieldComponent addField(
+    Vector2 position,
+    Vector2 size, {
+    bool canBeDestroyedByTap = true,
+  }) {
+    final field = FieldComponent(canBeDestroyedByTap: canBeDestroyedByTap)
       ..position = game.matrix.correctPositionForMatrix(position)
       ..size = size;
     _fields.add(field);
@@ -52,6 +56,7 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
     addField(
       farmPosition - Vector2(fieldWidth / 2, fieldHeight / 2),
       Vector2(fieldWidth, fieldHeight),
+      canBeDestroyedByTap: false,
     );
   }
 

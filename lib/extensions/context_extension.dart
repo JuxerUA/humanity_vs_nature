@@ -11,5 +11,16 @@ extension ContextExt on BuildContext {
     );
   }
 
+  Future<T?> pushNamedAndRemoveAll<T extends Object?>(
+    String newRouteName, {
+    Object? arguments,
+  }) {
+    return Navigator.of(this).pushNamedAndRemoveUntil<T?>(
+      newRouteName,
+      (Route<dynamic> route) => false,
+      arguments: arguments,
+    );
+  }
+
   void pop([dynamic result]) => Navigator.of(this).pop(result);
 }

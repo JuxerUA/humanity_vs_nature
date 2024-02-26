@@ -1,6 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
+import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/pause_menu_overlay.dart';
 
 class GamePage extends StatefulWidget {
@@ -14,7 +15,7 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   final _simulationGame = SimulationGame();
-  final _grassColor = Colors.lightGreen;
+  final backgroundColor = Colors.lightBlueAccent;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,7 @@ class _GamePageState extends State<GamePage> {
       body: SafeArea(
         child: GameWidget(
           game: _simulationGame,
-          backgroundBuilder: (context) => Container(color: _grassColor),
+          backgroundBuilder: (context) => Container(color: backgroundColor),
           loadingBuilder: (context) => Container(
             color: Colors.orange,
             child: const Center(child: Text('Loading...')),
@@ -30,15 +31,12 @@ class _GamePageState extends State<GamePage> {
           overlayBuilderMap: {
             PauseMenuOverlay.overlayName: (context, game) =>
                 const PauseMenuOverlay(),
+            GameInterfaceOverlay.overlayName: (context, game) =>
+                const GameInterfaceOverlay(),
           },
         ),
       ),
-      backgroundColor: _grassColor,
-      bottomNavigationBar: ElevatedButton(
-        onPressed: () =>
-            setState(() => _simulationGame.paused = !_simulationGame.paused),
-        child: Text(_simulationGame.paused ? 'Resume' : 'Pause'),
-      ),
+      backgroundColor: backgroundColor,
     );
   }
 }

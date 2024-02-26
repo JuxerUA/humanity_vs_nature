@@ -39,12 +39,13 @@ class GasUnit {
     velocity *= pow(0.9, dt).toDouble();
 
     // TODO no need to calculate it every time
-    final minHalfScreen =
-        game.size.x < game.size.y ? game.size.x / 2 : game.size.y / 2;
+    final minHalfScreen = game.worldSize.x < game.worldSize.y
+        ? game.worldSize.x / 2
+        : game.worldSize.y / 2;
     final leftSide = minHalfScreen;
-    final rightSide = game.size.x - minHalfScreen;
+    final rightSide = game.worldSize.x - minHalfScreen;
     final topSide = minHalfScreen;
-    final bottomSide = game.size.y - minHalfScreen;
+    final bottomSide = game.worldSize.y - minHalfScreen;
 
     if (position.x < leftSide) {
       velocity.x += (leftSide - position.x) / minHalfScreen * dt;

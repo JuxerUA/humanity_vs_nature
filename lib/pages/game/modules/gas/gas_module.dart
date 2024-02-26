@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/math.dart';
 import 'package:flutter/material.dart';
+import 'package:humanity_vs_nature/pages/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/pages/game/modules/gas/gas_type.dart';
 import 'package:humanity_vs_nature/pages/game/modules/gas/gas_unit.dart';
 import 'package:humanity_vs_nature/pages/game/modules/tree/tree_component.dart';
@@ -19,12 +21,20 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
 
   double currentBiggestCO2Volume = GasUnit.defaultVolume;
   double currentBiggestCH4Volume = GasUnit.defaultVolume;
-  double maxScreenLengthSquartedForDistribution = 0; //todo
+  double maxScreenLengthForDistribution = 0; //todo
 
   double totalCO2created = 0;
   double totalCO2absorbedByTheOcean = 0;
   double totalCH4created = 0;
   double totalCH4convertedToCO2 = 0;
+
+  @override
+  FutureOr<void> onLoad() {
+    maxScreenLengthForDistribution = sqrt(
+      game.worldSize.x * game.worldSize.x + game.worldSize.y * game.worldSize.y,
+    );
+    return super.onLoad();
+  }
 
   @override
   void render(Canvas canvas) {
@@ -61,8 +71,8 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
 
         final leftClearance = unitPosition.x;
         final topClearance = unitPosition.y;
-        final rightClearance = game.size.x - unitPosition.x;
-        final bottomClearance = game.size.y - unitPosition.y;
+        final rightClearance = game.worldSize.x - unitPosition.x;
+        final bottomClearance = game.worldSize.y - unitPosition.y;
 
         final myMinXClearance = min(leftClearance, rightClearance);
         final myMinYClearance = min(topClearance, bottomClearance);
@@ -80,9 +90,6 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
   }
 
   void gasDistribution(List<GasUnit> units, double biggestVolume, double dt) {
-    //todo
-    final maxLength =
-        sqrt(game.size.x * game.size.x + game.size.y * game.size.y);
     for (var i = 0; i < units.length; i++) {
       final unitI = units[i];
       var resultVector = Vector2.zero();
@@ -92,7 +99,8 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
         final direction = unitJ.position - unitI.position;
         final length = direction.length;
         if (length < 50) {
-          final intensity = (maxLength - length) / maxLength;
+          final intensity = (maxScreenLengthForDistribution - length) /
+              maxScreenLengthForDistribution;
           resultVector += direction * intensity;
         }
       }
@@ -232,14 +240,13 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
   }
 
   double aTreeWantsSomeCO2(Vector2 position, double dt) {
-    const attractionDistance = 50;
+    const attractionDistance = TreeComponent.radius * 5;
     final leftSide = position.x - attractionDistance;
     final rightSide = position.x + attractionDistance;
     final topSide = position.y - attractionDistance;
     final bottomSide = position.y + attractionDistance;
 
-    for (var i = 0; i < _unitsCO2.length; i++) {
-      final unit = _unitsCO2[i];
+    for (final unit in _unitsCO2) {
       if (unit.position.x > leftSide &&
           unit.position.x < rightSide &&
           unit.position.y > topSide &&
@@ -256,14 +263,33 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
     return 0;
   }
 
-  double _getSomeGasFromTheUnit(GasUnit gasUnit) {
-    if (gasUnit.volume > 1) {
-      gasUnit.volume -= 1;
-      return 1;
-    } else {
-      final volume = gasUnit.volume;
-      removeGasUnit(gasUnit);
+  double aFieldWantsSomeCO2(Vector2 position, double dt) {
+    const attractionDistance = FieldComponent.gasRadius;
+    final leftSide = position.x - attractionDistance;
+    final rightSide = position.x + attractionDistance;
+    final topSide = position.y - attractionDistance;
+    final bottomSide = position.y + attractionDistance;
+
+    for (final unit in _unitsCO2) {
+      if (unit.position.x > leftSide &&
+          unit.position.x < rightSide &&
+          unit.position.y > topSide &&
+          unit.position.y < bottomSide) {
+        return _getSomeGasFromTheUnit(unit, 0.1);
+      }
+    }
+
+    return 0;
+  }
+
+  double _getSomeGasFromTheUnit(GasUnit gasUnit, [double volume = 1]) {
+    if (gasUnit.volume > volume) {
+      gasUnit.volume -= volume;
       return volume;
+    } else {
+      final remainingVolume = gasUnit.volume;
+      removeGasUnit(gasUnit);
+      return remainingVolume;
     }
   }
 }

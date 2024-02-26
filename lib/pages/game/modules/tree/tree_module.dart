@@ -25,8 +25,8 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
       late Vector2 position;
       do {
         position = Vector2(
-          game.size.x * randomFallback.nextDouble(),
-          game.size.y * randomFallback.nextDouble(),
+          game.worldSize.x * randomFallback.nextDouble(),
+          game.worldSize.y * randomFallback.nextDouble(),
         );
       } while (!game.isSpotFree(position, TreeComponent.radius));
       _trees.add(TreeComponent(isMature: true)..position = position);

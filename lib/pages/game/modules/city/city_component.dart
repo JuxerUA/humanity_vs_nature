@@ -47,8 +47,8 @@ class CityComponent extends SpriteComponent
   }
 
   @override
-  void onTapDown(TapDownEvent event) {
-    super.onTapDown(event);
+  void onTapUp(TapUpEvent event) {
+    super.onTapUp(event);
     game.showPauseMenu();
   }
 

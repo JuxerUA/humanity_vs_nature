@@ -45,13 +45,6 @@ class BlocksMatrix {
     return ((block.toVector2() * blockSize)..round()) - Vector2.all(bs2);
   }
 
-  bool containsBlock(Block block) {
-    return block.y >= 0 &&
-        block.y < lengthY &&
-        block.x >= 0 &&
-        block.x < lengthX;
-  }
-
   void markBlocksForSpot(Spot spot, BlockType type) {
     final blocks = getBlocksForSpot(spot);
     for (final block in blocks) {
