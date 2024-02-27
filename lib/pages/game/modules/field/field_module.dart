@@ -11,9 +11,12 @@ import 'package:humanity_vs_nature/pages/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
 class FieldModule extends Component with HasGameRef<SimulationGame> {
-  final List<FieldComponent> _fields = [];
+  static const double maxFieldClearanceTime = 5;
 
-  List<FieldComponent> get fields => _fields;
+  final List<FieldComponent> fields = [];
+  List<FieldComponent> abandonedFields = [];
+
+  var _timeForRemoveAbandonedField = maxFieldClearanceTime;
 
   double get blockSize => SimulationGame.blockSize;
 
@@ -23,6 +26,24 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
 
   int get blocksCountY => game.matrix.lengthY;
 
+  @override
+  void update(double dt) {
+    _tryRemoveAbandonedField(dt);
+    super.update(dt);
+  }
+
+  void _tryRemoveAbandonedField(double dt) {
+    _timeForRemoveAbandonedField -= dt;
+    if (_timeForRemoveAbandonedField < 0) {
+      _timeForRemoveAbandonedField =
+          randomFallback.nextDouble() * maxFieldClearanceTime;
+      if (abandonedFields.isNotEmpty) {
+        final fieldForRemove = abandonedFields.random();
+        removeField(fieldForRemove);
+      }
+    }
+  }
+
   FieldComponent addField(
     Vector2 position,
     Vector2 size, {
@@ -31,20 +52,21 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
     final field = FieldComponent(canBeDestroyedByTap: canBeDestroyedByTap)
       ..position = game.matrix.correctPositionForMatrix(position)
       ..size = size;
-    _fields.add(field);
+    fields.add(field);
     add(field);
     game.matrix.markBlocksForField(field, BlockType.field);
     return field;
   }
 
   void removeField(FieldComponent field) {
-    _fields.remove(field);
+    fields.remove(field);
+    abandonedFields.remove(field);
     remove(field);
     game.matrix.removeBlocksForField(field);
   }
 
   /// Making the first farm's field of random shape
-  void addFirstFarmField(Vector2 farmPosition) {
+  FieldComponent addFirstFarmField(Vector2 farmPosition) {
     final fieldWidthK = 2.4 + 0.4 * randomFallback.nextDouble();
     final fieldHeightK = 1.2 + 0.8 * randomFallback.nextDouble();
 
@@ -53,7 +75,7 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
     var fieldHeight = FarmComponent.radius * fieldHeightK;
     fieldHeight = (fieldHeight / blockSize).round() * blockSize;
 
-    addField(
+    return addField(
       farmPosition - Vector2(fieldWidth / 2, fieldHeight / 2),
       Vector2(fieldWidth, fieldHeight),
       canBeDestroyedByTap: false,
@@ -102,5 +124,10 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
     }
 
     return null;
+  }
+
+  void onFarmRemoved(FarmComponent farm) {
+    removeField(farm.baseField);
+    abandonedFields.addAll(farm.fields);
   }
 }

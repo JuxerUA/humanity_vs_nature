@@ -35,7 +35,8 @@ class PlayingField extends RectangleComponent
     super.onTapUp(event);
 
     _timeForSpawnTree /= 2;
-    _preferredPositionForSpawnTree = event.canvasPosition;
+    _preferredPositionForSpawnTree =
+        game.camera.globalToLocal(event.canvasPosition);
   }
 
   void _trySpawnTree(double dt) {

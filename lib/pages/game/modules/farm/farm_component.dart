@@ -16,7 +16,7 @@ class FarmComponent extends SpriteComponent
   FarmComponent({required this.owner});
 
   static const double radius = 25;
-  static const double requiredSpotRadius = 50;
+  static const double requiredSpotRadius = 60;
   static const double maxExpandFieldsTime = 15;
   static const double gasSpawnTime = 0.3;
 
@@ -26,6 +26,7 @@ class FarmComponent extends SpriteComponent
   int hp = 20;
 
   final CityComponent owner;
+  late final FieldComponent baseField;
   final List<FieldComponent> fields = [];
 
   Spot get spot => Spot(position, radius);

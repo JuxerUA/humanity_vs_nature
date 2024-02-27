@@ -3,19 +3,17 @@ import 'package:humanity_vs_nature/pages/game/modules/bulldozer/bulldozer_compon
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
 class BulldozerModule extends Component with HasGameRef<SimulationGame> {
-  final List<BulldozerComponent> _bulldozers = [];
-
-  List<BulldozerComponent> get bulldozers => _bulldozers;
+  final List<BulldozerComponent> bulldozers = [];
 
   void addBulldozer(PositionComponent owner) {
     final bulldozer = BulldozerComponent(base: owner)
       ..position = owner.position;
-    _bulldozers.add(bulldozer);
+    bulldozers.add(bulldozer);
     add(bulldozer);
   }
 
   void removeBulldozer(BulldozerComponent bulldozer) {
     remove(bulldozer);
-    _bulldozers.remove(bulldozer);
+    bulldozers.remove(bulldozer);
   }
 }

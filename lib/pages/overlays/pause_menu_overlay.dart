@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:humanity_vs_nature/extensions/context_extension.dart';
+import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
+import 'package:humanity_vs_nature/pages/main_menu/main_menu_page.dart';
+import 'package:humanity_vs_nature/pages/widgets/pretty_menu_line.dart';
 
 class PauseMenuOverlay extends StatelessWidget {
-  const PauseMenuOverlay({super.key});
+  const PauseMenuOverlay({
+    required this.game,
+    super.key,
+  });
 
   static const overlayName = 'pause_menu';
+
+  final SimulationGame game;
 
   /// OVERLAYS
   ///
@@ -34,15 +44,36 @@ class PauseMenuOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black87,
-      child: Center(
-        child: Container(
-          width: 200,
-          height: 300,
-          color: Colors.orange,
-          child: const Center(child: Text('PAUSE')),
+      color: Colors.black38,
+      child: PrettyMenuLine(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 80),
+            ElevatedButton(
+              onPressed: _onResumeTap,
+              child: const Text('Resume'),
+            ),
+            const SizedBox(height: 80),
+            ElevatedButton(
+              onPressed: () =>
+                  context.pushNamedAndRemoveAll(MainMenuPage.routeName),
+              child: const Text('Main Menu'),
+            ),
+            const SizedBox(height: 20),
+            const ElevatedButton(
+              onPressed: SystemNavigator.pop,
+              child: Text('Exit'),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  void _onResumeTap() {
+    game.paused = false;
+    game.overlays.remove(overlayName);
   }
 }

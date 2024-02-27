@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/extensions/context_extension.dart';
 import 'package:humanity_vs_nature/pages/game/game_page.dart';
+import 'package:humanity_vs_nature/pages/widgets/pretty_menu_line.dart';
 
 class MainMenuPage extends StatefulWidget {
   const MainMenuPage({super.key});
@@ -16,8 +17,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.brown,
-      body: Padding(
-        padding: const EdgeInsets.all(30),
+      body: PrettyMenuLine(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -26,7 +26,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
             const Center(
               child: SizedBox(
                 height: 150,
-                width: 220,
+                width: 230,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -34,6 +34,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
                     Text(
                       'HUMANITY',
                       style: TextStyle(
+                        fontFamily: 'ArchivoBlack',
                         fontSize: 24,
                         height: 0.5,
                         color: Colors.orange,
@@ -43,6 +44,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
                     Text(
                       'VS',
                       style: TextStyle(
+                        fontFamily: 'ArchivoBlack',
                         fontSize: 150,
                         height: 0.5,
                         //color: Colors.deepOrange,
@@ -52,6 +54,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
                     Text(
                       'NATURE',
                       style: TextStyle(
+                        fontFamily: 'ArchivoBlack',
                         fontSize: 24,
                         height: 0.5,
                         color: Colors.lime,

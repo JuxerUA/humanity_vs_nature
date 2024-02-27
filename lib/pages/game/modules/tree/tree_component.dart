@@ -4,7 +4,6 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/math.dart';
-import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
 import 'package:humanity_vs_nature/pages/game/models/spot.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
@@ -78,11 +77,13 @@ class TreeComponent extends SpriteComponent
     game.treeModule.expandForest(position);
   }
 
-  void doDamage(double damageValue) {
+  bool doDamage(double damageValue) {
     hp -= damageValue;
     if (hp <= 0 && isMounted) {
       game.treeModule.removeTree(this);
+      return true;
     }
+    return false;
   }
 }
 

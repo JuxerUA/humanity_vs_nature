@@ -16,11 +16,11 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
   static const expectedNumberOfCO2units = 100;
   static const expectedNumberOfCH4units = 20;
 
-  final List<GasUnit> _unitsCO2 = [];
-  final List<GasUnit> _unitsCH4 = [];
+  final List<GasUnit> unitsCO2 = [];
+  final List<GasUnit> unitsCH4 = [];
 
-  double currentBiggestCO2Volume = GasUnit.defaultVolume;
-  double currentBiggestCH4Volume = GasUnit.defaultVolume;
+  double currentBiggestCO2UnitVolume = GasUnit.defaultVolume;
+  double currentBiggestCH4UnitVolume = GasUnit.defaultVolume;
   double maxScreenLengthForDistribution = 0; //todo
 
   double totalCO2created = 0;
@@ -38,35 +38,35 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
 
   @override
   void render(Canvas canvas) {
-    for (final unit in _unitsCO2) {
+    for (final unit in unitsCO2) {
       unit.render(canvas);
     }
-    for (final unit in _unitsCH4) {
+    for (final unit in unitsCH4) {
       unit.render(canvas);
     }
   }
 
   @override
   void update(double dt) {
-    if (_unitsCO2.isEmpty) {
+    if (unitsCO2.isEmpty) {
       return;
     }
 
-    for (final unit in _unitsCO2) {
+    for (final unit in unitsCO2) {
       unit.update(dt, game);
     }
 
-    for (final unit in _unitsCH4) {
+    for (final unit in unitsCH4) {
       unit.update(dt, game);
     }
 
-    gasDistribution(_unitsCO2, currentBiggestCO2Volume, dt);
-    gasDistribution(_unitsCH4, currentBiggestCH4Volume, dt);
+    gasDistribution(unitsCO2, currentBiggestCO2UnitVolume, dt);
+    gasDistribution(unitsCH4, currentBiggestCH4UnitVolume, dt);
 
     if (totalCO2absorbedByTheOcean < totalCO2created * 0.3) {
       var minClearance = double.infinity;
-      var minClearanceUnit = _unitsCO2.first;
-      for (final unit in _unitsCO2) {
+      var minClearanceUnit = unitsCO2.first;
+      for (final unit in unitsCO2) {
         final unitPosition = unit.position;
 
         final leftClearance = unitPosition.x;
@@ -105,7 +105,7 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
         }
       }
 
-      unitI.velocity -= (resultVector..clampLength(0, 10)) *
+      unitI.velocity -= (resultVector..clampLength(0, 15)) *
           (unitI.volume / biggestVolume) *
           dt;
     }
@@ -114,18 +114,18 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
   void addCO2(Vector2 position, [double volume = GasUnit.defaultVolume]) {
     final velocity = Vector2(randomFallback.nextDouble() - 0.5, -10);
     final gasUnit = GasUnit(GasType.co2, position, velocity)..volume = volume;
-    _unitsCO2.add(gasUnit);
+    unitsCO2.add(gasUnit);
     totalCO2created += gasUnit.volume;
-    unitSynthesis(_unitsCO2, expectedNumberOfCO2units, GasType.co2);
+    unitSynthesis(unitsCO2, expectedNumberOfCO2units, GasType.co2);
     updateCO2Text();
   }
 
   void addCH4(Vector2 position, [double volume = GasUnit.defaultVolume]) {
     final velocity = Vector2(randomFallback.nextDouble() - 0.5, -5);
     final gasUnit = GasUnit(GasType.ch4, position, velocity)..volume = volume;
-    _unitsCH4.add(gasUnit);
+    unitsCH4.add(gasUnit);
     totalCH4created += gasUnit.volume;
-    unitSynthesis(_unitsCH4, expectedNumberOfCH4units, GasType.ch4);
+    unitSynthesis(unitsCH4, expectedNumberOfCH4units, GasType.ch4);
     updateCH4Text();
   }
 
@@ -133,12 +133,12 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
     final type = gasUnit.type;
     switch (type) {
       case GasType.co2:
-        _unitsCO2.remove(gasUnit);
-        unitDecomposition(_unitsCO2, expectedNumberOfCO2units, type);
+        unitsCO2.remove(gasUnit);
+        unitDecomposition(unitsCO2, expectedNumberOfCO2units, type);
         updateCO2Text();
       case GasType.ch4:
-        _unitsCH4.remove(gasUnit);
-        unitDecomposition(_unitsCH4, expectedNumberOfCH4units, type);
+        unitsCH4.remove(gasUnit);
+        unitDecomposition(unitsCH4, expectedNumberOfCH4units, type);
         updateCH4Text();
     }
   }
@@ -213,30 +213,28 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
   void updateBiggestGasVolume(GasType type, double volume) {
     switch (type) {
       case GasType.co2:
-        if (volume > currentBiggestCO2Volume) {
-          currentBiggestCO2Volume = volume;
+        if (volume > currentBiggestCO2UnitVolume) {
+          currentBiggestCO2UnitVolume = volume;
         }
       case GasType.ch4:
-        if (volume > currentBiggestCH4Volume) {
-          currentBiggestCH4Volume = volume;
+        if (volume > currentBiggestCH4UnitVolume) {
+          currentBiggestCH4UnitVolume = volume;
         }
     }
   }
 
   void updateCO2Text() {
-    final volumeCO2 = _unitsCO2
+    final volumeCO2 = unitsCO2
         .map((e) => e.volume)
-        .reduce((value, element) => value += element)
-        .round();
-    game.textCO2.text = 'CO2: $volumeCO2';
+        .reduce((value, element) => value += element);
+    game.currentCO2Value.value = volumeCO2;
   }
 
   void updateCH4Text() {
-    final volumeCH4 = _unitsCH4
+    final volumeCH4 = unitsCH4
         .map((e) => e.volume)
-        .reduce((value, element) => value += element)
-        .round();
-    game.textCH4.text = 'CH4: $volumeCH4';
+        .reduce((value, element) => value += element);
+    game.currentCH4Value.value = volumeCH4;
   }
 
   double aTreeWantsSomeCO2(Vector2 position, double dt) {
@@ -246,7 +244,7 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
     final topSide = position.y - attractionDistance;
     final bottomSide = position.y + attractionDistance;
 
-    for (final unit in _unitsCO2) {
+    for (final unit in unitsCO2) {
       if (unit.position.x > leftSide &&
           unit.position.x < rightSide &&
           unit.position.y > topSide &&
@@ -270,7 +268,7 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
     final topSide = position.y - attractionDistance;
     final bottomSide = position.y + attractionDistance;
 
-    for (final unit in _unitsCO2) {
+    for (final unit in unitsCO2) {
       if (unit.position.x > leftSide &&
           unit.position.x < rightSide &&
           unit.position.y > topSide &&

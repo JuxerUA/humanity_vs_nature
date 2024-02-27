@@ -17,10 +17,12 @@ class BulldozerComponent extends SpriteComponent
   static const radius = 10.0;
   static const damagePerSecond = 5.0;
   static const workingDistance = 7.0;
+  static const killTarget = 5;
 
   final PositionComponent base;
 
   int hp = 5;
+  int killCount = 0;
   TreeComponent? targetTree;
   bool isReturningToBase = false;
 
@@ -54,14 +56,20 @@ class BulldozerComponent extends SpriteComponent
     final target = targetTree;
     if (target != null) {
       if (position.distanceTo(target.position) < workingDistance) {
-        target.doDamage(damagePerSecond * dt);
+        if (target.doDamage(damagePerSecond * dt)) {
+          if (++killCount >= killTarget) goHome();
+        }
       } else {
         goToPosition(target.position, workingDistance, dt);
       }
     } else {
-      isReturningToBase = true;
-      state = VehicleState.accelerate;
+      goHome();
     }
+  }
+
+  void goHome() {
+    isReturningToBase = true;
+    state = VehicleState.accelerate;
   }
 
   @override
@@ -72,6 +80,7 @@ class BulldozerComponent extends SpriteComponent
       if (other.isSapling) {
         other.doDamage(1);
       } else {
+        isReturningToBase = false;
         targetTree = other;
         currentSpeed = VehicleState.rotation.targetSpeed;
       }

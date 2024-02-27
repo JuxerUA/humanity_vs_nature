@@ -8,20 +8,25 @@ import 'package:humanity_vs_nature/pages/game/modules/tree/tree_component.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
 class TreeModule extends Component with HasGameRef<SimulationGame> {
-  final List<TreeComponent> _trees = [];
+  final List<TreeComponent> trees = [];
 
-  List<TreeComponent> get trees => _trees;
+  TreeComponent? topmostTreeAddedDuringThisUpdate;
 
-  Iterable<Spot> get spots => _trees.map((e) => e.spot);
+  Iterable<Spot> get spots => trees.map((e) => e.spot);
 
   @override
-  FutureOr<void> onLoad() async {
-    spawnInitialTrees();
+  void update(double dt) {
+    final topmostTree = topmostTreeAddedDuringThisUpdate;
+    if (topmostTree != null) {
+      sortTreesByY(topmostTree);
+      topmostTreeAddedDuringThisUpdate = null;
+    }
+    super.update(dt);
   }
 
   /// Spawn initial mature trees
-  void spawnInitialTrees() {
-    for (var i = 0; i < 4; i++) {
+  Future<void> spawnInitialTrees() async {
+    for (var i = 0; i < 10; i++) {
       late Vector2 position;
       do {
         position = Vector2(
@@ -29,32 +34,71 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
           game.worldSize.y * randomFallback.nextDouble(),
         );
       } while (!game.isSpotFree(position, TreeComponent.radius));
-      _trees.add(TreeComponent(isMature: true)..position = position);
+
+      /// Add forest
+      final numberOfTreesInTheForest = 5 + randomFallback.nextInt(20);
+      trees.add(TreeComponent(isMature: true)..position = position);
+      for (var j = 1; j < numberOfTreesInTheForest; j++) {
+        final spawnPosition = game.getNearestFreeSpot(
+          position,
+          TreeComponent.radius,
+          maxDistance: 35,
+        );
+        if (spawnPosition != null) {
+          trees.add(TreeComponent(isMature: true)..position = position);
+          if (randomFallback.nextBool()) {
+            position = spawnPosition;
+          }
+        }
+      }
     }
-    addAll(_trees);
-    for (final tree in _trees) {
+    trees.sort((a, b) => a.position.y.compareTo(b.position.y));
+    await addAll(trees);
+    for (final tree in trees) {
       game.matrix.markBlocksForSpot(tree.spot, BlockType.tree);
     }
   }
 
-  void addTree(Vector2 position) {
-    final tree = TreeComponent()..position = position;
-    _trees.add(tree);
+  void addTree(Vector2 position, {bool isMature = false}) {
+    final tree = TreeComponent(isMature: isMature)..position = position;
+    trees.add(tree);
     add(tree);
     game.matrix.markBlocksForSpot(tree.spot, BlockType.tree);
+    updateTopmostTree(tree);
   }
 
   void removeTree(TreeComponent tree) {
     remove(tree);
-    _trees.remove(tree);
+    trees.remove(tree);
     game.matrix.markBlocksForSpot(tree.spot, BlockType.empty);
+  }
+
+  void updateTopmostTree(TreeComponent tree) {
+    final topmostTree = topmostTreeAddedDuringThisUpdate;
+    if (topmostTree != null) {
+      if (tree.position.y > topmostTree.position.y) {
+        topmostTreeAddedDuringThisUpdate = tree;
+      }
+    } else {
+      topmostTreeAddedDuringThisUpdate = tree;
+    }
+  }
+
+  void sortTreesByY(TreeComponent tree) {
+    trees.sort((a, b) => a.position.y.compareTo(b.position.y));
+    final allTreesBelow = trees.where((e) => e.position.y > tree.position.y);
+    removeWhere((e) => e is TreeComponent && e.position.y > tree.position.y);
+    addAll(allTreesBelow);
   }
 
   void expandForest(Vector2 position) {
     final tree = findNearestMatureTree(position);
     if (tree != null) {
-      final spawnPosition =
-          game.getNearestFreeSpot(tree.position, TreeComponent.radius, 35);
+      final spawnPosition = game.getNearestFreeSpot(
+        tree.position,
+        TreeComponent.radius,
+        maxDistance: 35,
+      );
       if (spawnPosition != null) {
         addTree(spawnPosition);
       }
@@ -68,7 +112,7 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
     TreeComponent? nearestTree;
     var minDistance = double.infinity;
 
-    final list = treeList ?? _trees;
+    final list = treeList ?? trees;
     for (final tree in list) {
       final distance = tree.position.distanceTo(targetPosition);
 
@@ -84,7 +128,7 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
   TreeComponent? findNearestMatureTree(Vector2 position) {
     TreeComponent? nearestMatureTree;
     var nearestDistance = double.infinity;
-    for (final tree in _trees) {
+    for (final tree in trees) {
       if (tree.isMature) {
         final distance = (tree.position - position).length2;
         if (distance < nearestDistance) {
@@ -105,7 +149,7 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
       }
     }
 
-    final freeMatureTrees = _trees
+    final freeMatureTrees = trees
         .where((tree) => tree.isMature && !reservedTrees.contains(tree))
         .toList();
     return findNearestTree(targetPosition, freeMatureTrees) ??

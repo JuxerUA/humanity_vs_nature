@@ -1,6 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
+import 'package:humanity_vs_nature/pages/loading/loading_page.dart';
 import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/pause_menu_overlay.dart';
 
@@ -14,29 +15,35 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  final _simulationGame = SimulationGame();
-  final backgroundColor = Colors.lightBlueAccent;
+  final _game = SimulationGame();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: GameWidget(
-          game: _simulationGame,
-          backgroundBuilder: (context) => Container(color: backgroundColor),
-          loadingBuilder: (context) => Container(
-            color: Colors.orange,
-            child: const Center(child: Text('Loading...')),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: _onPop,
+      child: Scaffold(
+        body: SafeArea(
+          child: GameWidget(
+            game: _game,
+            backgroundBuilder: (context) =>
+                Container(color: SimulationGame.gameBackgroundColor),
+            loadingBuilder: (context) => const LoadingPage(),
+            overlayBuilderMap: {
+              PauseMenuOverlay.overlayName: (context, game) =>
+                  PauseMenuOverlay(game: _game),
+              GameInterfaceOverlay.overlayName: (context, game) =>
+                  GameInterfaceOverlay(game: _game),
+            },
           ),
-          overlayBuilderMap: {
-            PauseMenuOverlay.overlayName: (context, game) =>
-                const PauseMenuOverlay(),
-            GameInterfaceOverlay.overlayName: (context, game) =>
-                const GameInterfaceOverlay(),
-          },
         ),
+        backgroundColor: Colors.black,
       ),
-      backgroundColor: backgroundColor,
     );
+  }
+
+  void _onPop(bool didPop) {
+    _game.paused = true;
+    _game.overlays.add(PauseMenuOverlay.overlayName);
   }
 }

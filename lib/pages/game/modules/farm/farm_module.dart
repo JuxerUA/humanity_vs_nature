@@ -6,20 +6,22 @@ import 'package:humanity_vs_nature/pages/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/pages/game/simulation_game.dart';
 
 class FarmModule extends Component with HasGameRef<SimulationGame> {
-  final List<FarmComponent> _farms = [];
+  final List<FarmComponent> farms = [];
 
-  Iterable<Spot> get spots => _farms.map((e) => e.spot);
+  Iterable<Spot> get spots => farms.map((e) => e.spot);
 
   void addFarm(Vector2 position, CityComponent owner) {
     final farm = FarmComponent(owner: owner)..position = position;
-    _farms.add(farm);
+    farms.add(farm);
     add(farm);
-    game.fieldModule.addFirstFarmField(position);
+    farm.baseField = game.fieldModule.addFirstFarmField(position);
+    //todo we need to remove all fields in the area of the base field
   }
 
   void removeFarm(FarmComponent farm) {
     remove(farm);
-    _farms.remove(farm);
+    farms.remove(farm);
+    game.fieldModule.onFarmRemoved(farm);
     game.matrix.removeBlocksOfTypeForSpot(farm.spot, BlockType.farm);
   }
 }

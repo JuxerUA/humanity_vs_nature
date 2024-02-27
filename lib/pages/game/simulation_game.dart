@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flame/experimental.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame_rive/flame_rive.dart';
@@ -19,10 +20,10 @@ import 'package:humanity_vs_nature/pages/game/modules/matrix/blocks_matrix.dart'
 import 'package:humanity_vs_nature/pages/game/modules/tree/tree_module.dart';
 import 'package:humanity_vs_nature/pages/game/playing_field.dart';
 import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
-import 'package:humanity_vs_nature/pages/overlays/pause_menu_overlay.dart';
 
 class SimulationGame extends FlameGame
     with HasCollisionDetection, TapCallbacks, DragCallbacks {
+  static const gameBackgroundColor = Colors.lightBlueAccent;
   static const double blockSize = 10;
 
   late BlocksMatrix matrix;
@@ -40,8 +41,8 @@ class SimulationGame extends FlameGame
   final combineModule = CombineModule();
   final gasModule = GasModule();
 
-  final textCO2 = TextComponent(text: 'CO2: 0')..position = Vector2(15, 40);
-  final textCH4 = TextComponent(text: 'CH4: 0')..position = Vector2(160, 40);
+  final ValueNotifier<double> currentCO2Value = ValueNotifier(0);
+  final ValueNotifier<double> currentCH4Value = ValueNotifier(0);
 
   @override
   FutureOr<void> onLoad() async {
@@ -57,14 +58,21 @@ class SimulationGame extends FlameGame
       ..add(cityModule)
       ..add(gasModule);
 
-    //todo
-    add(textCO2);
-    add(textCH4);
+    await treeModule.spawnInitialTrees();
 
     overlays.add(GameInterfaceOverlay.overlayName);
 
-    // camera.world = world;
-    //camera.setBounds(Rectangle.fromLTRB(0, 0, 10, 10));
+    final cameraBoundsOffset = worldSize.x * 0.1;
+    camera
+      ..moveTo(worldSize / 2)
+      ..setBounds(
+        Rectangle.fromLTRB(
+          cameraBoundsOffset,
+          cameraBoundsOffset,
+          worldSize.x - cameraBoundsOffset,
+          worldSize.y - cameraBoundsOffset,
+        ),
+      );
 
     // waterArtboard = await loadArtboard(RiveFile.asset(Assets.riveWater));
     //
@@ -76,6 +84,8 @@ class SimulationGame extends FlameGame
     //   ..position = Vector2(0, worldSize.y / 2)
     //   ..size = Vector2(worldSize.x, worldSize.y / 2));
 
+    await Future.delayed(const Duration(seconds: 2));
+
     return super.onLoad();
   }
 
@@ -83,10 +93,6 @@ class SimulationGame extends FlameGame
   void onDragUpdate(DragUpdateEvent event) {
     super.onDragUpdate(event);
     camera.moveBy(event.localDelta.inverted());
-  }
-
-  void showPauseMenu() {
-    overlays.add(PauseMenuOverlay.overlayName);
   }
 
   void addDebugBlock(
@@ -119,9 +125,10 @@ class SimulationGame extends FlameGame
 
   Vector2? getNearestFreeSpot(
     Vector2 targetPosition,
-    double objectRadius, [
+    double objectRadius, {
     double? maxDistance,
-  ]) {
+    bool ignoreBlocks = false,
+  }) {
     final stepSize = objectRadius / 10;
     final searchRadius = maxDistance ?? objectRadius * 10;
 
@@ -132,7 +139,11 @@ class SimulationGame extends FlameGame
         final y = targetPosition.y + distance * sin(angle);
 
         final potentialSpot = Vector2(x, y);
-        if (isSpotFree(potentialSpot, objectRadius)) {
+        if (isSpotFree(
+          potentialSpot,
+          objectRadius,
+          ignoreBlocks: ignoreBlocks,
+        )) {
           freeSpotsOnTheLevel.add(potentialSpot);
         }
       }
@@ -145,7 +156,11 @@ class SimulationGame extends FlameGame
     return null;
   }
 
-  bool isSpotFree(Vector2 position, double radius) {
+  bool isSpotFree(
+    Vector2 position,
+    double radius, {
+    bool ignoreBlocks = false,
+  }) {
     /// Check playing field boards
     final smallerRadius = radius * 0.6;
     if (position.x - smallerRadius < 0 ||
@@ -156,9 +171,11 @@ class SimulationGame extends FlameGame
     }
 
     /// Check fields by blocks
-    final blocks = matrix.getBlocksForSpot(Spot(position, radius));
-    for (final block in blocks) {
-      if (matrix.getBlockType(block) == BlockType.field) return false;
+    if (!ignoreBlocks) {
+      final blocks = matrix.getBlocksForSpot(Spot(position, radius));
+      for (final block in blocks) {
+        if (matrix.getBlockType(block) == BlockType.field) return false;
+      }
     }
 
     /// Check other spots
