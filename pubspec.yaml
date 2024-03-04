@@ -1,8 +1,6 @@
 name: humanity_vs_nature
 description: A new Flutter project.
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 
 version: 1.0.0+1
 
@@ -15,6 +13,7 @@ dependencies:
 
   flame: 1.16.0
   flame_rive: 1.10.0
+  shared_preferences: 2.2.2
 
 dev_dependencies:
   flutter_test:

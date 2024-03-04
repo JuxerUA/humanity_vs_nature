@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:humanity_vs_nature/pages/game/game_page.dart';
-import 'package:humanity_vs_nature/pages/main_menu/main_menu_page.dart';
+import 'package:humanity_vs_nature/pages/game_page.dart';
+import 'package:humanity_vs_nature/pages/main_menu_page.dart';
+import 'package:humanity_vs_nature/utils/prefs.dart';
 import 'package:humanity_vs_nature/utils/theme.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Prefs.init();
+
   runApp(const App());
 }
 
@@ -13,7 +17,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'HumanityVsNature',
+      title: 'Humanity vs Nature',
       theme: appTheme,
       routes: {
         MainMenuPage.routeName: (context) => const MainMenuPage(),

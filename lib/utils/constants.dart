@@ -1,1 +1,0 @@
-const double kPrettyPageLineWidth = 270;
