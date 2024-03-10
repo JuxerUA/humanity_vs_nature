@@ -17,7 +17,6 @@ class FarmModule extends Component with HasGameRef<SimulationGame> {
       if (farmPlace != null) {
         final farm = addFarm(farmPlace, city);
         city.farms.add(farm);
-        farm.storedGas = 100 * randomFallback.nextDouble();
       }
     }
   }
@@ -26,7 +25,7 @@ class FarmModule extends Component with HasGameRef<SimulationGame> {
     return game.getNearestFreeSpot(
       position,
       FarmComponent.requiredSpotRadius,
-      ignoreBlocks: true,
+      ignoreFields: true,
     );
   }
 

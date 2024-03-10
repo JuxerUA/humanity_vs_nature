@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -23,13 +22,15 @@ class FieldComponent extends RectangleComponent
   }
 
   static const double gasEarnRadius = SimulationGame.blockSize * 3;
-  static const int harvestValuePerBlock = 1000;
+  static const int harvestValuePerBlock = 200;
 
   final PositionComponent owner;
   final bool canBeDestroyedByTap;
 
-  double storedGas = 0;
-  double remainingGasForMoveToNextPhase = 0;
+  late final List<double> phasesTime;
+  late double productionRatePerSecond;
+  double timer = 0;
+
   GrowthPhase currentGrowthPhase = GrowthPhase.ground;
 
   double get area => size.x * size.y;
@@ -37,41 +38,43 @@ class FieldComponent extends RectangleComponent
   int get areaInBlocks =>
       (area / (SimulationGame.blockSize * SimulationGame.blockSize)).round();
 
+  int get totalFieldHarvest => areaInBlocks * harvestValuePerBlock;
+
+  double get totalFieldGrowthTime => phasesTime.reduce((sum, e) => sum + e);
+
+  double get growthTimeOfCurrentPhase => phasesTime[currentGrowthPhase.index];
+
   @override
   FutureOr<void> onLoad() {
-    updateRemainingGas();
+    phasesTime = [
+      5 + randomFallback.nextDouble(),
+      5 + randomFallback.nextDouble(),
+      10 + randomFallback.nextDouble(),
+      10 + randomFallback.nextDouble(),
+    ];
+    productionRatePerSecond = totalFieldHarvest / totalFieldGrowthTime;
     return super.onLoad();
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    if (storedGas < 0.5) {
-      storedGas += game.gasModule.aFieldWantsSomeCO2(position);
-    }
+    timer += dt;
+    if (timer >= growthTimeOfCurrentPhase) {
+      timer -= growthTimeOfCurrentPhase;
 
-    final usingGas = min(storedGas, dt * 0.1);
-    if (usingGas > 0) {
-      storedGas -= usingGas;
-      remainingGasForMoveToNextPhase -= usingGas;
-
-      if (remainingGasForMoveToNextPhase <= 0) {
-        switch (currentGrowthPhase) {
-          case GrowthPhase.ground:
-            currentGrowthPhase = GrowthPhase.seeds;
-          case GrowthPhase.seeds:
-            currentGrowthPhase = GrowthPhase.young;
-          case GrowthPhase.young:
-            currentGrowthPhase = GrowthPhase.medium;
-          case GrowthPhase.medium:
-            currentGrowthPhase = GrowthPhase.mature;
-          case GrowthPhase.mature:
-            _sendHarvestToOwner();
-            currentGrowthPhase = GrowthPhase.ground;
-        }
-        updateRemainingGas();
-        updatePaintWithColor(currentGrowthPhase.getColor());
+      switch (currentGrowthPhase) {
+        case GrowthPhase.ground:
+          currentGrowthPhase = GrowthPhase.young;
+        case GrowthPhase.young:
+          currentGrowthPhase = GrowthPhase.medium;
+        case GrowthPhase.medium:
+          currentGrowthPhase = GrowthPhase.mature;
+        case GrowthPhase.mature:
+          _sendHarvestToOwner();
+          currentGrowthPhase = GrowthPhase.ground;
       }
+      paint.color = currentGrowthPhase.getColor();
     }
   }
 
@@ -84,12 +87,11 @@ class FieldComponent extends RectangleComponent
   }
 
   void _sendHarvestToOwner() {
-    final harvestValue = areaInBlocks * harvestValuePerBlock;
     final base = owner;
     if (base is FarmComponent) {
-      base.plantFoodAmount += harvestValue;
+      base.plantFoodAmount += totalFieldHarvest;
     } else if (base is CityComponent) {
-      base.plantFoodAmount += harvestValue;
+      base.plantFoodAmount += totalFieldHarvest;
     }
 
     // game.foodModule.add(FoodComponent(
@@ -100,21 +102,9 @@ class FieldComponent extends RectangleComponent
     // currentGrowthPhase = GrowthPhase.ground;
   }
 
-  void updateRemainingGas() {
-    remainingGasForMoveToNextPhase +=
-        currentGrowthPhase.requiredGasForMoveToNextPhase * areaInBlocks;
-  }
-
-  void updatePaintWithColor(Color color) {
-    paint = paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
-  }
-
   void setRandomPhase() {
     currentGrowthPhase = GrowthPhase.values.random();
-    updatePaintWithColor(currentGrowthPhase.getColor());
-    updateRemainingGas();
-    remainingGasForMoveToNextPhase *= randomFallback.nextDouble();
+    paint.color = currentGrowthPhase.getColor();
+    timer = growthTimeOfCurrentPhase * randomFallback.nextDouble();
   }
 }

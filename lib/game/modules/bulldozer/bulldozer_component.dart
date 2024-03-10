@@ -13,14 +13,14 @@ import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
 class BulldozerComponent extends SpriteComponent
     with Vehicle, TapCallbacks, CollisionCallbacks, HasGameRef<SimulationGame> {
-  BulldozerComponent({required this.base});
+  BulldozerComponent({required this.city});
 
   static const radius = 10.0;
 
   static const workingDistance = 7.0;
   static const killTarget = 5;
 
-  final CityComponent base;
+  final CityComponent city;
 
   double hp = 5;
   int killCount = 0;
@@ -47,10 +47,10 @@ class BulldozerComponent extends SpriteComponent
     }
 
     if (isReturningToBase) {
-      if (position.distanceTo(base.position) < workingDistance) {
+      if (position.distanceTo(city.position) < workingDistance) {
         game.bulldozerModule.removeBulldozer(this);
       } else {
-        goToPosition(base.position, workingDistance, dt);
+        goToPosition(city.position, workingDistance, dt);
       }
       return;
     }
@@ -105,7 +105,7 @@ class BulldozerComponent extends SpriteComponent
   void _updateTargetTree() {
     if (targetTree == null || targetTree?.isMounted == false) {
       final tree = isAngry
-          ? game.treeModule.findFreeNearestTree(base.position)
+          ? game.treeModule.findFreeNearestTree(city.position)
           : game.treeModule.findFreeMatureNearestTree(position);
       targetTree = tree != targetTree && tree?.isMounted == true ? tree : null;
       state = VehicleState.stop;

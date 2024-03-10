@@ -9,6 +9,8 @@ import 'package:humanity_vs_nature/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 
 class CityModule extends Component with HasGameRef<SimulationGame> {
+  static const requiredAverageAwareness = 0.75;
+
   final List<CityComponent> cities = [];
 
   Iterable<Spot> get spots => cities.map((e) => e.spot);
@@ -62,5 +64,16 @@ class CityModule extends Component with HasGameRef<SimulationGame> {
       ..markBlocksForSpot(city1.spot, BlockType.city)
       ..markBlocksForSpot(city2.spot, BlockType.city)
       ..markBlocksForSpot(city3.spot, BlockType.city);
+  }
+
+  void updateAwarenessProgress() {
+    var totalPopulation = 0;
+    var totalAwareness = 0.0;
+    for (final city in cities) {
+      totalPopulation += city.population;
+      totalAwareness += city.awareness * city.population;
+    }
+    game.awarenessPercentage.value =
+        (totalAwareness / totalPopulation / requiredAverageAwareness * 100).round();
   }
 }

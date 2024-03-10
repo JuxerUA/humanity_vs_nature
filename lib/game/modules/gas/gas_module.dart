@@ -15,6 +15,9 @@ export 'gas_unit.dart';
 class GasModule extends Component with HasGameRef<SimulationGame> {
   static const expectedNumberOfCO2units = 100;
   static const expectedNumberOfCH4units = 20;
+  static const maxAllowablePollution = 10000;
+  static const multiplierCO2 = 1;
+  static const multiplierCH4 = 80;
 
   final List<GasUnit> unitsCO2 = [];
   final List<GasUnit> unitsCH4 = [];
@@ -22,11 +25,18 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
   double currentBiggestCO2UnitVolume = GasUnit.defaultVolume;
   double currentBiggestCH4UnitVolume = GasUnit.defaultVolume;
   double maxScreenLengthForDistribution = 0; //todo
+  double convertCH4toCO2Timer = 0;
 
   double totalCO2created = 0;
   double totalCO2absorbedByTheOcean = 0;
   double totalCH4created = 0;
   double totalCH4convertedToCO2 = 0;
+
+  double get currentTotalCO2Volume =>
+      unitsCO2.map((e) => e.volume).reduce((value, volume) => value += volume);
+
+  double get currentTotalCH4Volume =>
+      unitsCH4.map((e) => e.volume).reduce((value, volume) => value += volume);
 
   @override
   FutureOr<void> onLoad() {
@@ -48,10 +58,6 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
 
   @override
   void update(double dt) {
-    if (unitsCO2.isEmpty) {
-      return;
-    }
-
     for (final unit in unitsCO2) {
       unit.update(dt, game);
     }
@@ -87,6 +93,46 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
         totalCO2absorbedByTheOcean += _getSomeGasFromTheUnit(minClearanceUnit);
       }
     }
+
+    if ((convertCH4toCO2Timer -= dt) < 0) {
+      convertCH4toCO2Timer = randomFallback.nextDouble();
+      if (currentTotalCH4Volume * multiplierCH4 > currentTotalCO2Volume) {
+        var minCH4Unit = unitsCH4.first;
+        var minVolume = double.infinity;
+        for (final unit in unitsCH4) {
+          if (unit.volume < minVolume) {
+            minVolume = unit.volume;
+            minCH4Unit = unit;
+          }
+        }
+
+        addCO2(
+          minCH4Unit.position,
+          volume: minCH4Unit.volume,
+          velocity: minCH4Unit.velocity,
+        );
+        removeGasUnit(minCH4Unit);
+      }
+    }
+  }
+
+  void spawnInitialGas() {
+    for (var i = 0; i < 40; i++) {
+      addCO2(
+        Vector2.random() * game.worldSize.x,
+        velocity: Vector2.zero(),
+        updateText: false,
+      );
+    }
+    for (var i = 0; i < 10; i++) {
+      addCH4(
+        Vector2.random() * game.worldSize.x,
+        velocity: Vector2.zero(),
+        updateText: false,
+      );
+    }
+    updateCO2Text();
+    updateCH4Text();
   }
 
   void gasDistribution(List<GasUnit> units, double biggestVolume, double dt) {
@@ -111,22 +157,63 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
     }
   }
 
-  void addCO2(Vector2 position, [double volume = GasUnit.defaultVolume]) {
-    final velocity = Vector2(randomFallback.nextDouble() - 0.5, -10);
-    final gasUnit = GasUnit(GasType.co2, position, velocity)..volume = volume;
+  // void gasDistribution(List<GasUnit> units, double biggestVolume, double dt) {
+  //   final unitsLength = units.length;
+  //   final unitArea = game.worldSize.x * game.worldSize.y / unitsLength;
+  //   final unitSide = sqrt(unitArea);
+  //   final maxLength2 = unitSide * unitSide;
+  //
+  //   for (var i = 0; i < unitsLength; i++) {
+  //     final unitI = units[i];
+  //     final resultVector = Vector2.zero();
+  //     for (var j = i + 1; j < unitsLength; j++) {
+  //       final unitJ = units[j];
+  //       if ((unitJ.position.x - unitI.position.x).abs() < unitSide &&
+  //           (unitJ.position.y - unitI.position.y).abs() < unitSide) {
+  //         final direction = unitJ.position - unitI.position;
+  //         final length2 = direction.length2;
+  //         resultVector.addScaled(direction, maxLength2 / length2);
+  //       }
+  //     }
+  //     // final scaledVector = resultVector.scaled(1 / unitI.volume * dt * 0.0000001);
+  //     // print('');
+  //     // unitI.velocity += resultVector.scaled(1 / unitI.volume * dt * 0.0000001)
+  //     //   ..clampLength(1, 20);
+  //   }
+  // }
+
+  void addCO2(
+    Vector2 position, {
+    double volume = GasUnit.defaultVolume,
+    Vector2? velocity,
+    bool updateText = true,
+  }) {
+    final gasUnit = GasUnit(
+      GasType.co2,
+      position,
+      velocity ?? Vector2(randomFallback.nextDouble() - 0.5, -10),
+    )..volume = volume;
     unitsCO2.add(gasUnit);
     totalCO2created += gasUnit.volume;
     unitSynthesis(unitsCO2, expectedNumberOfCO2units, GasType.co2);
-    updateCO2Text();
+    if (updateText) updateCO2Text();
   }
 
-  void addCH4(Vector2 position, [double volume = GasUnit.defaultVolume]) {
-    final velocity = Vector2(randomFallback.nextDouble() - 0.5, -5);
-    final gasUnit = GasUnit(GasType.ch4, position, velocity)..volume = volume;
+  void addCH4(
+    Vector2 position, {
+    double volume = GasUnit.defaultVolume,
+    Vector2? velocity,
+    bool updateText = true,
+  }) {
+    final gasUnit = GasUnit(
+      GasType.ch4,
+      position,
+      velocity ?? Vector2(randomFallback.nextDouble() - 0.5, -5),
+    )..volume = volume;
     unitsCH4.add(gasUnit);
     totalCH4created += gasUnit.volume;
     unitSynthesis(unitsCH4, expectedNumberOfCH4units, GasType.ch4);
-    updateCH4Text();
+    if (updateText) updateCH4Text();
   }
 
   void removeGasUnit(GasUnit gasUnit) {
@@ -224,17 +311,21 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
   }
 
   void updateCO2Text() {
-    final volumeCO2 = unitsCO2
-        .map((e) => e.volume)
-        .reduce((value, element) => value += element);
-    game.currentCO2Value.value = volumeCO2;
+    final co2Volume = currentTotalCO2Volume;
+    game.currentCO2Value.value = co2Volume.round();
+    final pollution =
+        co2Volume * multiplierCO2 + currentTotalCH4Volume * multiplierCH4;
+    game.pollutionPercentage.value =
+        (pollution / maxAllowablePollution * 100).round();
   }
 
   void updateCH4Text() {
-    final volumeCH4 = unitsCH4
-        .map((e) => e.volume)
-        .reduce((value, element) => value += element);
-    game.currentCH4Value.value = volumeCH4;
+    final ch4Volume = currentTotalCH4Volume;
+    game.currentCH4Value.value = ch4Volume.round();
+    final pollution =
+        currentTotalCO2Volume * multiplierCO2 + ch4Volume * multiplierCH4;
+    game.pollutionPercentage.value =
+        (pollution / maxAllowablePollution * 100).round();
   }
 
   double aTreeWantsSomeCO2(Vector2 position, double dt) {
@@ -255,27 +346,6 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
         if (length < TreeComponent.radius) {
           return _getSomeGasFromTheUnit(unit);
         }
-      }
-    }
-
-    return 0;
-  }
-
-  double aFieldWantsSomeCO2(Vector2 position) {
-    const attractionDistance = FieldComponent.gasEarnRadius;
-    final leftSide = position.x - attractionDistance;
-    final rightSide = position.x + attractionDistance;
-    final topSide = position.y - attractionDistance;
-    final bottomSide = position.y + attractionDistance;
-
-    for (final unit in unitsCO2) {
-      if (unit.position.x > leftSide &&
-          unit.position.x < rightSide &&
-          unit.position.y > topSide &&
-          unit.position.y < bottomSide) {
-        return _getSomeGasFromTheUnit(
-          unit,
-        );
       }
     }
 

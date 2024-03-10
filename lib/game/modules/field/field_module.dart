@@ -57,6 +57,7 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
           field.setRandomPhase();
         }
       }
+      farm.updateProductionRate();
     }
   }
 

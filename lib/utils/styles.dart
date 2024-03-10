@@ -8,6 +8,13 @@ class Styles {
     fontStyle: FontStyle.normal,
   );
 
+  static const white12 = TextStyle(
+    fontFamily: 'ArchivoBlack',
+    color: Colors.white,
+    fontSize: 12,
+    fontStyle: FontStyle.normal,
+  );
+
   static const black16 = TextStyle(
     fontFamily: 'ArchivoBlack',
     color: Colors.black,
@@ -22,10 +29,10 @@ class Styles {
     fontStyle: FontStyle.normal,
   );
 
-  static const white12 = TextStyle(
+  static const black10 = TextStyle(
     fontFamily: 'ArchivoBlack',
-    color: Colors.white,
-    fontSize: 12,
+    color: Colors.black,
+    fontSize: 10,
     fontStyle: FontStyle.normal,
   );
 }

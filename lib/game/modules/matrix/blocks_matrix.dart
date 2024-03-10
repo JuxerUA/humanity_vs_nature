@@ -2,12 +2,13 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
+import 'package:humanity_vs_nature/extensions/block_extension.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 
-class BlocksMatrix {
+class BlocksMatrix extends Component with HasGameRef<SimulationGame> {
   BlocksMatrix(Vector2 gameSize) {
     lengthX = gameSize.x ~/ blockSize + 1;
     lengthY = gameSize.y ~/ blockSize + 1;
@@ -19,12 +20,29 @@ class BlocksMatrix {
 
   late List<List<BlockType>> matrix;
 
+  final List<Block> postFieldBlocks = [];
+  double postFieldTimer = 0;
+
   late int lengthX;
   late int lengthY;
 
   double get blockSize => SimulationGame.blockSize;
 
   double get bs2 => blockSize / 2;
+
+  @override
+  void update(double dt) {
+    if ((postFieldTimer += dt) < 0) {
+      postFieldTimer = 0.1;
+      if (postFieldBlocks.isNotEmpty) {
+        final block = postFieldBlocks.random();
+        if (getBlockType(block) == BlockType.postField) {
+          setBlockType(block, BlockType.empty);
+        }
+      }
+    }
+    super.update(dt);
+  }
 
   Block getBlock(Vector2 position) {
     return Block(
@@ -35,6 +53,9 @@ class BlocksMatrix {
 
   void setBlockType(Block block, BlockType type) {
     matrix[block.x][block.y] = type;
+    if (type == BlockType.postField) {
+      postFieldBlocks.add(block);
+    }
   }
 
   BlockType getBlockType(Block block) {
@@ -43,6 +64,18 @@ class BlocksMatrix {
 
   Vector2 getPosition(Block block) {
     return ((block.toVector2() * blockSize)..round()) - Vector2.all(bs2);
+  }
+
+  BlockType getBlockTypeAtPosition(Vector2 position) {
+    return getBlockType(getBlock(position));
+  }
+
+  bool doesBlockContainPoint(Block block, Vector2 point) {
+    final position = getPosition(block);
+    return point.x > position.x &&
+        point.x < position.x + blockSize &&
+        point.y > position.y &&
+        point.y < position.y + blockSize;
   }
 
   void markBlocksForSpot(Spot spot, BlockType type) {
@@ -76,8 +109,8 @@ class BlocksMatrix {
     final spotBlocks = <Block>[];
     for (var x = firstBlockX; x <= lastBlockX; x++) {
       for (var y = firstBlockY; y <= lastBlockY; y++) {
-        final dotPosition = Vector2(x.toDouble(), y.toDouble()) * blockSize;
-        final distance2 = dotPosition.distanceToSquared(spot.position);
+        final blockPosition = Vector2(x.toDouble(), y.toDouble()) * blockSize;
+        final distance2 = blockPosition.distanceToSquared(spot.position);
         if (distance2 <= radius2) {
           spotBlocks.add(Block(x, y));
         }
@@ -102,7 +135,7 @@ class BlocksMatrix {
     for (final block in fieldBlocks) {
       final blockType = getBlockType(block);
       if (blockType == BlockType.field) {
-        setBlockType(block, BlockType.empty);
+        setBlockType(block, BlockType.postField);
       }
     }
   }
@@ -149,19 +182,24 @@ class BlocksMatrix {
 
     bool canPlaceField(int startX, int startY, Point<int> size) {
       var treeBlocksCount = 0;
+      var postFieldBlocksCount = 0;
       for (var x = startX; x < startX + size.x; x++) {
         for (var y = startY; y < startY + size.y; y++) {
           final blockType = matrix[x][y];
           if (blockType == BlockType.tree) {
             treeBlocksCount++;
+          } else if (blockType == BlockType.postField) {
+            postFieldBlocksCount++;
           } else if (blockType != BlockType.empty) {
             return false;
           }
         }
       }
 
-      /// 0.2 - fields can cover up to 20% of the trees
-      return treeBlocksCount / (size.x * size.y) < 0.2;
+      /// Field can cover up to 20% of the trees and the post field blocks
+      final fieldBlocksCount = size.x * size.y;
+      return treeBlocksCount / fieldBlocksCount <= 0.2 &&
+          postFieldBlocksCount / fieldBlocksCount <= 0.2;
     }
 
     final validPositions = <Vector2>[];
@@ -174,5 +212,46 @@ class BlocksMatrix {
     }
 
     return validPositions.isEmpty ? null : validPositions.random();
+  }
+
+  List<Block> getAllBlocksOfThisBlot(Vector2 position) {
+    final initialBlock = getBlock(position);
+    final initialBlockType = getBlockType(initialBlock);
+    if (initialBlockType != BlockType.empty) {
+      return [initialBlock];
+    } else {
+      final blocks = <Block>[];
+      floodFill(initialBlock, initialBlockType, blocks, []);
+      return blocks;
+    }
+  }
+
+  void floodFill(
+      Block block, BlockType type, List<Block> blocks, List<Block> visited) {
+    if (block.x < 0 ||
+        block.x >= lengthX ||
+        block.y < 0 ||
+        block.y >= lengthY) {
+      return;
+    }
+
+    if (visited.contains(block)) {
+      return;
+    }
+
+    visited.add(block);
+
+    if (getBlockType(block) != type) {
+      return;
+    }
+    blocks.add(block);
+    if (blocks.length >= 20) {
+      return;
+    }
+
+    floodFill(block.blockRight, type, blocks, visited);
+    floodFill(block.blockLeft, type, blocks, visited);
+    floodFill(block.blockAbove, type, blocks, visited);
+    floodFill(block.blockBelow, type, blocks, visited);
   }
 }

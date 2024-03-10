@@ -92,15 +92,27 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
   }
 
   void expandForest(Vector2 position) {
-    final tree = findNearestMatureTree(position);
-    if (tree != null) {
+    const findMatureTreesRadius2 = 20 * 20;
+    final matureTrees = <TreeComponent>[];
+    for (final tree in trees) {
+      if (tree.isMature &&
+          tree.position.distanceToSquared(position) < findMatureTreesRadius2) {
+        matureTrees.add(tree);
+      }
+    }
+    matureTrees.sort((a, b) => a.position
+        .distanceToSquared(position)
+        .compareTo(b.position.distanceToSquared(position)));
+
+    for (final matureTree in matureTrees) {
       final spawnPosition = game.getNearestFreeSpot(
-        tree.position,
+        matureTree.position,
         TreeComponent.radius,
         maxDistance: 35,
       );
       if (spawnPosition != null) {
         addTree(spawnPosition);
+        return;
       }
     }
   }
@@ -155,5 +167,16 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
       targetPosition,
       trees.where((tree) => tree.isMature).toList(),
     );
+  }
+
+  bool isThereAnyTreesAtTheSpot(Spot spot) {
+    final distance = spot.radius - TreeComponent.radius;
+    final distance2 = distance * distance;
+    for (final tree in trees) {
+      if (tree.position.distanceToSquared(spot.position) < distance2) {
+        return true;
+      }
+    }
+    return false;
   }
 }

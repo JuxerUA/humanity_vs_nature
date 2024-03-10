@@ -4,6 +4,7 @@ enum BlockType {
   empty(Colors.white),
   tree(Colors.green),
   field(Colors.orangeAccent),
+  postField(Colors.brown),
   farm(Colors.red),
   city(Colors.black);
 

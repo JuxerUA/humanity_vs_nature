@@ -4,7 +4,6 @@ import 'package:humanity_vs_nature/extensions/context_extension.dart';
 import 'package:humanity_vs_nature/pages/game_page.dart';
 import 'package:humanity_vs_nature/utils/prefs.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
-import 'package:humanity_vs_nature/widgets/language_selector.dart';
 import 'package:humanity_vs_nature/widgets/pretty_menu_line.dart';
 
 class MainMenuPage extends StatefulWidget {
@@ -30,8 +29,9 @@ class _MainMenuPageState extends State<MainMenuPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 6),
-                const LanguageSelector(),
+                //TODO for future updates
+                // const SizedBox(height: 6),
+                // const LanguageSelector(),
                 const Expanded(child: SizedBox()),
 
                 /// Logo

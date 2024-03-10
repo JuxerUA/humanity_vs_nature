@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:humanity_vs_nature/extensions/context_extension.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/pages/main_menu_page.dart';
+import 'package:humanity_vs_nature/widgets/pause_background.dart';
 import 'package:humanity_vs_nature/widgets/pretty_menu_line.dart';
 
 class PauseMenuOverlay extends StatelessWidget {
@@ -17,8 +18,7 @@ class PauseMenuOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black38,
+    return PauseBackground(
       child: PrettyMenuLine(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

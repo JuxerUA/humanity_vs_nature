@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/math.dart';
 import 'package:flutter/material.dart';
+import 'package:humanity_vs_nature/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/game/modules/tree/tree_component.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 
@@ -34,9 +35,13 @@ class PlayingField extends RectangleComponent
   void onTapUp(TapUpEvent event) {
     super.onTapUp(event);
 
-    _timeForSpawnTree /= 2;
-    _preferredPositionForSpawnTree =
-        game.camera.globalToLocal(event.canvasPosition);
+    final tapPosition = game.camera.globalToLocal(event.canvasPosition);
+    if (game.matrix.getBlockTypeAtPosition(tapPosition) == BlockType.tree) {
+      game.treeModule.expandForest(tapPosition);
+    } else {
+      _timeForSpawnTree /= 2;
+      _preferredPositionForSpawnTree = tapPosition;
+    }
   }
 
   void _trySpawnTree(double dt) {

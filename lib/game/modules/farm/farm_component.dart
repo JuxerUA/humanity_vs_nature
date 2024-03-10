@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame/math.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
+import 'package:humanity_vs_nature/game/modules/farm/farm_expand_result.dart';
 import 'package:humanity_vs_nature/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
@@ -20,8 +20,8 @@ class FarmComponent extends SpriteComponent
   static const double radiusForFields = 100;
   static const double maxExpandFieldsTime = 15;
   static const double gasSpawnTime = 0.3;
+  static const double foodConversionRate = 6;
 
-  var _timeForExpandFields = 5.0;
   var _timeForSpawnGas = 0.0;
 
   int hp = 20;
@@ -30,8 +30,9 @@ class FarmComponent extends SpriteComponent
   late final FieldComponent baseField;
   final List<FieldComponent> fields = [];
 
+  double productionRatePerSecond = 0;
+
   double plantFoodAmount = 0;
-  int animalFoodAmount = 0;
   double storedGas = 0;
 
   Spot get spot => Spot(position, radius);
@@ -48,27 +49,57 @@ class FarmComponent extends SpriteComponent
   @override
   void update(double dt) {
     super.update(dt);
-    const foodConversionRate = 6;
     final animalFoodGrowthAmount =
         (plantFoodAmount / foodConversionRate).floor();
     plantFoodAmount -= animalFoodGrowthAmount * foodConversionRate;
-    animalFoodAmount += animalFoodGrowthAmount;
-    owner.animalFoodAmount += animalFoodAmount;
-    animalFoodAmount = 0;
+    owner.animalFoodAmount += animalFoodGrowthAmount;
 
-    storedGas += animalFoodGrowthAmount / 10;
+    storedGas += animalFoodGrowthAmount * 0.0000001;
 
     _trySpawnGas(dt);
   }
 
-  void _tryToExpandFields(double dt) {
-    _timeForExpandFields -= dt;
-    if (_timeForExpandFields < 0) {
-      _timeForExpandFields = randomFallback.nextDouble() * maxExpandFieldsTime;
-      final field = game.fieldModule.expandField(this, radiusForFields);
-      if (field != null) {
-        fields.add(field);
+  void updateProductionRate() {
+    productionRatePerSecond = fields
+            .map((e) => e.productionRatePerSecond)
+            .reduce((sum, rate) => sum + rate) /
+        foodConversionRate;
+  }
+
+  FarmIncreaseProductionResult tryToIncreaseProduction() {
+    final field = game.fieldModule.expandField(this, radiusForFields);
+    if (field != null) {
+      fields.add(field);
+      updateProductionRate();
+      return FarmIncreaseProductionResult.successfullyIncreased;
+    }
+
+    return game.treeModule.isThereAnyTreesAtTheSpot(
+      Spot(position, radiusForFields),
+    )
+        ? FarmIncreaseProductionResult.thereAreTrees
+        : FarmIncreaseProductionResult.limitHasBeenReached;
+  }
+
+  bool reduceProduction() {
+    if (fields.isNotEmpty) {
+      var furthestField = fields.first;
+      var distance2 = 0.0;
+      for (final field in fields) {
+        final fieldDistance2 = field.position.distanceToSquared(position);
+        if (fieldDistance2 > distance2) {
+          distance2 = fieldDistance2;
+          furthestField = field;
+        }
       }
+
+      fields.remove(furthestField);
+      game.fieldModule.abandonField(furthestField);
+      updateProductionRate();
+      return false;
+    } else {
+      game.farmModule.removeFarm(this);
+      return true;
     }
   }
 
@@ -79,8 +110,8 @@ class FarmComponent extends SpriteComponent
       final gasPosition =
           position + (Vector2.random() - Vector2.all(0.5)) * radius;
       final gasVolume = storedGas * 0.1;
-      storedGas = gasVolume;
-      game.gasModule.addCH4(gasPosition, gasVolume);
+      storedGas -= gasVolume;
+      game.gasModule.addCH4(gasPosition, volume: gasVolume);
     }
   }
 

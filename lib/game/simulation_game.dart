@@ -6,6 +6,7 @@ import 'package:flame/events.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
+import 'package:flame/math.dart';
 import 'package:flame_rive/flame_rive.dart';
 import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/game/experimental/food_module.dart';
@@ -22,6 +23,8 @@ import 'package:humanity_vs_nature/game/modules/tree/tree_module.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorial_module.dart';
 import 'package:humanity_vs_nature/game/playing_field.dart';
 import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
+import 'package:humanity_vs_nature/pages/overlays/you_lost_overlay.dart';
+import 'package:humanity_vs_nature/pages/overlays/you_win_overlay.dart';
 import 'package:humanity_vs_nature/utils/prefs.dart';
 
 //TODO
@@ -40,6 +43,7 @@ class SimulationGame extends FlameGame
     with HasCollisionDetection, TapCallbacks, DragCallbacks {
   static const gameBackgroundColor = Colors.lightBlueAccent;
   static const double blockSize = 10;
+  static const double timeToStopCountdown = 30.1;
 
   late BlocksMatrix matrix;
 
@@ -59,14 +63,22 @@ class SimulationGame extends FlameGame
   final gasModule = GasModule();
   final foodModule = FoodModule();
 
-  final ValueNotifier<double> currentCO2Value = ValueNotifier(0);
-  final ValueNotifier<double> currentCH4Value = ValueNotifier(0);
+  final ValueNotifier<int> currentCO2Value = ValueNotifier(0);
+  final ValueNotifier<int> currentCH4Value = ValueNotifier(0);
+  final ValueNotifier<int> pollutionPercentage = ValueNotifier(0);
+  final ValueNotifier<int> awarenessPercentage = ValueNotifier(0);
+  final ValueNotifier<int> countdownToLoss = ValueNotifier(0);
+
+  double timerToLoss = timeToStopCountdown;
 
   @override
   FutureOr<void> onLoad() async {
+    await Future.delayed(const Duration(seconds: 1));
+
     matrix = BlocksMatrix(worldSize);
 
     await world.addAll([
+      matrix,
       playingField,
       fieldModule,
       treeModule,
@@ -82,6 +94,7 @@ class SimulationGame extends FlameGame
     await farmModule.spawnInitialFarms();
     await fieldModule.spawnInitialFields();
     await treeModule.spawnInitialTrees();
+    gasModule.spawnInitialGas();
 
     overlays.add(GameInterfaceOverlay.overlayName);
     if (Prefs.tutorialEnabled) {
@@ -101,8 +114,6 @@ class SimulationGame extends FlameGame
     //   ..position = Vector2(0, worldSize.y / 2)
     //   ..size = Vector2(worldSize.x, worldSize.y / 2));
 
-    await Future.delayed(const Duration(seconds: 1));
-
     return super.onLoad();
   }
 
@@ -114,12 +125,34 @@ class SimulationGame extends FlameGame
     super.onDragUpdate(event);
   }
 
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    /// Check win/lose conditions
+    if (awarenessPercentage.value >= 100) {
+      paused = true;
+      overlays.add(YouWinOverlay.overlayName);
+    } else {
+      if (pollutionPercentage.value >= 100) {
+        timerToLoss -= dt;
+        if (timerToLoss <= 0) {
+          paused = true;
+          overlays.add(YouLostOverlay.overlayName);
+        }
+      } else {
+        timerToLoss = timeToStopCountdown;
+      }
+      countdownToLoss.value = timerToLoss.ceil();
+    }
+  }
+
   void addDebugBlock(
     Block block, [
     BlockType? type,
     Color color = Colors.white,
   ]) {
-    add(
+    playingField.add(
       RectangleComponent()
         ..position = matrix.getPosition(block)
         ..size = Vector2.all(matrix.blockSize)
@@ -134,7 +167,7 @@ class SimulationGame extends FlameGame
     double radius = 1,
     Color color = Colors.white,
   ]) {
-    add(
+    playingField.add(
       CircleComponent()
         ..position = (position - Vector2(radius / 2, radius / 2))
         ..radius = radius
@@ -159,14 +192,17 @@ class SimulationGame extends FlameGame
     Vector2 targetPosition,
     double objectRadius, {
     double? maxDistance,
-    bool ignoreBlocks = false,
+    bool ignoreFields = false,
   }) {
-    final stepSize = objectRadius / 10;
+    final stepSize = objectRadius / 4;
     final searchRadius = maxDistance ?? objectRadius * 10;
 
+    final angleOffset = randomFallback.nextDouble();
+    final maxAngle = 2 * pi + angleOffset;
+    const angleStep = pi / 3;
     for (var distance = 0.0; distance <= searchRadius; distance += stepSize) {
       final freeSpotsOnTheLevel = <Vector2>[];
-      for (var angle = 0.0; angle < 2 * pi; angle += 0.1) {
+      for (var angle = angleOffset; angle < maxAngle; angle += angleStep) {
         final x = targetPosition.x + distance * cos(angle);
         final y = targetPosition.y + distance * sin(angle);
 
@@ -174,7 +210,7 @@ class SimulationGame extends FlameGame
         if (isSpotFree(
           potentialSpot,
           objectRadius,
-          ignoreBlocks: ignoreBlocks,
+          ignoreFields: ignoreFields,
         )) {
           freeSpotsOnTheLevel.add(potentialSpot);
         }
@@ -191,7 +227,7 @@ class SimulationGame extends FlameGame
   bool isSpotFree(
     Vector2 position,
     double radius, {
-    bool ignoreBlocks = false,
+    bool ignoreFields = false,
   }) {
     /// Check playing field boards
     final smallerRadius = radius * 0.6;
@@ -203,7 +239,7 @@ class SimulationGame extends FlameGame
     }
 
     /// Check fields by blocks
-    if (!ignoreBlocks) {
+    if (!ignoreFields) {
       final blocks = matrix.getBlocksForSpot(Spot(position, radius));
       for (final block in blocks) {
         if (matrix.getBlockType(block) == BlockType.field) return false;

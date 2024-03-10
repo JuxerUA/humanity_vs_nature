@@ -7,7 +7,7 @@ class BulldozerModule extends Component with HasGameRef<SimulationGame> {
   final List<BulldozerComponent> bulldozers = [];
 
   BulldozerComponent addBulldozer(CityComponent owner) {
-    final bulldozer = BulldozerComponent(base: owner)
+    final bulldozer = BulldozerComponent(city: owner)
       ..position = owner.position;
     bulldozers.add(bulldozer);
     add(bulldozer);
@@ -16,7 +16,7 @@ class BulldozerModule extends Component with HasGameRef<SimulationGame> {
 
   void removeBulldozer(BulldozerComponent bulldozer) {
     remove(bulldozer);
-    bulldozer.base.bulldozers.remove(bulldozer);
+    bulldozer.city.bulldozers.remove(bulldozer);
     bulldozers.remove(bulldozer);
   }
 }

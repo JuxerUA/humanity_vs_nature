@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/base_tutorial.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/bulldozer_tutorial.dart';
+import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/ch4_tutorial.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/co2_tutorial.dart';
+import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/disasters_tutorial.dart';
+import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/farm_tutorial.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/first_tutorial.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/pages/overlays/tutorial_overlay.dart';
@@ -15,7 +18,7 @@ class TutorialModule extends Component with HasGameRef<SimulationGame> {
   /// - trees grows with CO2 (and fields too)
   /// - oceans eat 25-30% of CO2
   /// - farms produce CH4
-  /// - farms is the main cause of deforestation
+  /// - fields is the main cause of deforestation
   /// - farms is the main cause of ocean dead zones ??? need to check
   /// - CH4 is almost as dangerous to global warming as CO2
   /// - CH4 become CO2 in 12 years
@@ -26,13 +29,16 @@ class TutorialModule extends Component with HasGameRef<SimulationGame> {
     FirstTutorial(game),
     BulldozerTutorial(game),
     CO2Tutorial(game),
+    CH4Tutorial(game),
+    FarmTutorial(game),
+    DisastersTutorial(game),
   ];
 
   late final int totalTutorialsCount;
 
   BaseTutorial? showingTutorial;
   double timeElapsedSinceLastTutorialWasShown = 0;
-  double timer = 0;
+  double timer = -1;
 
   @override
   FutureOr<void> onLoad() {
@@ -44,7 +50,7 @@ class TutorialModule extends Component with HasGameRef<SimulationGame> {
   void update(double dt) {
     timeElapsedSinceLastTutorialWasShown += dt;
     timer += dt;
-    if (timer > 3) {
+    if (timer > 0.5) {
       timer = 0;
       if (showingTutorial == null) {
         for (final unShownTutorial in unShownTutorials) {
@@ -81,12 +87,7 @@ class TutorialModule extends Component with HasGameRef<SimulationGame> {
     }
   }
 
-  bool isTutorialShown(BaseTutorial tutorial) {
-    for (final unShownTutorial in unShownTutorials) {
-      if (unShownTutorial == tutorial) {
-        return false;
-      }
-    }
-    return true;
+  bool isTutorialShown<T>() {
+    return unShownTutorials.whereType<T>().isEmpty;
   }
 }

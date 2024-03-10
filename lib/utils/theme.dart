@@ -6,6 +6,7 @@ final ThemeData appTheme = ThemeData(
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       textStyle: Styles.black16,
+      backgroundColor: Colors.orangeAccent.shade100,
     ),
   ),
 );
