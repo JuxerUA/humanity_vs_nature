@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
@@ -15,27 +16,26 @@ class FoodComponent extends PolygonComponent with HasGameRef<SimulationGame> {
   }
 
   final PositionComponent target;
+  double speed = 150;
+
+  @override
+  FutureOr<void> onLoad() {
+    anchor = Anchor.center;
+    return super.onLoad();
+  }
 
   @override
   void update(double dt) {
     super.update(dt);
+    final direction = target.position - position;
+    final length = direction.normalize();
+    position += direction * speed * dt;
+    speed += dt;
+    size *= 0.5;
 
-    if ((target.position - position).length2 < 25) {
+    if (length < 10) {
       game.foodModule.remove(this);
       return;
     }
-
-    final center =
-        vertices.reduce((prev, e) => prev + e) / vertices.length.toDouble();
-
-    for (final vertex in vertices) {
-      final diffToTarget = target.position - (vertex + position);
-      final diffToCenter = center - vertex;
-      vertex
-        ..addScaled(diffToTarget, dt * 0.5)
-        ..addScaled(diffToCenter, 0.4);
-    }
-
-    position = position + vertices.first;
   }
 }

@@ -2,14 +2,12 @@
 class Assets {
   Assets._();
 
-  static const String riveTest = 'assets/rive/test.riv';
-  static const String riveWater = 'assets/rive/water.riv';
   static const String spritesBulldozer = 'assets/sprites/bulldozer.png';
   static const String spritesCity = 'assets/sprites/city.png';
   static const String spritesCombine = 'assets/sprites/combine.png';
+  static const String spritesCone = 'assets/sprites/cone.png';
   static const String spritesFarm = 'assets/sprites/farm.png';
-  static const String spritesTree = 'assets/sprites/tree.png';
-  static const String spritesTreeSapling = 'assets/sprites/tree_sapling.png';
-  static const String spritesTreeSmall = 'assets/sprites/tree_small.png';
+  static const String spritesMatureTree = 'assets/sprites/mature_tree.png';
+  static const String spritesYoungTree = 'assets/sprites/young_tree.png';
 
 }

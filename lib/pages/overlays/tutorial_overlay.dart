@@ -12,14 +12,16 @@ class TutorialOverlay extends StatelessWidget {
     super.key,
   });
 
-  static const overlayName = 'first_tutorial';
+  static const overlayName = 'tutorial';
 
   final SimulationGame game;
 
   @override
   Widget build(BuildContext context) {
-    final tutorialText = game.tutorial.showingTutorial?.mainTutorialText;
-    final doYouKnowText = game.tutorial.showingTutorial?.doYouKnowText;
+    final showingTutorial = game.tutorial.showingTutorial ??
+        game.tutorial.showingTutorialFromTutorials;
+    final tutorialText = showingTutorial?.mainTutorialText;
+    final doYouKnowText = showingTutorial?.doYouKnowText;
 
     return TutorialBackground(
       child: LayoutBuilder(

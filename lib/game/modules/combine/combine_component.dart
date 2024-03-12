@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:humanity_vs_nature/extensions/sprite_component_extension.dart';
+import 'package:humanity_vs_nature/game/mixins/animation_on_tap.dart';
 import 'package:humanity_vs_nature/game/mixins/vehicle.dart';
 import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
@@ -10,7 +11,7 @@ import 'package:humanity_vs_nature/generated/assets.dart';
 import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
 class CombineComponent extends SpriteComponent
-    with Vehicle, TapCallbacks, HasGameRef<SimulationGame> {
+    with Vehicle, TapCallbacks, HasGameRef<SimulationGame>, AnimationOnTap {
   CombineComponent({
     required this.owner,
     required this.targetPlace,
@@ -70,5 +71,6 @@ class CombineComponent extends SpriteComponent
     if (hp < 1) {
       game.combineModule.removeCombine(this);
     }
+    animateOnTap();
   }
 }

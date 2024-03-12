@@ -1,5 +1,4 @@
 import 'package:flame/components.dart';
-import 'package:flame/math.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/game/modules/farm/farm_component.dart';

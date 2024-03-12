@@ -7,7 +7,6 @@ import 'package:flame/math.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
-import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
 class TreeComponent extends SpriteComponent
     with TapCallbacks, HasGameRef<SimulationGame> {
@@ -36,12 +35,15 @@ class TreeComponent extends SpriteComponent
     await _updateTreeAccordingToCurrentPhase();
     add(CircleHitbox());
     anchor = Anchor.bottomCenter;
+    // size = game.matureTreeSprite.originalSize * 0.5;
     return super.onLoad();
   }
 
   @override
   void update(double dt) {
     super.update(dt);
+
+    _updateShake();
 
     // If the tree is still growing
     if (_phase != _TreePhase.mature) {
@@ -68,7 +70,17 @@ class TreeComponent extends SpriteComponent
   Future<void> _updateTreeAccordingToCurrentPhase() async {
     hp = _phase.hp;
     needCO2toNextPhase = _phase.volumeCO2toNextPhase;
-    sprite = await getSpriteFromAsset(_phase.spritePath);
+    switch (_phase) {
+      case _TreePhase.sapling:
+        sprite = game.spriteCone;
+        size = game.spriteCone.originalSize * 0.5;
+      case _TreePhase.young:
+        sprite = game.spriteYoungTree;
+        size = game.spriteYoungTree.originalSize * 0.5;
+      case _TreePhase.mature:
+        sprite = game.spriteMatureTree;
+        size = game.spriteMatureTree.originalSize * 0.5;
+    }
   }
 
   @override
@@ -85,12 +97,27 @@ class TreeComponent extends SpriteComponent
     }
     return false;
   }
+
+  void shakeTheTree() {
+    scale = Vector2(1.3, 1);
+  }
+
+  void _updateShake() {
+    var sc = scale.x;
+    if (sc > 1) {
+      sc *= 0.99;
+      if (sc < 1) {
+        sc = 1;
+      }
+      scale = Vector2(sc, 1);
+    }
+  }
 }
 
 enum _TreePhase {
-  sapling(2, 10, Assets.spritesTreeSapling),
-  young(15, 30, Assets.spritesTreeSmall),
-  mature(30, 0, Assets.spritesTree);
+  sapling(1, 10, Assets.spritesCone),
+  young(15, 30, Assets.spritesYoungTree),
+  mature(10, 0, Assets.spritesMatureTree);
 
   const _TreePhase(this.hp, this.volumeCO2toNextPhase, this.spritePath);
 

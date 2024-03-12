@@ -4,6 +4,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:humanity_vs_nature/extensions/sprite_component_extension.dart';
+import 'package:humanity_vs_nature/game/mixins/animation_on_tap.dart';
 import 'package:humanity_vs_nature/game/mixins/vehicle.dart';
 import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/game/modules/tree/tree_component.dart';
@@ -12,13 +13,18 @@ import 'package:humanity_vs_nature/generated/assets.dart';
 import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
 class BulldozerComponent extends SpriteComponent
-    with Vehicle, TapCallbacks, CollisionCallbacks, HasGameRef<SimulationGame> {
+    with
+        Vehicle,
+        TapCallbacks,
+        CollisionCallbacks,
+        HasGameRef<SimulationGame>,
+        AnimationOnTap {
   BulldozerComponent({required this.city});
 
   static const radius = 10.0;
 
-  static const workingDistance = 7.0;
-  static const killTarget = 5;
+  static const workingDistance = 10.0;
+  static const killTarget = 7;
 
   final CityComponent city;
 
@@ -28,12 +34,13 @@ class BulldozerComponent extends SpriteComponent
   bool isReturningToBase = false;
   bool isAngry = false;
 
-  double get damagePerSecond => isAngry ? 10 : 5;
+  double get damagePerSecond => isAngry ? 10 : 7;
 
   @override
   FutureOr<void> onLoad() async {
     sprite = await getSpriteFromAsset(Assets.spritesBulldozer);
     anchor = Anchor.center;
+    size *= 0.9;
     add(CircleHitbox(radius: radius));
     return super.onLoad();
   }
@@ -100,6 +107,7 @@ class BulldozerComponent extends SpriteComponent
     super.onTapUp(event);
     hp -= 1;
     if (hp < 1) game.bulldozerModule.removeBulldozer(this);
+    animateOnTap();
   }
 
   void _updateTargetTree() {

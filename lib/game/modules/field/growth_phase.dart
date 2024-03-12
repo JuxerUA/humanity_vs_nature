@@ -1,5 +1,4 @@
 import 'package:flame/extensions.dart';
-import 'package:flame/math.dart';
 import 'package:flutter/material.dart';
 
 enum GrowthPhase {

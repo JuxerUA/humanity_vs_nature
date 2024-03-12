@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/math.dart';
 import 'package:flutter/material.dart';
-import 'package:humanity_vs_nature/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/game/modules/gas/gas_type.dart';
 import 'package:humanity_vs_nature/game/modules/gas/gas_unit.dart';
 import 'package:humanity_vs_nature/game/modules/tree/tree_component.dart';

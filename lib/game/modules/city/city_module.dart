@@ -16,7 +16,7 @@ class CityModule extends Component with HasGameRef<SimulationGame> {
   Iterable<Spot> get spots => cities.map((e) => e.spot);
 
   Future<void> spawnInitialCities() async {
-    const offset = CityComponent.radius * 2.5;
+    const offset = CityComponent.radius * 2;
     final buildingZone = Rectangle.fromLTRB(
       offset,
       offset,
@@ -74,6 +74,6 @@ class CityModule extends Component with HasGameRef<SimulationGame> {
       totalAwareness += city.awareness * city.population;
     }
     game.awarenessPercentage.value =
-        (totalAwareness / totalPopulation / requiredAverageAwareness * 100).round();
+        (totalAwareness / totalPopulation * 100).round();
   }
 }

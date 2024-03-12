@@ -7,7 +7,6 @@ import 'package:flame/experimental.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/math.dart';
-import 'package:flame_rive/flame_rive.dart';
 import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/game/experimental/food_module.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
@@ -22,10 +21,11 @@ import 'package:humanity_vs_nature/game/modules/matrix/blocks_matrix.dart';
 import 'package:humanity_vs_nature/game/modules/tree/tree_module.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorial_module.dart';
 import 'package:humanity_vs_nature/game/playing_field.dart';
+import 'package:humanity_vs_nature/generated/assets.dart';
 import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/you_lost_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/you_win_overlay.dart';
-import 'package:humanity_vs_nature/utils/prefs.dart';
+import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
 //TODO
 /// - CH4 is converted to CO2
@@ -40,7 +40,7 @@ import 'package:humanity_vs_nature/utils/prefs.dart';
 /// - check the feasibility of using lists for owners
 
 class SimulationGame extends FlameGame
-    with HasCollisionDetection, TapCallbacks, DragCallbacks {
+    with HasCollisionDetection, TapCallbacks, DragCallbacks, ScaleDetector {
   static const gameBackgroundColor = Colors.lightBlueAccent;
   static const double blockSize = 10;
   static const double timeToStopCountdown = 30.1;
@@ -49,7 +49,11 @@ class SimulationGame extends FlameGame
 
   Vector2 worldSize = Vector2(600, 600);
 
-  static late final Artboard waterArtboard;
+  late final Sprite spriteCone;
+  late final Sprite spriteYoungTree;
+  late final Sprite spriteMatureTree;
+  late final Sprite spriteFarm;
+  late final Sprite spriteCity;
 
   final playingField = PlayingField();
   final tutorial = TutorialModule();
@@ -75,6 +79,12 @@ class SimulationGame extends FlameGame
   FutureOr<void> onLoad() async {
     await Future.delayed(const Duration(seconds: 1));
 
+    spriteCone = await getSpriteFromAsset(Assets.spritesCone);
+    spriteMatureTree = await getSpriteFromAsset(Assets.spritesMatureTree);
+    spriteYoungTree = await getSpriteFromAsset(Assets.spritesYoungTree);
+    spriteFarm = await getSpriteFromAsset(Assets.spritesFarm);
+    spriteCity = await getSpriteFromAsset(Assets.spritesCity);
+
     matrix = BlocksMatrix(worldSize);
 
     await world.addAll([
@@ -97,22 +107,10 @@ class SimulationGame extends FlameGame
     gasModule.spawnInitialGas();
 
     overlays.add(GameInterfaceOverlay.overlayName);
-    if (Prefs.tutorialEnabled) {
-      add(tutorial);
-    }
+    add(tutorial);
 
     camera.moveTo(worldSize / 2);
     setCameraBounds();
-
-    // waterArtboard = await loadArtboard(RiveFile.asset(Assets.riveWater));
-    //
-    // add(TestRiveComponent()
-    //   ..position = Vector2.zero()
-    //   ..size = Vector2(worldSize.x, worldSize.y / 2));
-    //
-    // add(TestRiveComponent()
-    //   ..position = Vector2(0, worldSize.y / 2)
-    //   ..size = Vector2(worldSize.x, worldSize.y / 2));
 
     return super.onLoad();
   }
@@ -124,6 +122,14 @@ class SimulationGame extends FlameGame
     }
     super.onDragUpdate(event);
   }
+
+  // @override
+  // void onScaleUpdate(ScaleUpdateInfo info) {
+  //   if (tutorial.showingTutorial == null) {
+  //     camera.viewport.size = camera.viewport.size.scaled(info.scale.global.x);
+  //   }
+  //   super.onScaleUpdate(info);
+  // }
 
   @override
   void update(double dt) {

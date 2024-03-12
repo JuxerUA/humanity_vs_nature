@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 
-mixin Vehicle on PositionComponent {
+mixin Vehicle on SpriteComponent {
   static const maxSpeed = 50.0;
   static const rotationSpeed = 2.0;
 

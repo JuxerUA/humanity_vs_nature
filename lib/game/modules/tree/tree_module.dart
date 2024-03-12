@@ -36,7 +36,7 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
       } while (!game.isSpotFree(position, TreeComponent.radius));
 
       /// Add forest
-      final numberOfTreesInTheForest = 5 + randomFallback.nextInt(20);
+      final numberOfTreesInTheForest = 1 + randomFallback.nextInt(10);
       trees.add(TreeComponent(isMature: true)..position = position);
       for (var j = 1; j < numberOfTreesInTheForest; j++) {
         final spawnPosition = game.getNearestFreeSpot(
@@ -45,7 +45,7 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
           maxDistance: 35,
         );
         if (spawnPosition != null) {
-          trees.add(TreeComponent(isMature: true)..position = position);
+          trees.add(TreeComponent(isMature: true)..position = spawnPosition);
           if (randomFallback.nextBool()) {
             position = spawnPosition;
           }
@@ -92,7 +92,7 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
   }
 
   void expandForest(Vector2 position) {
-    const findMatureTreesRadius2 = 20 * 20;
+    const findMatureTreesRadius2 = 30 * 30;
     final matureTrees = <TreeComponent>[];
     for (final tree in trees) {
       if (tree.isMature &&
@@ -111,6 +111,7 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
         maxDistance: 35,
       );
       if (spawnPosition != null) {
+        matureTree.shakeTheTree();
         addTree(spawnPosition);
         return;
       }

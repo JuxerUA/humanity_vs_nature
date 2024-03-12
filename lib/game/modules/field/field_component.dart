@@ -17,7 +17,7 @@ class FieldComponent extends RectangleComponent
     this.canBeDestroyedByTap = true,
   }) {
     paint = Paint()
-      ..color = GrowthPhase.ground.getColor()
+      ..color = randomColor
       ..style = PaintingStyle.fill;
   }
 
@@ -40,18 +40,40 @@ class FieldComponent extends RectangleComponent
 
   int get totalFieldHarvest => areaInBlocks * harvestValuePerBlock;
 
-  double get totalFieldGrowthTime => phasesTime.reduce((sum, e) => sum + e);
+  double totalFieldGrowthTime = 20 + randomFallback.nextDouble() * 20;
 
   double get growthTimeOfCurrentPhase => phasesTime[currentGrowthPhase.index];
 
+  Color get randomColor => [
+        Colors.green,
+        Colors.green,
+        Colors.green,
+        Colors.green,
+        // Colors.lightGreen,
+        Colors.lightGreenAccent,
+        Colors.lightGreenAccent,
+        Colors.lightGreenAccent,
+        Colors.lime,
+        Colors.lime,
+        Colors.limeAccent,
+        Colors.yellowAccent,
+        Colors.yellow,
+        Colors.amberAccent,
+        Colors.amber,
+        Colors.orangeAccent,
+        Colors.orange,
+        // Colors.deepOrangeAccent,
+        // Colors.deepOrange,
+      ].random();
+
   @override
   FutureOr<void> onLoad() {
-    phasesTime = [
-      5 + randomFallback.nextDouble(),
-      5 + randomFallback.nextDouble(),
-      10 + randomFallback.nextDouble(),
-      10 + randomFallback.nextDouble(),
-    ];
+    // phasesTime = [
+    //   5 + randomFallback.nextDouble(),
+    //   5 + randomFallback.nextDouble(),
+    //   10 + randomFallback.nextDouble(),
+    //   10 + randomFallback.nextDouble(),
+    // ];
     productionRatePerSecond = totalFieldHarvest / totalFieldGrowthTime;
     return super.onLoad();
   }
@@ -60,22 +82,27 @@ class FieldComponent extends RectangleComponent
   void update(double dt) {
     super.update(dt);
     timer += dt;
-    if (timer >= growthTimeOfCurrentPhase) {
-      timer -= growthTimeOfCurrentPhase;
-
-      switch (currentGrowthPhase) {
-        case GrowthPhase.ground:
-          currentGrowthPhase = GrowthPhase.young;
-        case GrowthPhase.young:
-          currentGrowthPhase = GrowthPhase.medium;
-        case GrowthPhase.medium:
-          currentGrowthPhase = GrowthPhase.mature;
-        case GrowthPhase.mature:
-          _sendHarvestToOwner();
-          currentGrowthPhase = GrowthPhase.ground;
-      }
-      paint.color = currentGrowthPhase.getColor();
+    if (timer >= totalFieldGrowthTime) {
+      timer -= totalFieldGrowthTime;
+      _sendHarvestToOwner();
+      //paint.color = randomColor;
     }
+    // if (timer >= growthTimeOfCurrentPhase) {
+    //   timer -= growthTimeOfCurrentPhase;
+    //
+    //   switch (currentGrowthPhase) {
+    //     case GrowthPhase.ground:
+    //       currentGrowthPhase = GrowthPhase.young;
+    //     case GrowthPhase.young:
+    //       currentGrowthPhase = GrowthPhase.medium;
+    //     case GrowthPhase.medium:
+    //       currentGrowthPhase = GrowthPhase.mature;
+    //     case GrowthPhase.mature:
+    //       _sendHarvestToOwner();
+    //       currentGrowthPhase = GrowthPhase.ground;
+    //   }
+    //   paint.color = currentGrowthPhase.getColor();
+    // }
   }
 
   @override
@@ -98,13 +125,14 @@ class FieldComponent extends RectangleComponent
     //   owner,
     //   paint.color,
     //   vertices,
-    // )..position = position);
-    // currentGrowthPhase = GrowthPhase.ground;
+    // )..position = position + size / 2);
   }
 
   void setRandomPhase() {
-    currentGrowthPhase = GrowthPhase.values.random();
-    paint.color = currentGrowthPhase.getColor();
-    timer = growthTimeOfCurrentPhase * randomFallback.nextDouble();
+    // currentGrowthPhase = GrowthPhase.values.random();
+    // paint.color = currentGrowthPhase.getColor();
+    paint.color = randomColor;
+    // timer = growthTimeOfCurrentPhase * randomFallback.nextDouble();
+    timer = totalFieldGrowthTime * randomFallback.nextDouble();
   }
 }

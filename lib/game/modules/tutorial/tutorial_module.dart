@@ -10,6 +10,7 @@ import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/farm_tutorial
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/first_tutorial.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/pages/overlays/tutorial_overlay.dart';
+import 'package:humanity_vs_nature/utils/prefs.dart';
 
 class TutorialModule extends Component with HasGameRef<SimulationGame> {
   /// Do you know?:
@@ -37,20 +38,26 @@ class TutorialModule extends Component with HasGameRef<SimulationGame> {
   late final int totalTutorialsCount;
 
   BaseTutorial? showingTutorial;
+  BaseTutorial? showingTutorialFromTutorials;
   double timeElapsedSinceLastTutorialWasShown = 0;
   double timer = -1;
 
+  late final bool tutorialEnabled;
+
   @override
   FutureOr<void> onLoad() {
+    tutorialEnabled = Prefs.tutorialEnabled;
     totalTutorialsCount = unShownTutorials.length;
     return super.onLoad();
   }
 
   @override
   void update(double dt) {
+    if (!tutorialEnabled || unShownTutorials.isEmpty) return;
+
     timeElapsedSinceLastTutorialWasShown += dt;
     timer += dt;
-    if (timer > 0.5) {
+    if (timer > 1) {
       timer = 0;
       if (showingTutorial == null) {
         for (final unShownTutorial in unShownTutorials) {
@@ -76,15 +83,20 @@ class TutorialModule extends Component with HasGameRef<SimulationGame> {
     game
       ..overlays.remove(TutorialOverlay.overlayName)
       ..setCameraBounds();
-    timeElapsedSinceLastTutorialWasShown = 0;
-    timer = 0;
-    unShownTutorials.remove(showingTutorial);
-    showingTutorial = null;
+
+    if (showingTutorial != null) {
+      timeElapsedSinceLastTutorialWasShown = 0;
+      timer = 0;
+      unShownTutorials.remove(showingTutorial);
+      showingTutorial = null;
+    }
+    showingTutorialFromTutorials = null;
+
     game.paused = false;
 
-    if (unShownTutorials.isEmpty) {
-      game.remove(game.tutorial);
-    }
+    // if (unShownTutorials.isEmpty) {
+    //   removeFromParent();
+    // }
   }
 
   bool isTutorialShown<T>() {

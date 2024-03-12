@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:humanity_vs_nature/game/mixins/animation_on_tap.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/game/modules/farm/farm_expand_result.dart';
@@ -12,12 +12,12 @@ import 'package:humanity_vs_nature/generated/assets.dart';
 import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
 class FarmComponent extends SpriteComponent
-    with TapCallbacks, HasGameRef<SimulationGame> {
+    with TapCallbacks, HasGameRef<SimulationGame>, AnimationOnTap {
   FarmComponent({required this.owner});
 
   static const double radius = 25;
-  static const double requiredSpotRadius = 85;
-  static const double radiusForFields = 100;
+  static const double requiredSpotRadius = 60;
+  static const double radiusForFields = 80;
   static const double maxExpandFieldsTime = 15;
   static const double gasSpawnTime = 0.3;
   static const double foodConversionRate = 6;
@@ -39,10 +39,9 @@ class FarmComponent extends SpriteComponent
 
   @override
   FutureOr<void> onLoad() async {
-    sprite = await getSpriteFromAsset(Assets.spritesFarm);
+    sprite = game.spriteFarm;
     anchor = Anchor.bottomCenter;
-    size *= 0.7;
-    add(CircleHitbox());
+    size *= 0.5;
     return super.onLoad();
   }
 
@@ -54,7 +53,7 @@ class FarmComponent extends SpriteComponent
     plantFoodAmount -= animalFoodGrowthAmount * foodConversionRate;
     owner.animalFoodAmount += animalFoodGrowthAmount;
 
-    storedGas += animalFoodGrowthAmount * 0.0000001;
+    storedGas += animalFoodGrowthAmount * 0.001;
 
     _trySpawnGas(dt);
   }
@@ -122,5 +121,6 @@ class FarmComponent extends SpriteComponent
     if (hp < 1) {
       game.farmModule.removeFarm(this);
     }
+    animateOnTap();
   }
 }

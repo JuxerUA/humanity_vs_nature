@@ -1,13 +1,12 @@
 import 'dart:async';
-import 'dart:math';
 
-import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/math.dart';
 import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/extensions/iterable_extension.dart';
 import 'package:humanity_vs_nature/game/experimental/floating_text_component.dart';
+import 'package:humanity_vs_nature/game/mixins/animation_on_tap.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/modules/bulldozer/bulldozer_component.dart';
 import 'package:humanity_vs_nature/game/modules/farm/farm_component.dart';
@@ -15,12 +14,10 @@ import 'package:humanity_vs_nature/game/modules/farm/farm_expand_result.dart';
 import 'package:humanity_vs_nature/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/base_tutorial.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
-import 'package:humanity_vs_nature/generated/assets.dart';
-import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
 
 class CityComponent extends SpriteComponent
-    with TapCallbacks, HasGameRef<SimulationGame> {
+    with TapCallbacks, HasGameRef<SimulationGame>, AnimationOnTap {
   static const double radius = 50;
   static const double radiusForFields = 150;
   static const double maxBulldozerSpawnTime = 50;
@@ -40,14 +37,18 @@ class CityComponent extends SpriteComponent
   int animalFoodAmount = 0;
   double bulldozersPower = 0;
 
-  final textPopulation = TextComponent();
-  final textAwareness = TextComponent();
+  final textPopulation = TextComponent(text: 'Population');
+  final textPopulationValue = TextComponent();
+  final textAwareness = TextComponent(text: 'Awareness');
+  final textAwarenessValue = TextComponent();
   final textPlantFood = TextComponent();
   final textAnimalFood = TextComponent();
 
   Spot get spot => Spot(position, radius);
 
-  double get co2Emission => population * (1 - awareness) * 0.005;
+  double get ignorance => 1 - awareness;
+
+  double get co2Emission => population * ignorance * 0.005;
 
   int get requiredPlantFoodAmount =>
       (population * 0.5 + population * 0.5 * awareness).round();
@@ -68,30 +69,41 @@ class CityComponent extends SpriteComponent
 
   @override
   FutureOr<void> onLoad() async {
-    sprite = await getSpriteFromAsset(Assets.spritesCity);
+    sprite = game.spriteCity;
     anchor = Anchor.center;
+    size *= 0.5;
 
     bulldozersPower = randomFallback.nextDouble() * 10;
 
     population = randomFallback.nextInt(50) + 50;
     textPopulation
       ..anchor = Anchor.center
-      ..position = size / 2
-      ..textRenderer = TextPaint(style: Styles.white12);
+      ..position = Vector2(size.x / 2, size.y / 2 - 3)
+      ..textRenderer = TextPaint(style: Styles.white10);
     add(textPopulation);
+    textPopulationValue
+      ..anchor = Anchor.center
+      ..position = textPopulation.position + Vector2(0, 12)
+      ..textRenderer = TextPaint(style: Styles.white14);
+    add(textPopulationValue);
 
     awareness = randomFallback.nextDouble() * 0.1;
     textAwareness
       ..anchor = Anchor.center
-      ..position = textPopulation.position + Vector2(0, 10)
-      ..textRenderer = TextPaint(style: Styles.white12);
+      ..position = textPopulationValue.position + Vector2(0, 13)
+      ..textRenderer = TextPaint(style: Styles.white10);
     add(textAwareness);
+    textAwarenessValue
+      ..anchor = Anchor.center
+      ..position = textAwareness.position + Vector2(0, 12)
+      ..textRenderer = TextPaint(style: Styles.white16);
+    add(textAwarenessValue);
 
     plantFoodAmount = population * 10 + randomFallback.nextInt(population * 10);
     textPlantFood
       ..anchor = Anchor.center
-      ..position = textAwareness.position + Vector2(0, 10)
-      ..textRenderer = TextPaint(style: Styles.white12);
+      ..position = textAwarenessValue.position + Vector2(0, 22)
+      ..textRenderer = TextPaint(style: Styles.black10);
     add(textPlantFood);
 
     animalFoodAmount =
@@ -99,7 +111,7 @@ class CityComponent extends SpriteComponent
     textAnimalFood
       ..anchor = Anchor.center
       ..position = textPlantFood.position + Vector2(0, 10)
-      ..textRenderer = TextPaint(style: Styles.white12);
+      ..textRenderer = TextPaint(style: Styles.black10);
     add(textAnimalFood);
 
     return super.onLoad();
@@ -118,8 +130,8 @@ class CityComponent extends SpriteComponent
 
     _tryToSpawnGas(dt);
 
-    textPopulation.text = 'Population: $population';
-    textAwareness.text = 'Awareness: ${(awareness * 100).round()}';
+    textPopulationValue.text = '$population';
+    textAwarenessValue.text = '${(awareness * 100).round()}%';
     textPlantFood.text = 'Plant Food: $plantFoodAmount';
     textAnimalFood.text = 'Animal Food: $animalFoodAmount';
 
@@ -130,37 +142,28 @@ class CityComponent extends SpriteComponent
   void onTapUp(TapUpEvent event) {
     super.onTapUp(event);
     awareness += 0.001;
-    textAwareness.text = 'Awareness: ${(awareness * 100).round()}';
+    if (awareness > 100) awareness = 100;
+    textAwarenessValue.text = '${(awareness * 100).round()}';
+    showPositiveText('Awareness +0.1%');
     game.cityModule.updateAwarenessProgress();
+    animateOnTap();
   }
 
   void _updateCityState() {
     /// Update awareness
-    awareness += (1 - awareness) * 0.001 - randomFallback.nextDouble() * 0.0005;
+    awareness += ignorance * 0.001 - randomFallback.nextDouble() * 0.0005;
+    if (awareness > 100) awareness = 100;
 
     /// Update food amount
-    plantFoodAmount -= requiredAnimalFoodAmount;
+    plantFoodAmount -= requiredPlantFoodAmount;
     animalFoodAmount -= requiredAnimalFoodAmount;
 
     /// Update population growth
-    final foodSummary = plantFoodAmount + animalFoodAmount;
-    final maxPopulationGrowth = max(population * 0.01, 0);
-    final maxPopulationDecline = max(population * 0.001, 0);
-    final maxPopulationGrowthByFood = max(
-      min(plantFoodAmount / awareness, animalFoodAmount / (1 - awareness)),
-      0,
-    );
-    var populationGrowth = 0.0;
-    if (foodSummary > 0) {
-      populationGrowth = min(maxPopulationGrowth, maxPopulationGrowthByFood) +
-          5 * randomFallback.nextDouble();
-      populationGrowth *= 1 - awareness;
-    } else {
-      populationGrowth =
-          -maxPopulationDecline - 3 + 5 * randomFallback.nextDouble();
-      populationGrowth *= awareness;
-    }
-    population += populationGrowth.round();
+    var populationGrowth = 1;
+    if (animalFoodAmount > population) populationGrowth += 1;
+    if (plantFoodAmount > population) populationGrowth += 1;
+    populationGrowth += (3 * ignorance).round();
+    population += populationGrowth;
 
     /// Update plant food production
     final requiredPlantFoodFor60Seconds = requiredPlantFoodAmount * 60 * 1.1;
@@ -191,10 +194,11 @@ class CityComponent extends SpriteComponent
     if (existingAnimalFoodFor60Seconds < requiredAnimalFoodFor60Seconds) {
       /// Not enough animal food production
       if (farms.isNotEmpty) {
-        final result = farms.random().tryToIncreaseProduction();
+        final farm = farms.random();
+        final result = farm.tryToIncreaseProduction();
         switch (result) {
           case FarmIncreaseProductionResult.thereAreTrees:
-            _tryToUseBulldozersPower();
+            _tryToUseBulldozersPower(forFarm: farm);
             break;
           case FarmIncreaseProductionResult.limitHasBeenReached:
             if (game.combineModule.cityWantsToBuildNewFarm(this)) {
@@ -251,14 +255,19 @@ class CityComponent extends SpriteComponent
     return false;
   }
 
-  void _tryToUseBulldozersPower() {
+  void _tryToUseBulldozersPower({FarmComponent? forFarm}) {
     if (bulldozersPower > 10) {
       bulldozersPower -= 5 + randomFallback.nextDouble() * 20;
       if (bulldozers.length < 10 &&
           game.bulldozerModule.bulldozers.length * 15 <
               game.treeModule.trees.length) {
-        final bulldozer = game.bulldozerModule.addBulldozer(this);
-        bulldozers.add(bulldozer);
+        final farm = forFarm;
+        if (farm != null) {
+          final tree = game.treeModule.findFreeMatureNearestTree(farm.position);
+          bulldozers.add(game.bulldozerModule.addBulldozer(this, target: tree));
+        } else {
+          bulldozers.add(game.bulldozerModule.addBulldozer(this));
+        }
         showNegativeText('We need more bulldozers!');
       } else {
         bulldozers.firstOrNullWhere((e) => !e.isAngry)?.isAngry = true;
@@ -281,13 +290,20 @@ class CityComponent extends SpriteComponent
   void showNegativeText(String text) => _createText(text, Colors.redAccent);
 
   void _createText(String text, Color color) {
-    add(
-      FloatingTextComponent(text: text)
-        ..position = Vector2(
-          size.x / 2,
-          size.y / 2 - 20,
-        )
-        ..paint.color = color,
-    );
+    final existingFloatingText =
+        children.whereType<FloatingTextComponent>().firstOrNull;
+
+    if (existingFloatingText != null) {
+      existingFloatingText.reSpawn(text, color);
+    } else {
+      add(
+        FloatingTextComponent(text: text)
+          ..position = Vector2(
+            size.x / 2,
+            size.y / 2 - 20,
+          )
+          ..paint.color = color,
+      );
+    }
   }
 }

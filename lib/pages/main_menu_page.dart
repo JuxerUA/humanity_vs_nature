@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:humanity_vs_nature/extensions/context_extension.dart';
 import 'package:humanity_vs_nature/pages/game_page.dart';
 import 'package:humanity_vs_nature/utils/prefs.dart';
@@ -85,22 +84,14 @@ class _MainMenuPageState extends State<MainMenuPage> {
                       context.pushNamedAndRemoveAll(GamePage.routeName),
                   child: const Text('Start'),
                 ),
-                const SizedBox(height: 20),
-
-                /// Exit button
-                const ElevatedButton(
-                  onPressed: SystemNavigator.pop,
-                  child: Text('Exit'),
-                ),
-
-                const Expanded(child: SizedBox()),
+                const SizedBox(height: 22),
 
                 Text(
                   tutorialEnabled ? 'Tutorial enabled' : 'Tutorial disabled',
                   style: Styles.white20,
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
 
                 ElevatedButton(
                   onPressed: () => setState(
@@ -108,7 +99,8 @@ class _MainMenuPageState extends State<MainMenuPage> {
                   ),
                   child: Text(tutorialEnabled ? 'Disable' : 'Enable'),
                 ),
-                const SizedBox(height: 20),
+
+                const Expanded(child: SizedBox()),
               ],
             ),
           ),

@@ -12,7 +12,6 @@ dependencies:
     sdk: flutter
 
   flame: 1.16.0
-  flame_rive: 1.10.0
   shared_preferences: 2.2.2
 
 dev_dependencies:
@@ -26,7 +25,6 @@ flutter:
   assets:
     - assets/
     - assets/sprites/
-    - assets/rive/
   fonts:
     - family: ArchivoBlack
       fonts:

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flame/components.dart';
+import 'package:flutter/animation.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
 
 class FloatingTextComponent extends RectangleComponent {
@@ -11,11 +12,12 @@ class FloatingTextComponent extends RectangleComponent {
   double duration = 2;
   late double timer = duration;
   late double initialY = y;
-  double floatingDistance = 40;
+  double floatingDistance = 30;
+  late final TextComponent textComponent;
 
   @override
   FutureOr<void> onLoad() {
-    final textComponent = TextComponent(
+    textComponent = TextComponent(
       text: text,
       textRenderer: TextPaint(style: Styles.black10),
     );
@@ -37,5 +39,14 @@ class FloatingTextComponent extends RectangleComponent {
       final timeProgressSquared = timeProgress * timeProgress;
       y = initialY + timeProgressSquared * floatingDistance - floatingDistance;
     }
+  }
+
+  void reSpawn(String text, Color color) {
+    y = initialY;
+    timer = duration;
+    textComponent.text = text;
+    size = textComponent.size + Vector2.all(4);
+    textComponent.position = Vector2.all(2);
+    paint.color = color.withAlpha(150);
   }
 }
