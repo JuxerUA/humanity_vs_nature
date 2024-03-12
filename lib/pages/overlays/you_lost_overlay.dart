@@ -23,6 +23,7 @@ class YouLostOverlay extends StatelessWidget {
                 context.pushNamedAndRemoveAll(MainMenuPage.routeName),
             child: const Text('Main Menu'),
           ),
+          const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () => context.pushNamedAndRemoveAll(GamePage.routeName),
             child: const Text('Play Again!'),
