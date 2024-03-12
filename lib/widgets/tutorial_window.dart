@@ -20,26 +20,29 @@ class TutorialWindow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        width: width,
-        height: height,
-        margin: margin,
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white70,
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          border: Border.all(width: 3),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(child: ListView(children: children)),
-            const SizedBox(height: 4),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: buttons,
-            ),
-          ],
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Container(
+          width: width,
+          height: height,
+          margin: margin,
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.white70,
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            border: Border.all(width: 3),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(child: ListView(children: children)),
+              const SizedBox(height: 4),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: buttons,
+              ),
+            ],
+          ),
         ),
       ),
     );

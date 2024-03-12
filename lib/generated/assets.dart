@@ -3,6 +3,8 @@ class Assets {
   Assets._();
 
   static const String spritesBulldozer = 'assets/sprites/bulldozer.png';
+  static const String spritesBulldozer1 = 'assets/sprites/bulldozer_1.png';
+  static const String spritesBulldozer2 = 'assets/sprites/bulldozer_2.png';
   static const String spritesCity = 'assets/sprites/city.png';
   static const String spritesCombine = 'assets/sprites/combine.png';
   static const String spritesCone = 'assets/sprites/cone.png';

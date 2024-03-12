@@ -37,7 +37,7 @@ class TutorialOverlay extends StatelessWidget {
             constraints.maxHeight - padding * 2,
             maxTutorialSize,
           ).toDouble();
-          final topMargin = constraints.maxHeight / 2 - padding;
+          final topMargin = constraints.maxHeight / 2 - padding * 2;
 
           return TutorialWindow(
             width: width,

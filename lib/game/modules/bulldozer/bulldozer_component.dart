@@ -9,8 +9,6 @@ import 'package:humanity_vs_nature/game/mixins/vehicle.dart';
 import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/game/modules/tree/tree_component.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
-import 'package:humanity_vs_nature/generated/assets.dart';
-import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
 class BulldozerComponent extends SpriteComponent
     with
@@ -38,9 +36,9 @@ class BulldozerComponent extends SpriteComponent
 
   @override
   FutureOr<void> onLoad() async {
-    sprite = await getSpriteFromAsset(Assets.spritesBulldozer);
+    sprite = game.spriteBulldozer1;
+    size *= 0.5;
     anchor = Anchor.center;
-    size *= 0.9;
     add(CircleHitbox(radius: radius));
     return super.onLoad();
   }
@@ -88,7 +86,7 @@ class BulldozerComponent extends SpriteComponent
       Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
     if (other is TreeComponent) {
-      if (other.isSapling && !isAngry) {
+      if (other.isCone && !isAngry) {
         other.doDamage(1);
       } else {
         isReturningToBase = false;

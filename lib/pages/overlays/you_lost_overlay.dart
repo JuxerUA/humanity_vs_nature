@@ -30,7 +30,7 @@ class YouLostOverlay extends StatelessWidget {
         ],
         children: const [
           Text(
-            "You lost! What a shame! Don't lose next time!",
+            "Oh, no!\nLooks like this planet is doomed. Well, at least it's only a game :) Maybe there's another way to make things right.\nGood luck!",
             style: Styles.black16,
           ),
         ],

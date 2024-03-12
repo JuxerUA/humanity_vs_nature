@@ -5,14 +5,17 @@ class FarmTutorial extends BaseTutorial {
   FarmTutorial(super.game);
 
   @override
-  String? get mainTutorialText => 'This is a farm!';
+  String? get mainTutorialText =>
+      "It's a farm. It raises animals for food.\nSounds wild, doesn't it? I thought so too :)\nWell, it is what it is. In the process of digesting food, the animals produce methane.";
 
   @override
-  String? get doYouKnowText => '';
+  String? get doYouKnowText =>
+      "The majority of human-produced methane comes from livestock farming.";
 
   @override
   bool canBeShown(TutorialModule module) {
-    return module.isTutorialShown<CH4Tutorial>();
+    return module.timeElapsedSinceLastTutorialWasShown > 20 &&
+        module.isTutorialShown<CH4Tutorial>();
   }
 
   @override

@@ -8,23 +8,21 @@ import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/game/modules/farm/farm_expand_result.dart';
 import 'package:humanity_vs_nature/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
-import 'package:humanity_vs_nature/generated/assets.dart';
-import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
 class FarmComponent extends SpriteComponent
     with TapCallbacks, HasGameRef<SimulationGame>, AnimationOnTap {
   FarmComponent({required this.owner});
 
   static const double radius = 25;
-  static const double requiredSpotRadius = 60;
-  static const double radiusForFields = 80;
+  static const double requiredSpotRadius = 50;
+  static const double radiusForFields = 50;
   static const double maxExpandFieldsTime = 15;
   static const double gasSpawnTime = 0.3;
   static const double foodConversionRate = 6;
 
   var _timeForSpawnGas = 0.0;
 
-  int hp = 20;
+  int hp = 10;
 
   final CityComponent owner;
   late final FieldComponent baseField;
@@ -53,7 +51,7 @@ class FarmComponent extends SpriteComponent
     plantFoodAmount -= animalFoodGrowthAmount * foodConversionRate;
     owner.animalFoodAmount += animalFoodGrowthAmount;
 
-    storedGas += animalFoodGrowthAmount * 0.001;
+    storedGas += animalFoodGrowthAmount * 0.0005;
 
     _trySpawnGas(dt);
   }

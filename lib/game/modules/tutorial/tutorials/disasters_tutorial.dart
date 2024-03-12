@@ -6,7 +6,7 @@ class DisastersTutorial extends BaseTutorial {
 
   @override
   String? get mainTutorialText =>
-      'Weather disasters like fires or tornadoes were also planned for this game. But not this time :)';
+      'Weather disasters like fires or tornadoes were also planned for this game. But not this time :) Well, uh.';
 
   @override
   String? get doYouKnowText =>
@@ -14,7 +14,8 @@ class DisastersTutorial extends BaseTutorial {
 
   @override
   bool canBeShown(TutorialModule module) {
-    return randomFallback.nextDouble() < 0.1;
+    return module.timeElapsedSinceLastTutorialWasShown > 20 &&
+        randomFallback.nextInt(10) == 10;
   }
 
   @override

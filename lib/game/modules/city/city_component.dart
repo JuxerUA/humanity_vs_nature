@@ -48,7 +48,7 @@ class CityComponent extends SpriteComponent
 
   double get ignorance => 1 - awareness;
 
-  double get co2Emission => population * ignorance * 0.005;
+  double get co2Emission => population * ignorance * 0.002;
 
   int get requiredPlantFoodAmount =>
       (population * 0.5 + population * 0.5 * awareness).round();
@@ -99,20 +99,20 @@ class CityComponent extends SpriteComponent
       ..textRenderer = TextPaint(style: Styles.white16);
     add(textAwarenessValue);
 
-    plantFoodAmount = population * 10 + randomFallback.nextInt(population * 10);
-    textPlantFood
-      ..anchor = Anchor.center
-      ..position = textAwarenessValue.position + Vector2(0, 22)
-      ..textRenderer = TextPaint(style: Styles.black10);
-    add(textPlantFood);
-
-    animalFoodAmount =
-        population * 10 + randomFallback.nextInt(population * 10);
-    textAnimalFood
-      ..anchor = Anchor.center
-      ..position = textPlantFood.position + Vector2(0, 10)
-      ..textRenderer = TextPaint(style: Styles.black10);
-    add(textAnimalFood);
+    // plantFoodAmount = population * 10 + randomFallback.nextInt(population * 10);
+    // textPlantFood
+    //   ..anchor = Anchor.center
+    //   ..position = textAwarenessValue.position + Vector2(0, 22)
+    //   ..textRenderer = TextPaint(style: Styles.black10);
+    // add(textPlantFood);
+    //
+    // animalFoodAmount =
+    //     population * 10 + randomFallback.nextInt(population * 10);
+    // textAnimalFood
+    //   ..anchor = Anchor.center
+    //   ..position = textPlantFood.position + Vector2(0, 10)
+    //   ..textRenderer = TextPaint(style: Styles.black10);
+    // add(textAnimalFood);
 
     return super.onLoad();
   }
@@ -132,8 +132,8 @@ class CityComponent extends SpriteComponent
 
     textPopulationValue.text = '$population';
     textAwarenessValue.text = '${(awareness * 100).round()}%';
-    textPlantFood.text = 'Plant Food: $plantFoodAmount';
-    textAnimalFood.text = 'Animal Food: $animalFoodAmount';
+    // textPlantFood.text = 'Plant Food: $plantFoodAmount';
+    // textAnimalFood.text = 'Animal Food: $animalFoodAmount';
 
     super.update(dt);
   }
@@ -151,7 +151,7 @@ class CityComponent extends SpriteComponent
 
   void _updateCityState() {
     /// Update awareness
-    awareness += ignorance * 0.001 - randomFallback.nextDouble() * 0.0005;
+    awareness += ignorance * 0.001 + randomFallback.nextDouble() * 0.0005;
     if (awareness > 100) awareness = 100;
 
     /// Update food amount
@@ -183,7 +183,7 @@ class CityComponent extends SpriteComponent
         requiredPlantFoodFor60Seconds * 3) {
       /// Too much plant food production
       if (_tryToRemoveField()) {
-        showPositiveText('There are unused fields');
+        //showPositiveText('There are unused fields');
       }
     }
 
@@ -202,14 +202,14 @@ class CityComponent extends SpriteComponent
             break;
           case FarmIncreaseProductionResult.limitHasBeenReached:
             if (game.combineModule.cityWantsToBuildNewFarm(this)) {
-              showNegativeText('We need to build a new farm');
+              //showNegativeText('We need to build a new farm');
             }
             break;
           case FarmIncreaseProductionResult.successfullyIncreased:
         }
       } else {
         if (game.combineModule.cityWantsToBuildNewFarm(this)) {
-          showNegativeText('We need to build a new farm');
+          //showNegativeText('We need to build a new farm');
         }
       }
     } else if (existingAnimalFoodFor60Seconds >
@@ -217,9 +217,9 @@ class CityComponent extends SpriteComponent
       /// Too much animal food production
       if (farms.isNotEmpty) {
         if (farms.random().reduceProduction()) {
-          showPositiveText('We have an unused farm');
+          //showPositiveText('We have an unused farm');
         } else {
-          showPositiveText('Farm has an unused field');
+          //showPositiveText('Farm has an unused field');
         }
       }
     }
@@ -268,10 +268,10 @@ class CityComponent extends SpriteComponent
         } else {
           bulldozers.add(game.bulldozerModule.addBulldozer(this));
         }
-        showNegativeText('We need more bulldozers!');
+        //showNegativeText('We need more bulldozers!');
       } else {
         bulldozers.firstOrNullWhere((e) => !e.isAngry)?.isAngry = true;
-        showNegativeText('Damn trees!');
+        //showNegativeText('Damn trees!');
       }
     }
   }

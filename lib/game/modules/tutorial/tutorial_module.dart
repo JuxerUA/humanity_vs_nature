@@ -4,10 +4,15 @@ import 'package:flame/components.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/base_tutorial.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/bulldozer_tutorial.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/ch4_tutorial.dart';
+import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/city_tutorial.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/co2_tutorial.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/disasters_tutorial.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/farm_tutorial.dart';
-import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/first_tutorial.dart';
+import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/fields_tutorial.dart';
+import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/goal_tutorial.dart';
+import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/interface_tutorial.dart';
+import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/trees_tutorial.dart';
+import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/welcome_tutorial.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/pages/overlays/tutorial_overlay.dart';
 import 'package:humanity_vs_nature/utils/prefs.dart';
@@ -27,11 +32,16 @@ class TutorialModule extends Component with HasGameRef<SimulationGame> {
   /// - most efficient way to fight global warming is increase people awareness
 
   late final unShownTutorials = <BaseTutorial>[
-    FirstTutorial(game),
-    BulldozerTutorial(game),
+    WelcomeTutorial(game),
+    InterfaceTutorial(game),
+    GoalTutorial(game),
+    TreesTutorial(game),
+    CityTutorial(game),
     CO2Tutorial(game),
+    BulldozerTutorial(game),
     CH4Tutorial(game),
     FarmTutorial(game),
+    FieldTutorial(game),
     DisastersTutorial(game),
   ];
 

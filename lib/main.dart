@@ -17,7 +17,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Humanity vs Nature',
+      title: 'Humanity VS Nature',
+      debugShowCheckedModeBanner: false,
       theme: appTheme,
       routes: {
         MainMenuPage.routeName: (context) => const MainMenuPage(),

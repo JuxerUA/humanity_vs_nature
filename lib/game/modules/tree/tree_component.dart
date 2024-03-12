@@ -18,7 +18,7 @@ class TreeComponent extends SpriteComponent
 
   static const double radius = 10;
 
-  _TreePhase _phase = _TreePhase.sapling;
+  _TreePhase _phase = _TreePhase.cone;
   late double hp;
   late double needCO2toNextPhase;
 
@@ -26,7 +26,9 @@ class TreeComponent extends SpriteComponent
 
   bool get isMature => _phase == _TreePhase.mature;
 
-  bool get isSapling => _phase == _TreePhase.sapling;
+  bool get isCone => _phase == _TreePhase.cone;
+
+  bool get isYoung => _phase == _TreePhase.young;
 
   Spot get spot => Spot(position, radius);
 
@@ -53,7 +55,7 @@ class TreeComponent extends SpriteComponent
         needCO2toNextPhase -= gasVolume;
       } else {
         // Grow up to next phase
-        if (_phase == _TreePhase.sapling) {
+        if (_phase == _TreePhase.cone) {
           _phase = _TreePhase.young;
         } else {
           _phase = _TreePhase.mature;
@@ -71,9 +73,9 @@ class TreeComponent extends SpriteComponent
     hp = _phase.hp;
     needCO2toNextPhase = _phase.volumeCO2toNextPhase;
     switch (_phase) {
-      case _TreePhase.sapling:
+      case _TreePhase.cone:
         sprite = game.spriteCone;
-        size = game.spriteCone.originalSize * 0.5;
+        size = game.spriteCone.originalSize * 0.2;
       case _TreePhase.young:
         sprite = game.spriteYoungTree;
         size = game.spriteYoungTree.originalSize * 0.5;
@@ -115,7 +117,7 @@ class TreeComponent extends SpriteComponent
 }
 
 enum _TreePhase {
-  sapling(1, 10, Assets.spritesCone),
+  cone(1, 10, Assets.spritesCone),
   young(15, 30, Assets.spritesYoungTree),
   mature(10, 0, Assets.spritesMatureTree);
 

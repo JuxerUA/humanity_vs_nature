@@ -7,8 +7,6 @@ import 'package:humanity_vs_nature/game/mixins/animation_on_tap.dart';
 import 'package:humanity_vs_nature/game/mixins/vehicle.dart';
 import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
-import 'package:humanity_vs_nature/generated/assets.dart';
-import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
 class CombineComponent extends SpriteComponent
     with Vehicle, TapCallbacks, HasGameRef<SimulationGame>, AnimationOnTap {
@@ -29,7 +27,8 @@ class CombineComponent extends SpriteComponent
 
   @override
   FutureOr<void> onLoad() async {
-    sprite = await getSpriteFromAsset(Assets.spritesCombine);
+    sprite = game.spriteBulldozer2;
+    size *= 0.5;
     anchor = Anchor.center;
     return super.onLoad();
   }

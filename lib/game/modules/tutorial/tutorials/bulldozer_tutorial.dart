@@ -5,7 +5,7 @@ class BulldozerTutorial extends BaseTutorial {
 
   @override
   String? get mainTutorialText =>
-      'Cities sometimes release bulldozers to clear land for fields and farms, especially when they start having food problems. You can break a bulldozer by tapping on it.';
+      'Cities like to let out bulldozers to clear some more space for fields and farms. Actually bulldozers can be useful for you :)';
 
   @override
   String? get doYouKnowText =>
@@ -13,9 +13,10 @@ class BulldozerTutorial extends BaseTutorial {
 
   @override
   bool canBeShown(TutorialModule module) {
-    return game.bulldozerModule.bulldozers
-        .where((e) => !e.isReturningToBase)
-        .isNotEmpty;
+    return module.timeElapsedSinceLastTutorialWasShown > 15 &&
+        game.bulldozerModule.bulldozers
+            .where((e) => !e.isReturningToBase)
+            .isNotEmpty;
   }
 
   @override

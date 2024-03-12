@@ -54,6 +54,8 @@ class SimulationGame extends FlameGame
   late final Sprite spriteMatureTree;
   late final Sprite spriteFarm;
   late final Sprite spriteCity;
+  late final Sprite spriteBulldozer1;
+  late final Sprite spriteBulldozer2;
 
   final playingField = PlayingField();
   final tutorial = TutorialModule();
@@ -84,6 +86,8 @@ class SimulationGame extends FlameGame
     spriteYoungTree = await getSpriteFromAsset(Assets.spritesYoungTree);
     spriteFarm = await getSpriteFromAsset(Assets.spritesFarm);
     spriteCity = await getSpriteFromAsset(Assets.spritesCity);
+    spriteBulldozer1 = await getSpriteFromAsset(Assets.spritesBulldozer1);
+    spriteBulldozer2 = await getSpriteFromAsset(Assets.spritesBulldozer2);
 
     matrix = BlocksMatrix(worldSize);
 

@@ -30,7 +30,7 @@ class YouWinOverlay extends StatelessWidget {
         ],
         children: const [
           Text(
-            'Congratulations! You won! Good for you!',
+            'Congratulations!\nThe general level of awareness among citizens has reached a level of no return. Global warming is no longer a threat to us. We can breathe.\nCongratulations again!',
             style: Styles.black16,
           ),
         ],
