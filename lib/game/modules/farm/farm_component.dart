@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:humanity_vs_nature/game/mixins/animation_on_tap.dart';
+import 'package:humanity_vs_nature/game/mixins/blink_mixin.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/game/modules/farm/farm_expand_result.dart';
@@ -10,19 +11,18 @@ import 'package:humanity_vs_nature/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 
 class FarmComponent extends SpriteComponent
-    with TapCallbacks, HasGameRef<SimulationGame>, AnimationOnTap {
+    with TapCallbacks, HasGameRef<SimulationGame>, AnimationOnTap, BlinkEffect {
   FarmComponent({required this.owner});
 
   static const double radius = 25;
-  static const double requiredSpotRadius = 50;
-  static const double radiusForFields = 50;
-  static const double maxExpandFieldsTime = 15;
+  static const double requiredSpotRadius = 60;
+  static const double radiusForFields = 70;
   static const double gasSpawnTime = 0.3;
   static const double foodConversionRate = 6;
 
   var _timeForSpawnGas = 0.0;
 
-  int hp = 10;
+  int hp = 15;
 
   final CityComponent owner;
   late final FieldComponent baseField;

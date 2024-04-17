@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/extensions/context_extension.dart';
+import 'package:humanity_vs_nature/generated/l10n.dart';
 import 'package:humanity_vs_nature/pages/game_page.dart';
 import 'package:humanity_vs_nature/utils/prefs.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
+import 'package:humanity_vs_nature/widgets/language_selector.dart';
 import 'package:humanity_vs_nature/widgets/pretty_menu_line.dart';
 
 class MainMenuPage extends StatefulWidget {
-  const MainMenuPage({super.key});
+  const MainMenuPage({
+    required this.currentLocaleNotifier,
+    super.key,
+  });
 
   static const routeName = '/mainMenu';
+
+  final ValueNotifier<Locale> currentLocaleNotifier;
 
   @override
   State<MainMenuPage> createState() => _MainMenuPageState();
@@ -28,15 +35,17 @@ class _MainMenuPageState extends State<MainMenuPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                //TODO for future updates
-                // const SizedBox(height: 6),
-                // const LanguageSelector(),
+                const SizedBox(height: 10),
+                LanguageSelector(
+                  onLocaleChanged: (locale) =>
+                      widget.currentLocaleNotifier.value = locale,
+                ),
                 const Expanded(child: SizedBox()),
 
                 /// Logo
                 const Center(
                   child: SizedBox(
-                    height: 150,
+                    height: 160,
                     width: 230,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -49,6 +58,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
                             fontSize: 24,
                             height: 0.5,
                             color: Colors.orange,
+                            shadows: [Shadow(blurRadius: 10)],
                           ),
                           textAlign: TextAlign.left,
                         ),
@@ -58,7 +68,8 @@ class _MainMenuPageState extends State<MainMenuPage> {
                             fontFamily: 'ArchivoBlack',
                             fontSize: 150,
                             height: 0.5,
-                            //color: Colors.deepOrange,
+                            color: Colors.lightBlueAccent,
+                            shadows: [Shadow(blurRadius: 10)],
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -69,6 +80,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
                             fontSize: 24,
                             height: 0.5,
                             color: Colors.lime,
+                            shadows: [Shadow(blurRadius: 10)],
                           ),
                           textAlign: TextAlign.right,
                         ),
@@ -82,12 +94,14 @@ class _MainMenuPageState extends State<MainMenuPage> {
                 ElevatedButton(
                   onPressed: () =>
                       context.pushNamedAndRemoveAll(GamePage.routeName),
-                  child: const Text('Start'),
+                  child: Text(S.current.start),
                 ),
                 const SizedBox(height: 22),
 
                 Text(
-                  tutorialEnabled ? 'Tutorial enabled' : 'Tutorial disabled',
+                  tutorialEnabled
+                      ? context.strings.tutorialEnabled
+                      : context.strings.tutorialDisabled,
                   style: Styles.white20,
                   textAlign: TextAlign.center,
                 ),
@@ -97,7 +111,11 @@ class _MainMenuPageState extends State<MainMenuPage> {
                   onPressed: () => setState(
                     () => Prefs.tutorialEnabled = !Prefs.tutorialEnabled,
                   ),
-                  child: Text(tutorialEnabled ? 'Disable' : 'Enable'),
+                  child: Text(
+                    tutorialEnabled
+                        ? context.strings.disable
+                        : context.strings.enable,
+                  ),
                 ),
 
                 const Expanded(child: SizedBox()),

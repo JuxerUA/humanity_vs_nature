@@ -28,7 +28,7 @@ class TutorialWindow extends StatelessWidget {
           margin: margin,
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
           decoration: BoxDecoration(
-            color: Colors.white70,
+            color: Colors.brown.shade400,
             borderRadius: const BorderRadius.all(Radius.circular(10)),
             border: Border.all(width: 3),
           ),

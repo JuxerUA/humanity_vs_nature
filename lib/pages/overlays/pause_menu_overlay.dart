@@ -27,18 +27,18 @@ class PauseMenuOverlay extends StatelessWidget {
             const SizedBox(height: 80),
             ElevatedButton(
               onPressed: _onResumeTap,
-              child: const Text('Resume'),
+              child: Text(context.strings.resume),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _onTutorialsTap,
-              child: const Text('Tutorials'),
+              child: Text(context.strings.tutorial),
             ),
             const SizedBox(height: 80),
             ElevatedButton(
               onPressed: () =>
                   context.pushNamedAndRemoveAll(MainMenuPage.routeName),
-              child: const Text('Main Menu'),
+              child: Text(context.strings.mainMenu),
             ),
           ],
         ),

@@ -98,7 +98,7 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
     } else if (owner is CityComponent) {
       owner.fields.remove(field);
     }
-    remove(field);
+    if (field.isMounted) field.removeFromParent();
     game.matrix.removeBlocksForField(field);
   }
 
@@ -188,29 +188,15 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
     abandonedFields.add(field);
   }
 
-  void removeAllFieldsInTheFieldArea(FieldComponent field) {
-    // final fieldRect = field.toRect();
-    // final overlappingFields =
-    //     fields.where((e) => e.toRect().overlaps(fieldRect));
-    // for (final overlappingField in overlappingFields) {
-    //   if (overlappingField != field) {
-    //     final owner = overlappingField.owner;
-    //     if (owner is FarmComponent) {
-    //       owner.fields.remove(overlappingField);
-    //     } else if (owner is CityComponent) {
-    //       owner.fields.remove(overlappingField);
-    //     }
-    //     // removeField(overlappingField);
-    //   }
-    // }
-    //
-    // // for (final overlappingField in overlappingFields) {
-    // //   fields.remove(overlappingField);
-    // //   abandonedFields.remove(overlappingField);
-    // //   game.matrix.removeBlocksForField(overlappingField);
-    // // }
-    // // removeAll(overlappingFields);
-    //
-    // game.matrix.markBlocksForField(field);
+  void removeAllOtherFieldsInTheFieldArea(FieldComponent field) {
+    final fieldRect = field.toRect();
+    final overlappingFields =
+        fields.where((e) => e.toRect().overlaps(fieldRect)).toList();
+    for (final overlappingField in overlappingFields) {
+      if (overlappingField != field) {
+        removeField(overlappingField);
+      }
+    }
+    game.matrix.markBlocksForField(field);
   }
 }

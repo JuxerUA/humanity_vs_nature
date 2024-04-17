@@ -21,7 +21,7 @@ class CombineComponent extends SpriteComponent
   final CityComponent owner;
   Vector2? targetPlace;
 
-  int hp = 5;
+  int hp = 10;
 
   bool get isReturningToBase => targetPlace == null;
 

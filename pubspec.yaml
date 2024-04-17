@@ -11,14 +11,20 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flame: 1.16.0
-  shared_preferences: 2.2.2
-
-dev_dependencies:
-  flutter_test:
+  # Localization
+  flutter_localizations:
     sdk: flutter
 
-  flutter_lints: ^3.0.1
+  flame: 1.17.0
+  shared_preferences: 2.2.2
+  intl: 0.18.1
+
+dev_dependencies:
+  flutter_lints: 3.0.2
+
+flutter_intl:
+  enabled: true
+  main_locale: en
 
 flutter:
   uses-material-design: true
@@ -29,3 +35,6 @@ flutter:
     - family: ArchivoBlack
       fonts:
         - asset: fonts/ArchivoBlack-Regular.ttf
+    - family: Play
+      fonts:
+        - asset: fonts/Play-Bold.ttf

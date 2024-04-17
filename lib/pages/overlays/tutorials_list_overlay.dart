@@ -31,12 +31,17 @@ class TutorialsListOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return PauseBackground(
       child: PrettyMenuLine(
-        color: Colors.black45,
+        color: Colors.black54,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 30),
-            const Center(child: Text('Tutorials', style: Styles.white20)),
+            Center(
+              child: Text(
+                context.strings.tutorial,
+                style: Styles.white20,
+              ),
+            ),
             const SizedBox(height: 10),
             const Divider(color: Colors.white, thickness: 2),
             Expanded(
@@ -44,58 +49,63 @@ class TutorialsListOverlay extends StatelessWidget {
                 children: [
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Welcome', style: Styles.white16),
+                    title: Text(context.strings.welcome, style: Styles.white16),
                     onTap: () => _popAndShowTutorial(WelcomeTutorial(game)),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Interface', style: Styles.white16),
+                    title:
+                        Text(context.strings.interface, style: Styles.white16),
                     onTap: () => _popAndShowTutorial(InterfaceTutorial(game)),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Game goal', style: Styles.white16),
+                    title:
+                        Text(context.strings.gameGoal, style: Styles.white16),
                     onTap: () => _popAndShowTutorial(GoalTutorial(game)),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Trees', style: Styles.white16),
+                    title: Text(context.strings.trees, style: Styles.white16),
                     onTap: () => _popAndShowTutorial(TreesTutorial(game)),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Bulldozers', style: Styles.white16),
+                    title:
+                        Text(context.strings.bulldozers, style: Styles.white16),
                     onTap: () => _popAndShowTutorial(BulldozerTutorial(game)),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Cities', style: Styles.white16),
+                    title: Text(context.strings.cities, style: Styles.white16),
                     onTap: () => _popAndShowTutorial(CityTutorial(game)),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Farms', style: Styles.white16),
+                    title: Text(context.strings.farms, style: Styles.white16),
                     onTap: () => _popAndShowTutorial(FarmTutorial(game)),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Fields', style: Styles.white16),
+                    title: Text(context.strings.fields, style: Styles.white16),
                     onTap: () => _popAndShowTutorial(FieldTutorial(game)),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Carbon dioxide (CO2)',
+                    title: Text(context.strings.carbonDioxideCo2,
                         style: Styles.white16),
                     onTap: () => _popAndShowTutorial(CO2Tutorial(game)),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Methane (CH4)', style: Styles.white16),
+                    title:
+                        Text(context.strings.methaneCh4, style: Styles.white16),
                     onTap: () => _popAndShowTutorial(CH4Tutorial(game)),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Disasters', style: Styles.white16),
+                    title:
+                        Text(context.strings.disasters, style: Styles.white16),
                     onTap: () => _popAndShowTutorial(DisastersTutorial(game)),
                   ),
                 ],
@@ -104,7 +114,7 @@ class TutorialsListOverlay extends StatelessWidget {
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: _onResumeTap,
-              child: const Text('Resume'),
+              child: Text(context.strings.resume),
             ),
             const SizedBox(height: 20),
           ],

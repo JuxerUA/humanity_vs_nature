@@ -8,7 +8,6 @@ import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/math.dart';
 import 'package:flutter/material.dart';
-import 'package:humanity_vs_nature/game/experimental/food_module.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/modules/bulldozer/bulldozer_module.dart';
 import 'package:humanity_vs_nature/game/modules/city/city_module.dart';
@@ -22,22 +21,11 @@ import 'package:humanity_vs_nature/game/modules/tree/tree_module.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorial_module.dart';
 import 'package:humanity_vs_nature/game/playing_field.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
+import 'package:humanity_vs_nature/generated/l10n.dart';
 import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/you_lost_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/you_win_overlay.dart';
 import 'package:humanity_vs_nature/utils/sprite_utils.dart';
-
-//TODO
-/// - CH4 is converted to CO2
-/// - normal growth of fields and transfer of crops to farms
-/// - farm produces meat and transfers to owner (if owner has too match - farm destroys fields)
-/// - global warming indicator (can filter to the screen)
-/// - cities grow or turn red or emit outrageous inscriptions
-/// - farm base field should destroy other fields (and trees)
-/// - beautiful crop dispatch ????
-/// - really want fire ????
-/// - camera: check how it works on the web, zoom
-/// - check the feasibility of using lists for owners
 
 class SimulationGame extends FlameGame
     with HasCollisionDetection, TapCallbacks, DragCallbacks, ScaleDetector {
@@ -48,6 +36,8 @@ class SimulationGame extends FlameGame
   late BlocksMatrix matrix;
 
   Vector2 worldSize = Vector2(600, 600);
+
+  late final S strings;
 
   late final Sprite spriteCone;
   late final Sprite spriteYoungTree;
@@ -67,7 +57,6 @@ class SimulationGame extends FlameGame
   final bulldozerModule = BulldozerModule();
   final combineModule = CombineModule();
   final gasModule = GasModule();
-  final foodModule = FoodModule();
 
   final ValueNotifier<int> currentCO2Value = ValueNotifier(0);
   final ValueNotifier<int> currentCH4Value = ValueNotifier(0);
@@ -98,7 +87,6 @@ class SimulationGame extends FlameGame
       treeModule,
       bulldozerModule,
       combineModule,
-      foodModule,
       farmModule,
       cityModule,
       gasModule,
@@ -126,14 +114,6 @@ class SimulationGame extends FlameGame
     }
     super.onDragUpdate(event);
   }
-
-  // @override
-  // void onScaleUpdate(ScaleUpdateInfo info) {
-  //   if (tutorial.showingTutorial == null) {
-  //     camera.viewport.size = camera.viewport.size.scaled(info.scale.global.x);
-  //   }
-  //   super.onScaleUpdate(info);
-  // }
 
   @override
   void update(double dt) {

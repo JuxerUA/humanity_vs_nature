@@ -33,9 +33,8 @@ class FarmModule extends Component with HasGameRef<SimulationGame> {
     farms.add(farm);
     add(farm);
     farm.baseField = game.fieldModule.addFirstFieldForFarm(farm);
+    game.fieldModule.removeAllOtherFieldsInTheFieldArea(farm.baseField);
     return farm;
-
-    game.fieldModule.removeAllFieldsInTheFieldArea(farm.baseField);
     //TODO remove all trees too
   }
 

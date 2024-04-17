@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:humanity_vs_nature/generated/l10n.dart';
 
 extension ContextExt on BuildContext {
+  S get strings => S.of(this);
+
   Future<T?> pushNamed<T extends Object?>(
     String routeName, {
     Object? arguments,

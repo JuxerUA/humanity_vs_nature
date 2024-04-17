@@ -5,10 +5,11 @@ import 'package:flame/events.dart';
 import 'package:flame/math.dart';
 import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/extensions/iterable_extension.dart';
-import 'package:humanity_vs_nature/game/experimental/floating_text_component.dart';
 import 'package:humanity_vs_nature/game/mixins/animation_on_tap.dart';
+import 'package:humanity_vs_nature/game/mixins/blink_mixin.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/modules/bulldozer/bulldozer_component.dart';
+import 'package:humanity_vs_nature/game/modules/city/floating_text_component.dart';
 import 'package:humanity_vs_nature/game/modules/farm/farm_component.dart';
 import 'package:humanity_vs_nature/game/modules/farm/farm_expand_result.dart';
 import 'package:humanity_vs_nature/game/modules/field/field_component.dart';
@@ -17,7 +18,7 @@ import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
 
 class CityComponent extends SpriteComponent
-    with TapCallbacks, HasGameRef<SimulationGame>, AnimationOnTap {
+    with TapCallbacks, HasGameRef<SimulationGame>, AnimationOnTap, BlinkEffect {
   static const double radius = 50;
   static const double radiusForFields = 150;
   static const double maxBulldozerSpawnTime = 50;
@@ -37,9 +38,9 @@ class CityComponent extends SpriteComponent
   int animalFoodAmount = 0;
   double bulldozersPower = 0;
 
-  final textPopulation = TextComponent(text: 'Population');
+  final textPopulation = TextComponent();
   final textPopulationValue = TextComponent();
-  final textAwareness = TextComponent(text: 'Awareness');
+  final textAwareness = TextComponent();
   final textAwarenessValue = TextComponent();
   final textPlantFood = TextComponent();
   final textAnimalFood = TextComponent();
@@ -51,7 +52,7 @@ class CityComponent extends SpriteComponent
   double get co2Emission => population * ignorance * 0.002;
 
   int get requiredPlantFoodAmount =>
-      (population * 0.5 + population * 0.5 * awareness).round();
+      (population * 0.4 + population * 0.5 * awareness).round();
 
   int get requiredAnimalFoodAmount => population - requiredPlantFoodAmount;
 
@@ -77,6 +78,7 @@ class CityComponent extends SpriteComponent
 
     population = randomFallback.nextInt(50) + 50;
     textPopulation
+      ..text = game.strings.population
       ..anchor = Anchor.center
       ..position = Vector2(size.x / 2, size.y / 2 - 3)
       ..textRenderer = TextPaint(style: Styles.white10);
@@ -89,6 +91,7 @@ class CityComponent extends SpriteComponent
 
     awareness = randomFallback.nextDouble() * 0.1;
     textAwareness
+      ..text = game.strings.awareness
       ..anchor = Anchor.center
       ..position = textPopulationValue.position + Vector2(0, 13)
       ..textRenderer = TextPaint(style: Styles.white10);
@@ -99,15 +102,15 @@ class CityComponent extends SpriteComponent
       ..textRenderer = TextPaint(style: Styles.white16);
     add(textAwarenessValue);
 
-    // plantFoodAmount = population * 10 + randomFallback.nextInt(population * 10);
+    plantFoodAmount = population * 10 + randomFallback.nextInt(population * 10);
+    animalFoodAmount =
+        population * 10 + randomFallback.nextInt(population * 10);
+
     // textPlantFood
     //   ..anchor = Anchor.center
     //   ..position = textAwarenessValue.position + Vector2(0, 22)
     //   ..textRenderer = TextPaint(style: Styles.black10);
     // add(textPlantFood);
-    //
-    // animalFoodAmount =
-    //     population * 10 + randomFallback.nextInt(population * 10);
     // textAnimalFood
     //   ..anchor = Anchor.center
     //   ..position = textPlantFood.position + Vector2(0, 10)
@@ -142,9 +145,9 @@ class CityComponent extends SpriteComponent
   void onTapUp(TapUpEvent event) {
     super.onTapUp(event);
     awareness += 0.001;
-    if (awareness > 100) awareness = 100;
+    if (awareness > 1) awareness = 1;
     textAwarenessValue.text = '${(awareness * 100).round()}';
-    showPositiveText('Awareness +0.1%');
+    showPositiveText(game.strings.awarenessIncreased);
     game.cityModule.updateAwarenessProgress();
     animateOnTap();
   }
@@ -152,7 +155,7 @@ class CityComponent extends SpriteComponent
   void _updateCityState() {
     /// Update awareness
     awareness += ignorance * 0.001 + randomFallback.nextDouble() * 0.0005;
-    if (awareness > 100) awareness = 100;
+    if (awareness > 1) awareness = 1;
 
     /// Update food amount
     plantFoodAmount -= requiredPlantFoodAmount;
@@ -298,10 +301,7 @@ class CityComponent extends SpriteComponent
     } else {
       add(
         FloatingTextComponent(text: text)
-          ..position = Vector2(
-            size.x / 2,
-            size.y / 2 - 20,
-          )
+          ..position = Vector2(size.x / 2, size.y / 2 - 20)
           ..paint.color = color,
       );
     }

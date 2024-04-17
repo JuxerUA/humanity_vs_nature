@@ -21,17 +21,17 @@ class YouLostOverlay extends StatelessWidget {
           ElevatedButton(
             onPressed: () =>
                 context.pushNamedAndRemoveAll(MainMenuPage.routeName),
-            child: const Text('Main Menu'),
+            child: Text(context.strings.mainMenu),
           ),
           const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () => context.pushNamedAndRemoveAll(GamePage.routeName),
-            child: const Text('Play Again!'),
+            child: Text(context.strings.playAgain),
           ),
         ],
-        children: const [
+        children: [
           Text(
-            "Oh, no!\nLooks like this planet is doomed. Well, at least it's only a game :) Maybe there's another way to make things right.\nGood luck!",
+            context.strings.ohNonlooksLikeThisPlanetIsDoomedWellAtLeast,
             style: Styles.black16,
           ),
         ],

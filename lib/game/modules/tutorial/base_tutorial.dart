@@ -1,9 +1,12 @@
+import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
-import 'package:flame/game.dart';
+import 'package:flutter/material.dart';
+import 'package:humanity_vs_nature/game/mixins/blink_mixin.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorial_module.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 
 export 'package:flame/extensions.dart';
+export 'package:humanity_vs_nature/extensions/context_extension.dart';
 export 'package:humanity_vs_nature/game/modules/tutorial/tutorial_module.dart';
 
 typedef IsTutorialShownCallback = bool Function(BaseTutorial tutorial);
@@ -13,9 +16,11 @@ abstract class BaseTutorial {
 
   final SimulationGame game;
 
-  String? get mainTutorialText;
+  BlinkEffect? target;
 
-  String? get doYouKnowText;
+  String? getMainTutorialText(BuildContext context);
+
+  String? getDoYouKnowText(BuildContext context);
 
   bool canBeShown(TutorialModule module);
 

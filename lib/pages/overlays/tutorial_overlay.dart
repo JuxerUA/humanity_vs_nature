@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:humanity_vs_nature/extensions/context_extension.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
 import 'package:humanity_vs_nature/widgets/tutorial_background.dart';
@@ -20,8 +21,8 @@ class TutorialOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final showingTutorial = game.tutorial.showingTutorial ??
         game.tutorial.showingTutorialFromTutorials;
-    final tutorialText = showingTutorial?.mainTutorialText;
-    final doYouKnowText = showingTutorial?.doYouKnowText;
+    final tutorialText = showingTutorial?.getMainTutorialText(context);
+    final doYouKnowText = showingTutorial?.getDoYouKnowText(context);
 
     return TutorialBackground(
       child: LayoutBuilder(
@@ -47,7 +48,7 @@ class TutorialOverlay extends StatelessWidget {
               /// Got It! button
               ElevatedButton(
                 onPressed: _onGotItTap,
-                child: const Text('Got It!'),
+                child: Text(context.strings.gotIt),
               )
             ],
             children: [
@@ -66,7 +67,7 @@ class TutorialOverlay extends StatelessWidget {
 
               /// "Do you know?" text
               if (doYouKnowText != null) ...[
-                const Text('Do you know?', style: Styles.black16),
+                Text(context.strings.doYouKnow, style: Styles.black16),
                 Text(doYouKnowText, style: Styles.black14),
               ],
             ],

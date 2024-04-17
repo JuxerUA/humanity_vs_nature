@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:humanity_vs_nature/extensions/sprite_component_extension.dart';
 import 'package:humanity_vs_nature/game/mixins/animation_on_tap.dart';
+import 'package:humanity_vs_nature/game/mixins/blink_mixin.dart';
 import 'package:humanity_vs_nature/game/mixins/vehicle.dart';
 import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/game/modules/tree/tree_component.dart';
@@ -16,7 +17,8 @@ class BulldozerComponent extends SpriteComponent
         TapCallbacks,
         CollisionCallbacks,
         HasGameRef<SimulationGame>,
-        AnimationOnTap {
+        AnimationOnTap,
+        BlinkEffect {
   BulldozerComponent({required this.city});
 
   static const radius = 10.0;
@@ -26,7 +28,7 @@ class BulldozerComponent extends SpriteComponent
 
   final CityComponent city;
 
-  double hp = 5;
+  double hp = 7;
   int killCount = 0;
   TreeComponent? targetTree;
   bool isReturningToBase = false;

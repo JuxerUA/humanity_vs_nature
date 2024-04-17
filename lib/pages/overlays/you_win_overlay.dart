@@ -21,17 +21,18 @@ class YouWinOverlay extends StatelessWidget {
           ElevatedButton(
             onPressed: () =>
                 context.pushNamedAndRemoveAll(MainMenuPage.routeName),
-            child: const Text('Main Menu'),
+            child: Text(context.strings.mainMenu),
           ),
           const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () => context.pushNamedAndRemoveAll(GamePage.routeName),
-            child: const Text('Play Again!'),
+            child: Text(context.strings.playAgain),
           ),
         ],
-        children: const [
+        children: [
           Text(
-            'Congratulations!\nThe general level of awareness among citizens has reached a level of no return. Global warming is no longer a threat to us. We can breathe.\nCongratulations again!',
+            context.strings
+                .congratulationsntheGeneralLevelOfAwarenessAmongCitizensHasReachedA,
             style: Styles.black16,
           ),
         ],

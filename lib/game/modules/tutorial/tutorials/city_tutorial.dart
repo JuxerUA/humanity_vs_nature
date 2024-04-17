@@ -1,14 +1,15 @@
+import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/base_tutorial.dart';
 
 class CityTutorial extends BaseTutorial {
   CityTutorial(super.game);
 
   @override
-  String? get mainTutorialText =>
-      "In this game, the cities are the only source of carbon dioxide. The larger the population of the city and the lower the average level of awareness of the city dwellers, the more carbon dioxide it creates.\nBy tapping on the town you can hasten the awareness of the townspeople :)\nAs awareness increases, citizens also consume less animal-based foods, which helps reduce the amount of methane.";
+  String? getMainTutorialText(BuildContext context) =>
+      context.strings.inThisGameTheCitiesAreTheOnlySourceOf;
 
   @override
-  String? get doYouKnowText => null;
+  String? getDoYouKnowText(BuildContext context) => null;
 
   @override
   bool canBeShown(TutorialModule module) {
@@ -17,8 +18,12 @@ class CityTutorial extends BaseTutorial {
 
   @override
   void onShowing() {
-    if (game.cityModule.cities.isNotEmpty) {
-      focusOn(game.cityModule.cities.random());
+    final cities = game.cityModule.cities;
+    if (cities.isNotEmpty) {
+      final city = cities.random();
+      target = city;
+      city.startBlinking();
+      focusOn(city);
     }
   }
 }

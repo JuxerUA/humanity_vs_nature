@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/game/modules/gas/gas_module.dart';
+import 'package:humanity_vs_nature/game/modules/tutorial/base_tutorial.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/pages/overlays/pause_menu_overlay.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
@@ -29,8 +30,8 @@ class GameInterfaceOverlay extends StatelessWidget {
                 children: [
                   /// Gas counters
                   Container(
-                    width: 132,
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    width: 122,
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
                     color: Colors.blueAccent,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -42,7 +43,7 @@ class GameInterfaceOverlay extends StatelessWidget {
                             ValueListenableBuilder(
                               valueListenable: game.currentCO2Value,
                               builder: (context, co2Volume, child) => Text(
-                                'CO2: $co2Volume',
+                                'CO₂: $co2Volume',
                                 style: Styles.black16,
                               ),
                             ),
@@ -60,7 +61,7 @@ class GameInterfaceOverlay extends StatelessWidget {
                             ValueListenableBuilder(
                               valueListenable: game.currentCH4Value,
                               builder: (context, ch4Volume, child) => Text(
-                                'CH4: $ch4Volume',
+                                'CH₄: $ch4Volume',
                                 style: Styles.black16,
                               ),
                             ),
@@ -107,21 +108,15 @@ class GameInterfaceOverlay extends StatelessWidget {
                                   ),
 
                                   /// Text
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 4),
-                                      child: ValueListenableBuilder(
-                                        valueListenable:
-                                            game.awarenessPercentage,
-                                        builder: (context, awarenessPercentage,
-                                            child) {
-                                          return Text(
-                                            'Awareness: $awarenessPercentage/75%',
-                                            style: Styles.black14,
-                                          );
-                                        },
-                                      ),
+                                  Center(
+                                    child: ValueListenableBuilder(
+                                      valueListenable: game.awarenessPercentage,
+                                      builder: (context, value, child) {
+                                        return Text(
+                                          context.strings.awareness,
+                                          style: Styles.black14,
+                                        );
+                                      },
                                     ),
                                   ),
                                 ],
@@ -155,21 +150,15 @@ class GameInterfaceOverlay extends StatelessWidget {
                                   ),
 
                                   /// Text
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 4),
-                                      child: ValueListenableBuilder(
-                                        valueListenable:
-                                            game.pollutionPercentage,
-                                        builder: (context, pollutionPercentage,
-                                            child) {
-                                          return Text(
-                                            'Pollution: $pollutionPercentage/100%',
-                                            style: Styles.black14,
-                                          );
-                                        },
-                                      ),
+                                  Center(
+                                    child: ValueListenableBuilder(
+                                      valueListenable: game.pollutionPercentage,
+                                      builder: (context, value, child) {
+                                        return Text(
+                                          context.strings.pollution,
+                                          style: Styles.black14,
+                                        );
+                                      },
                                     ),
                                   ),
                                 ],

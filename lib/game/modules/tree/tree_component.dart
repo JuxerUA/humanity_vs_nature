@@ -4,12 +4,13 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/math.dart';
+import 'package:humanity_vs_nature/game/mixins/blink_mixin.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
 
 class TreeComponent extends SpriteComponent
-    with TapCallbacks, HasGameRef<SimulationGame> {
+    with TapCallbacks, HasGameRef<SimulationGame>, BlinkEffect {
   TreeComponent({bool isMature = false}) {
     if (isMature) {
       _phase = _TreePhase.mature;

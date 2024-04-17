@@ -15,22 +15,10 @@ import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/trees_tutoria
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/welcome_tutorial.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/pages/overlays/tutorial_overlay.dart';
+import 'package:humanity_vs_nature/pages/overlays/tutorials_list_overlay.dart';
 import 'package:humanity_vs_nature/utils/prefs.dart';
 
 class TutorialModule extends Component with HasGameRef<SimulationGame> {
-  /// Do you know?:
-  /// - gases (mostly CO2, CH4) are the only cause of global warming
-  /// - cities produce CO2
-  /// - trees grows with CO2 (and fields too)
-  /// - oceans eat 25-30% of CO2
-  /// - farms produce CH4
-  /// - fields is the main cause of deforestation
-  /// - farms is the main cause of ocean dead zones ??? need to check
-  /// - CH4 is almost as dangerous to global warming as CO2
-  /// - CH4 become CO2 in 12 years
-  /// - ratio of land required depending on the diet
-  /// - most efficient way to fight global warming is increase people awareness
-
   late final unShownTutorials = <BaseTutorial>[
     WelcomeTutorial(game),
     InterfaceTutorial(game),
@@ -91,6 +79,7 @@ class TutorialModule extends Component with HasGameRef<SimulationGame> {
 
   void closeTutorial() {
     game
+      ..camera.stop()
       ..overlays.remove(TutorialOverlay.overlayName)
       ..setCameraBounds();
 
@@ -98,15 +87,17 @@ class TutorialModule extends Component with HasGameRef<SimulationGame> {
       timeElapsedSinceLastTutorialWasShown = 0;
       timer = 0;
       unShownTutorials.remove(showingTutorial);
+      showingTutorial?.target?.stopBlinking();
       showingTutorial = null;
+      game.paused = false;
     }
-    showingTutorialFromTutorials = null;
 
-    game.paused = false;
-
-    // if (unShownTutorials.isEmpty) {
-    //   removeFromParent();
-    // }
+    if (showingTutorialFromTutorials != null) {
+      game.paused = true;
+      showingTutorialFromTutorials?.target?.stopBlinking();
+      showingTutorialFromTutorials = null;
+      game.overlays.add(TutorialsListOverlay.overlayName);
+    }
   }
 
   bool isTutorialShown<T>() {

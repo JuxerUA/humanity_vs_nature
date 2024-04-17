@@ -1,15 +1,16 @@
+import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/base_tutorial.dart';
 
 class BulldozerTutorial extends BaseTutorial {
   BulldozerTutorial(super.game);
 
   @override
-  String? get mainTutorialText =>
-      'Cities like to let out bulldozers to clear some more space for fields and farms. Actually bulldozers can be useful for you :)';
+  String? getMainTutorialText(BuildContext context) =>
+      context.strings.citiesLikeToLetOutBulldozersToClearSomeMore;
 
   @override
-  String? get doYouKnowText =>
-      'Agriculture is the leading cause of deforestation on the planet.';
+  String? getDoYouKnowText(BuildContext context) =>
+      context.strings.agricultureIsTheLeadingCauseOfDeforestationOnThePlanet;
 
   @override
   bool canBeShown(TutorialModule module) {
@@ -25,7 +26,10 @@ class BulldozerTutorial extends BaseTutorial {
         .where((e) => !e.isReturningToBase)
         .toList();
     if (bulldozers.isNotEmpty) {
-      focusOn(bulldozers.random());
+      final bulldozer = bulldozers.random();
+      target = bulldozer;
+      bulldozer.startBlinking();
+      focusOn(bulldozer);
     }
   }
 }
