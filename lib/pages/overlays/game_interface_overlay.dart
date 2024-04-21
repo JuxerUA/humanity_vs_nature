@@ -172,6 +172,7 @@ class GameInterfaceOverlay extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 10),
 
             /// Countdown to loss
             ValueListenableBuilder(

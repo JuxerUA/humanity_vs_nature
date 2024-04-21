@@ -10,7 +10,16 @@ class LoadingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: SimulationGame.gameBackgroundColor,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.bottomLeft,
+          end: Alignment.topRight,
+          colors: [
+            SimulationGame.gameBackgroundColor.shade700,
+            SimulationGame.gameBackgroundColor.shade400,
+          ],
+        ),
+      ),
       child: PrettyMenuLine(
         child: Center(
           child: Text(

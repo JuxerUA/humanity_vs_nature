@@ -472,10 +472,10 @@ class S {
     );
   }
 
-  /// `Trees use CO₂ (blue particles) to grow. A mature tree no longer absorbs the gas, but you can tap on it to make it drop its cones. New trees grow from these cones 😊`
+  /// `Trees use CO₂ (blue particles) to grow. A mature tree no longer absorbs the gas, but you can tap on it to make it drop its cones. New trees grow from these cones 😊\n\nThere is also a chance of getting a cone if you tap on the grass.`
   String get treesUseCo2BlueParticlesToGrowTheLargestTree {
     return Intl.message(
-      'Trees use CO₂ (blue particles) to grow. A mature tree no longer absorbs the gas, but you can tap on it to make it drop its cones. New trees grow from these cones 😊',
+      'Trees use CO₂ (blue particles) to grow. A mature tree no longer absorbs the gas, but you can tap on it to make it drop its cones. New trees grow from these cones 😊\n\nThere is also a chance of getting a cone if you tap on the grass.',
       name: 'treesUseCo2BlueParticlesToGrowTheLargestTree',
       desc: '',
       args: [],

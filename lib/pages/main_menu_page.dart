@@ -30,7 +30,16 @@ class _MainMenuPageState extends State<MainMenuPage> {
       backgroundColor: Colors.black,
       body: SafeArea(
         child: Container(
-          color: Colors.brown,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomLeft,
+              end: Alignment.topRight,
+              colors: [
+                Colors.brown.shade800,
+                Colors.brown.shade500,
+              ],
+            ),
+          ),
           child: PrettyMenuLine(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -61,6 +70,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
                             shadows: [Shadow(blurRadius: 10)],
                           ),
                           textAlign: TextAlign.left,
+                          textScaler: TextScaler.noScaling,
                         ),
                         Text(
                           'VS',
@@ -72,6 +82,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
                             shadows: [Shadow(blurRadius: 10)],
                           ),
                           textAlign: TextAlign.center,
+                          textScaler: TextScaler.noScaling,
                         ),
                         Text(
                           'NATURE',
@@ -83,6 +94,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
                             shadows: [Shadow(blurRadius: 10)],
                           ),
                           textAlign: TextAlign.right,
+                          textScaler: TextScaler.noScaling,
                         ),
                       ],
                     ),
