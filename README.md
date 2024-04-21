@@ -1,4 +1,4 @@
-# humanity-vs-nature
+# Humanity VS Nature
 An arcade game where you plant trees, to fight global warming and restore wildlife.
 
 You can download the apk file (android build) of the latest version of the game from this google drive link:
