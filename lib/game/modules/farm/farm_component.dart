@@ -57,10 +57,14 @@ class FarmComponent extends SpriteComponent
   }
 
   void updateProductionRate() {
-    productionRatePerSecond = fields
-            .map((e) => e.productionRatePerSecond)
-            .reduce((sum, rate) => sum + rate) /
-        foodConversionRate;
+    if (fields.isEmpty) {
+      productionRatePerSecond = 0;
+    } else {
+      productionRatePerSecond = fields
+              .map((field) => field.productionRatePerSecond)
+              .reduce((sum, rate) => sum + rate) /
+          foodConversionRate;
+    }
   }
 
   FarmIncreaseProductionResult tryToIncreaseProduction() {
