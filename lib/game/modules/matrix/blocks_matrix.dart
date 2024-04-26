@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:humanity_vs_nature/extensions/block_extension.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/game/modules/matrix/block_type.dart';
@@ -32,7 +31,7 @@ class BlocksMatrix extends Component with HasGameRef<SimulationGame> {
 
   @override
   void update(double dt) {
-    if ((postFieldTimer += dt) < 0) {
+    if ((postFieldTimer -= dt) < 0) {
       postFieldTimer = 0.1;
       if (postFieldBlocks.isNotEmpty) {
         final block = postFieldBlocks.random();
@@ -68,14 +67,6 @@ class BlocksMatrix extends Component with HasGameRef<SimulationGame> {
 
   BlockType getBlockTypeAtPosition(Vector2 position) {
     return getBlockType(getBlock(position));
-  }
-
-  bool doesBlockContainPoint(Block block, Vector2 point) {
-    final position = getPosition(block);
-    return point.x > position.x &&
-        point.x < position.x + blockSize &&
-        point.y > position.y &&
-        point.y < position.y + blockSize;
   }
 
   void markBlocksForSpot(Spot spot, BlockType type) {
@@ -212,46 +203,5 @@ class BlocksMatrix extends Component with HasGameRef<SimulationGame> {
     }
 
     return validPositions.isEmpty ? null : validPositions.random();
-  }
-
-  List<Block> getAllBlocksOfThisBlot(Vector2 position) {
-    final initialBlock = getBlock(position);
-    final initialBlockType = getBlockType(initialBlock);
-    if (initialBlockType != BlockType.empty) {
-      return [initialBlock];
-    } else {
-      final blocks = <Block>[];
-      floodFill(initialBlock, initialBlockType, blocks, []);
-      return blocks;
-    }
-  }
-
-  void floodFill(
-      Block block, BlockType type, List<Block> blocks, List<Block> visited) {
-    if (block.x < 0 ||
-        block.x >= lengthX ||
-        block.y < 0 ||
-        block.y >= lengthY) {
-      return;
-    }
-
-    if (visited.contains(block)) {
-      return;
-    }
-
-    visited.add(block);
-
-    if (getBlockType(block) != type) {
-      return;
-    }
-    blocks.add(block);
-    if (blocks.length >= 20) {
-      return;
-    }
-
-    floodFill(block.blockRight, type, blocks, visited);
-    floodFill(block.blockLeft, type, blocks, visited);
-    floodFill(block.blockAbove, type, blocks, visited);
-    floodFill(block.blockBelow, type, blocks, visited);
   }
 }

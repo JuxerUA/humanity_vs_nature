@@ -23,7 +23,7 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
 
   double currentBiggestCO2UnitVolume = GasUnit.defaultVolume;
   double currentBiggestCH4UnitVolume = GasUnit.defaultVolume;
-  double maxScreenLengthForDistribution = 0; //todo
+  double maxScreenLengthForDistribution = 0;
   double convertCH4toCO2Timer = 0;
 
   double totalCO2created = 0;
@@ -155,31 +155,6 @@ class GasModule extends Component with HasGameRef<SimulationGame> {
           dt;
     }
   }
-
-  // void gasDistribution(List<GasUnit> units, double biggestVolume, double dt) {
-  //   final unitsLength = units.length;
-  //   final unitArea = game.worldSize.x * game.worldSize.y / unitsLength;
-  //   final unitSide = sqrt(unitArea);
-  //   final maxLength2 = unitSide * unitSide;
-  //
-  //   for (var i = 0; i < unitsLength; i++) {
-  //     final unitI = units[i];
-  //     final resultVector = Vector2.zero();
-  //     for (var j = i + 1; j < unitsLength; j++) {
-  //       final unitJ = units[j];
-  //       if ((unitJ.position.x - unitI.position.x).abs() < unitSide &&
-  //           (unitJ.position.y - unitI.position.y).abs() < unitSide) {
-  //         final direction = unitJ.position - unitI.position;
-  //         final length2 = direction.length2;
-  //         resultVector.addScaled(direction, maxLength2 / length2);
-  //       }
-  //     }
-  //     // final scaledVector = resultVector.scaled(1 / unitI.volume * dt * 0.0000001);
-  //     // print('');
-  //     // unitI.velocity += resultVector.scaled(1 / unitI.volume * dt * 0.0000001)
-  //     //   ..clampLength(1, 20);
-  //   }
-  // }
 
   void addCO2(
     Vector2 position, {
