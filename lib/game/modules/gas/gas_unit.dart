@@ -55,7 +55,7 @@ class GasUnit {
 
     if (position.y < topSide) {
       velocity.y += (topSide - position.y) / minHalfScreen * dt;
-    } else if (position.x > bottomSide) {
+    } else if (position.y > bottomSide) {
       velocity.y += (bottomSide - position.y) / minHalfScreen * dt;
     }
   }
