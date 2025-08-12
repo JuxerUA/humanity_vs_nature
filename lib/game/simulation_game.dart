@@ -8,6 +8,7 @@ import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/math.dart';
 import 'package:flutter/material.dart';
+import 'package:humanity_vs_nature/game/audio/audio_manager.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/modules/bulldozer/bulldozer_module.dart';
 import 'package:humanity_vs_nature/game/modules/city/city_module.dart';
@@ -65,6 +66,9 @@ class SimulationGame extends FlameGame
   final ValueNotifier<int> countdownToLoss = ValueNotifier(0);
 
   double timerToLoss = timeToStopCountdown;
+
+  /// Centralised audio controller used by modules to play sound effects.
+  late final AudioManager audio = AudioManager(this);
 
   @override
   FutureOr<void> onLoad() async {
