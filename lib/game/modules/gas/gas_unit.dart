@@ -11,6 +11,7 @@ class GasUnit {
   }
 
   static const defaultVolume = 1.0;
+  static const _visualScale = 1.5;
 
   GasType type;
   Vector2 position;
@@ -65,5 +66,5 @@ class GasUnit {
     _updateRadius();
   }
 
-  void _updateRadius() => _radius = sqrt(_volume / pi);
+  void _updateRadius() => _radius = sqrt(_volume / pi) * _visualScale;
 }
