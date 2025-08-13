@@ -1,4 +1,4 @@
-# Humanity VS Nature
+# Keep Growing
 An arcade game where you plant trees to fight global warming and restore wildlife.
 
 You can download the APK (Android build) for the latest version of the game from this Google Drive link:

@@ -25,8 +25,8 @@
   "methaneCh4": "Methane (CH₄)",
   "disasters": "Natural disasters",
   "playAgain": "Play Again!",
-  "ohNonlooksLikeThisPlanetIsDoomedWellAtLeast": "Oh, no! Looks like this planet is doomed 😟\n\nWell, at least it's only a game 😅 Maybe there's another way to make things right.\n\nGood luck!",
-  "congratulationsntheGeneralLevelOfAwarenessAmongCitizensHasReachedA": "Congratulations! 😁\n\nThe general level of awareness among citizens has reached the point of no return. Global warming is no longer a threat to us! We can breathe again 😅\n\nCongratulations again!",
+  "ohNonlooksLikeThisPlanetIsDoomedWellAtLeast": "Oh, no! Looks like this planet is doomed 😟\n\nWell, at least it's only a game 😅 Maybe there's another way to make things right.\n\nGood luck!\n\nKeep Growing 😊",
+  "congratulationsntheGeneralLevelOfAwarenessAmongCitizensHasReachedA": "Congratulations! 😁\n\nThe general level of awareness among citizens has reached the point of no return. Global warming is no longer a threat to us! We can breathe again 😅\n\nCongratulations again!\n\nKeep Growing 😊",
   "citiesLikeToLetOutBulldozersToClearSomeMore": "Cities create bulldozers to make more space for fields and farms. Bulldozers can be useful for you as well because they make space for new trees 😉",
   "agricultureIsTheLeadingCauseOfDeforestationOnThePlanet": "Agriculture is the main cause of deforestation on the planet.",
   "thereIsAnotherImportantGasMethaneOrCh4YouCan": "There's another important gas: methane, or CH₄. You can see some white particles here\u2014that's it! Note that methane, although smaller in volume, affects the Pollution bar 80 times more than carbon dioxide.",
@@ -44,7 +44,7 @@
   "atTheTopOfTheScreenYouCanSeeThe": "At the top of the screen you can see the interface.\n\nThe left blue part contains counters for both gases.\n\nThe green Awareness bar shows the average level of awareness of the townspeople.\n\nThe orange Pollution bar shows the level of gas pollution in the area. If it is filled, the effects of global warming will become irreversible and you will lose.",
   "treesUseCo2BlueParticlesToGrowTheLargestTree": "Trees use CO₂ (blue particles) to grow. A mature tree no longer absorbs the gas, but you can tap on it to make it drop its cones. New trees grow from these cones 😊\n\nThere is also a chance of getting a cone if you tap on the grass.",
   "plantsGainMassMainlyByConvertingCarbonDioxideIntoCarbohydrate": "Plants gain mass mainly by converting carbon dioxide into carbohydrate. Thus, the more actively a plant grows, the more carbon dioxide it absorbs.",
-  "hiTherenweAreFacingTheProblemOfGlobalWarmingYouve": "Hi there!\n\nWe are facing the problem of global warming. You've probably heard about it by now 😲\n\nWell, we need a hero to clean up the mess.\n\nCould that be you? Definitely! Let's get to work.",
+  "hiTherenweAreFacingTheProblemOfGlobalWarmingYouve": "Hi there!\n\nWe are facing the problem of global warming. You've probably heard about it by now 😲\n\nWell, we need a hero to clean up the mess.\n\nCould that be you? Definitely! Let's get to work.\n\nKeep Growing 😊",
   "population": "Population",
   "awarenessIncreased": "Awareness increased!"
 }
