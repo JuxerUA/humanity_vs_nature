@@ -24,7 +24,7 @@ class App extends StatelessWidget {
       valueListenable: currentLocaleNotifier,
       builder: (context, currentLocale, child) {
         return MaterialApp(
-          title: 'Humanity VS Nature',
+          title: 'Keep Growing',
           debugShowCheckedModeBanner: false,
           theme: appTheme,
           routes: {

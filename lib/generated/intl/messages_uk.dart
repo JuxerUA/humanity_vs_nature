@@ -42,7 +42,7 @@ class MessageLookup extends MessageLookupByLibrary {
                 "Міста створюють бульдозери щоб звільнити більше простору для полів і ферм. Бульдозери можуть бути корисними і для вас, адже вони звільнюють простір і під нові дерева також 😉"),
         "congratulationsntheGeneralLevelOfAwarenessAmongCitizensHasReachedA":
             MessageLookupByLibrary.simpleMessage(
-                "Вітання! 😁\n\nЗагальний рівень обізнаності громадян досягнув точки неповернення. Глобальне потепління нам більше не загрожує! Ми знову можемо дихати 😅\n\nЩе раз вітання!"),
+                "Вітання! 😁\n\nЗагальний рівень обізнаності громадян досягнув точки неповернення. Глобальне потепління нам більше не загрожує! Ми знову можемо дихати 😅\n\nЩе раз вітання!\n\nKeep Growing 😊"),
         "disable": MessageLookupByLibrary.simpleMessage("Вимкнути"),
         "disasters": MessageLookupByLibrary.simpleMessage("Стихійні лиха"),
         "doYouKnow": MessageLookupByLibrary.simpleMessage("Чи вам відомо?"),
@@ -56,7 +56,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "gotIt": MessageLookupByLibrary.simpleMessage("Зрозуміло!"),
         "hiTherenweAreFacingTheProblemOfGlobalWarmingYouve":
             MessageLookupByLibrary.simpleMessage(
-                "Привіт! Ми зіткнулися з проблемою глобального потепління. Ви, напевно, вже чули про неї 😲 Що ж, нам потрібен герой, який прибере цей безлад.\n\nМожливо це ви? Безумовно! Тоді до роботи."),
+                "Привіт! Ми зіткнулися з проблемою глобального потепління. Ви, напевно, вже чули про неї 😲 Що ж, нам потрібен герой, який прибере цей безлад.\n\nМожливо це ви? Безумовно! Тоді до роботи.\n\nKeep Growing 😊"),
         "inThisGameTheCitiesAreTheOnlySourceOf":
             MessageLookupByLibrary.simpleMessage(
                 "У цій грі міста є єдиним джерелом вуглекислого газу. Чим більше населення міста і чим нижчий середній рівень обізнаності його мешканців, тим більше вуглекислого газу воно виробляє. Тапаючи на місто, ви можете прискорити підвищення рівня обізнаності городян 🧐\n\nЗростання обізнаності сприяє також зменшенню споживання їжі тваринного походження, що допомагає зменшити кількість метану."),
@@ -71,7 +71,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Більшість їжі, вирощеної на полях, йде на корм сільськогосподарським тваринам. Якби всі люди перейшли на рослинну їжу, ми могли б скоротити кількість полів у багато разів і повернути ці території дикій природі."),
         "ohNonlooksLikeThisPlanetIsDoomedWellAtLeast":
             MessageLookupByLibrary.simpleMessage(
-                "О, ні! Схоже, ця планета приречена 😟\n\nЩож.., принаймні, це лише гра 😅 Можливо, є інший спосіб все виправити.\n\nУспіхів!"),
+                "О, ні! Схоже, ця планета приречена 😟\n\nЩож.., принаймні, це лише гра 😅 Можливо, є інший спосіб все виправити.\n\nУспіхів!\n\nKeep Growing 😊"),
         "plantsGainMassMainlyByConvertingCarbonDioxideIntoCarbohydrate":
             MessageLookupByLibrary.simpleMessage(
                 "Рослини набирають масу в основному за рахунок перетворення вуглекислого газу на вуглеводи. Таким чином, чим активніше рослина росте, тим більше вуглекислого газу вона поглинає."),

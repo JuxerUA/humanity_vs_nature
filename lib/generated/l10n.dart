@@ -300,21 +300,21 @@ class S {
     );
   }
 
-  /// `Oh, no! Looks like this planet is doomed 😟\n\nWell, at least it's only a game 😅 Maybe there's another way to make things right.\n\nGood luck!`
+  /// `Oh, no! Looks like this planet is doomed 😟\n\nWell, at least it's only a game 😅 Maybe there's another way to make things right.\n\nGood luck!\n\nKeep Growing 😊`
   String get ohNonlooksLikeThisPlanetIsDoomedWellAtLeast {
     return Intl.message(
-      'Oh, no! Looks like this planet is doomed 😟\n\nWell, at least it\'s only a game 😅 Maybe there\'s another way to make things right.\n\nGood luck!',
+      'Oh, no! Looks like this planet is doomed 😟\n\nWell, at least it\'s only a game 😅 Maybe there\'s another way to make things right.\n\nGood luck!\n\nKeep Growing 😊',
       name: 'ohNonlooksLikeThisPlanetIsDoomedWellAtLeast',
       desc: '',
       args: [],
     );
   }
 
-  /// `Congratulations! 😁\n\nThe general level of awareness among citizens has reached a level of no return. Global warming is no longer a threat to us! We can breathe again 😅\n\nCongratulations again!`
+  /// `Congratulations! 😁\n\nThe general level of awareness among citizens has reached a level of no return. Global warming is no longer a threat to us! We can breathe again 😅\n\nCongratulations again!\n\nKeep Growing 😊`
   String
       get congratulationsntheGeneralLevelOfAwarenessAmongCitizensHasReachedA {
     return Intl.message(
-      'Congratulations! 😁\n\nThe general level of awareness among citizens has reached a level of no return. Global warming is no longer a threat to us! We can breathe again 😅\n\nCongratulations again!',
+      'Congratulations! 😁\n\nThe general level of awareness among citizens has reached a level of no return. Global warming is no longer a threat to us! We can breathe again 😅\n\nCongratulations again!\n\nKeep Growing 😊',
       name:
           'congratulationsntheGeneralLevelOfAwarenessAmongCitizensHasReachedA',
       desc: '',
@@ -492,10 +492,10 @@ class S {
     );
   }
 
-  /// `Hi there!\n\nWe are facing the problem of global warming. You've probably heard about it by now 😲\n\nWell, we need a hero to clean up the mess.\n\nCould that be you? Definitely! Let's get to work.`
+  /// `Hi there!\n\nWe are facing the problem of global warming. You've probably heard about it by now 😲\n\nWell, we need a hero to clean up the mess.\n\nCould that be you? Definitely! Let's get to work.\n\nKeep Growing 😊`
   String get hiTherenweAreFacingTheProblemOfGlobalWarmingYouve {
     return Intl.message(
-      'Hi there!\n\nWe are facing the problem of global warming. You\'ve probably heard about it by now 😲\n\nWell, we need a hero to clean up the mess.\n\nCould that be you? Definitely! Let\'s get to work.',
+      'Hi there!\n\nWe are facing the problem of global warming. You\'ve probably heard about it by now 😲\n\nWell, we need a hero to clean up the mess.\n\nCould that be you? Definitely! Let\'s get to work.\n\nKeep Growing 😊',
       name: 'hiTherenweAreFacingTheProblemOfGlobalWarmingYouve',
       desc: '',
       args: [],

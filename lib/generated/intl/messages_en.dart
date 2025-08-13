@@ -42,7 +42,7 @@ class MessageLookup extends MessageLookupByLibrary {
                 "Cities create bulldozers to make more space for fields and farms. Bulldozers can be useful for you too, because they make space for new trees too 😉"),
         "congratulationsntheGeneralLevelOfAwarenessAmongCitizensHasReachedA":
             MessageLookupByLibrary.simpleMessage(
-                "Congratulations! 😁\n\nThe general level of awareness among citizens has reached a level of no return. Global warming is no longer a threat to us! We can breathe again 😅\n\nCongratulations again!"),
+                "Congratulations! 😁\n\nThe general level of awareness among citizens has reached a level of no return. Global warming is no longer a threat to us! We can breathe again 😅\n\nCongratulations again!\n\nKeep Growing 😊"),
         "disable": MessageLookupByLibrary.simpleMessage("Disable"),
         "disasters": MessageLookupByLibrary.simpleMessage("Natural disasters"),
         "doYouKnow": MessageLookupByLibrary.simpleMessage("Do you know?"),
@@ -56,7 +56,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "gotIt": MessageLookupByLibrary.simpleMessage("Got It!"),
         "hiTherenweAreFacingTheProblemOfGlobalWarmingYouve":
             MessageLookupByLibrary.simpleMessage(
-                "Hi there!\n\nWe are facing the problem of global warming. You\'ve probably heard about it by now 😲\n\nWell, we need a hero to clean up the mess.\n\nCould that be you? Definitely! Let\'s get to work."),
+                "Hi there!\n\nWe are facing the problem of global warming. You\'ve probably heard about it by now 😲\n\nWell, we need a hero to clean up the mess.\n\nCould that be you? Definitely! Let\'s get to work.\n\nKeep Growing 😊"),
         "inThisGameTheCitiesAreTheOnlySourceOf":
             MessageLookupByLibrary.simpleMessage(
                 "In this game, the cities are the only source of carbon dioxide. The larger the population of the city and the lower the average level of awareness of the city dwellers, the more carbon dioxide it creates. By tapping on the town you can hasten the awareness of the townspeople 🧐\n\nAs awareness increases, citizens also consume less animal-based foods, which helps reduce the amount of methane."),
@@ -71,7 +71,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Most of the food grown in the fields is used to feed farm animals. If all people switched to a plant-based diet, we could reduce the number of fields by many times and return these areas to the wild."),
         "ohNonlooksLikeThisPlanetIsDoomedWellAtLeast":
             MessageLookupByLibrary.simpleMessage(
-                "Oh, no! Looks like this planet is doomed 😟\n\nWell, at least it\'s only a game 😅 Maybe there\'s another way to make things right.\n\nGood luck!"),
+                "Oh, no! Looks like this planet is doomed 😟\n\nWell, at least it\'s only a game 😅 Maybe there\'s another way to make things right.\n\nGood luck!\n\nKeep Growing 😊"),
         "plantsGainMassMainlyByConvertingCarbonDioxideIntoCarbohydrate":
             MessageLookupByLibrary.simpleMessage(
                 "Plants gain mass mainly by converting carbon dioxide into carbohydrate. Thus, the more active a plant grows, the more carbon dioxide it absorbs."),
