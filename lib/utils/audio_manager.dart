@@ -43,7 +43,7 @@ class AudioManager {
   /// Plays a single sound effect located at [fileName]. The [position] decides
   /// how loud the sound should be depending on its distance to the screen
   /// centre. Optional [baseVolume] can be used to further tune the volume.
-  static Future<void> playOnce(String fileName, Vector2 position,
+  static Future<void> play(String fileName, Vector2 position,
       {double baseVolume = 1}) async {
     final volume = _volumeFor(position) * baseVolume;
     await FlameAudio.play(fileName, volume: volume);

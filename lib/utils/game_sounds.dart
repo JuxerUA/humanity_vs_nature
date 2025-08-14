@@ -22,6 +22,21 @@ class GameSounds {
     ]);
   }
 
-  static String rustlingGrass() => _rustlingGrassAssets.random();
-  static String bulldozer() => _bulldozerAssets.random();
+  static String buttonTapped() => _rustlingGrassAssets.random();
+  static String tutorialShown() => _rustlingGrassAssets.random();
+  static String grassTapped() => _rustlingGrassAssets.random();
+  static String coneSpawned() => _rustlingGrassAssets.random();
+  static String treeTapped() => _rustlingGrassAssets.random();
+  static String treeSpawned() => _rustlingGrassAssets.random();
+  static String treeGrown() => _rustlingGrassAssets.random();
+  static String treeDestroyed() => _rustlingGrassAssets.random();
+  static String fieldSpawned() => _rustlingGrassAssets.random();
+  static String cityTapped() => _rustlingGrassAssets.random();
+  static String farmSpawned() => _rustlingGrassAssets.random();
+  static String farmTapped() => _rustlingGrassAssets.random();
+  static String farmDestroyed() => _rustlingGrassAssets.random();
+  static String bulldozerSpawned() => _bulldozerAssets.random();
+  static String bulldozerMoving() => _bulldozerAssets.random();
+  static String bulldozerTapped() => _bulldozerAssets.random();
+  static String bulldozerDestroyed() => _bulldozerAssets.random();
 }

@@ -41,8 +41,8 @@ class PlayingField extends RectangleComponent
     if (game.matrix.getBlockTypeAtPosition(tapPosition) == BlockType.tree) {
       game.treeModule.expandForest(tapPosition);
     } else {
-      AudioManager.playOnce(
-        GameSounds.rustlingGrass(),
+      AudioManager.play(
+        GameSounds.grassTapped(),
         tapPosition,
       );
       _timeForSpawnTree /= 2;
