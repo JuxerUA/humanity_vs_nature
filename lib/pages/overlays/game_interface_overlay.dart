@@ -4,6 +4,7 @@ import 'package:humanity_vs_nature/game/modules/tutorial/base_tutorial.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/pages/overlays/pause_menu_overlay.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class GameInterfaceOverlay extends StatelessWidget {
   const GameInterfaceOverlay({
@@ -198,6 +199,9 @@ class GameInterfaceOverlay extends StatelessWidget {
   }
 
   void _onPauseTap() {
+    AudioManager.play(
+      GameSounds.buttonTapped(),
+    );
     game.paused = true;
     game.overlays.add(PauseMenuOverlay.overlayName);
   }

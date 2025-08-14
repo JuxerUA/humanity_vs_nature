@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/game/modules/tree/tree_component.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
-import 'package:humanity_vs_nature/utils/audio_manager.dart';
 import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class PlayingField extends RectangleComponent
@@ -43,7 +42,7 @@ class PlayingField extends RectangleComponent
     } else {
       AudioManager.play(
         GameSounds.grassTapped(),
-        tapPosition,
+        position: tapPosition,
       );
       _timeForSpawnTree /= 2;
       _preferredPositionForSpawnTree = tapPosition;

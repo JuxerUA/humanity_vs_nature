@@ -24,7 +24,6 @@ import 'package:humanity_vs_nature/generated/l10n.dart';
 import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/lost_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/win_overlay.dart';
-import 'package:humanity_vs_nature/utils/audio_manager.dart';
 import 'package:humanity_vs_nature/utils/game_sounds.dart';
 import 'package:humanity_vs_nature/utils/game_sprites.dart';
 

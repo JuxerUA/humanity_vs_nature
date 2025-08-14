@@ -1,6 +1,8 @@
 import 'package:flame/extensions.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
-import 'package:humanity_vs_nature/utils/audio_manager.dart';
+import 'audio_manager.dart';
+
+export 'audio_manager.dart';
 
 class GameSounds {
   GameSounds._();

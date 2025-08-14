@@ -5,6 +5,7 @@ import 'package:humanity_vs_nature/pages/main_menu_page.dart';
 import 'package:humanity_vs_nature/pages/overlays/tutorials_list_overlay.dart';
 import 'package:humanity_vs_nature/widgets/pause_background.dart';
 import 'package:humanity_vs_nature/widgets/pretty_menu_line.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class PauseMenuOverlay extends StatelessWidget {
   const PauseMenuOverlay({
@@ -36,8 +37,12 @@ class PauseMenuOverlay extends StatelessWidget {
             ),
             const SizedBox(height: 80),
             ElevatedButton(
-              onPressed: () =>
-                  context.pushNamedAndRemoveAll(MainMenuPage.routeName),
+              onPressed: () {
+                AudioManager.play(
+                  GameSounds.buttonTapped(),
+                );
+                context.pushNamedAndRemoveAll(MainMenuPage.routeName);
+              },
               child: Text(context.strings.mainMenu),
             ),
           ],
@@ -47,11 +52,17 @@ class PauseMenuOverlay extends StatelessWidget {
   }
 
   void _onResumeTap() {
+    AudioManager.play(
+      GameSounds.buttonTapped(),
+    );
     game.paused = false;
     game.overlays.remove(overlayName);
   }
 
   void _onTutorialsTap() {
+    AudioManager.play(
+      GameSounds.buttonTapped(),
+    );
     game.overlays.remove(overlayName);
     game.overlays.add(TutorialsListOverlay.overlayName);
   }

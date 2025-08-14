@@ -4,6 +4,7 @@ import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/game/modules/farm/farm_component.dart';
 import 'package:humanity_vs_nature/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class FarmModule extends Component with HasGameRef<SimulationGame> {
   final List<FarmComponent> farms = [];
@@ -34,11 +35,19 @@ class FarmModule extends Component with HasGameRef<SimulationGame> {
     add(farm);
     farm.baseField = game.fieldModule.addFirstFieldForFarm(farm);
     game.fieldModule.removeAllOtherFieldsInTheFieldArea(farm.baseField);
+    AudioManager.play(
+      GameSounds.farmSpawned(),
+      position: position,
+    );
     return farm;
     //TODO remove all trees too
   }
 
   void removeFarm(FarmComponent farm) {
+    AudioManager.play(
+      GameSounds.farmDestroyed(),
+      position: farm.position,
+    );
     remove(farm);
     farms.remove(farm);
     farm.owner.farms.remove(farm);

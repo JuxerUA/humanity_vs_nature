@@ -15,6 +15,7 @@ import 'package:humanity_vs_nature/game/modules/farm/farm_expand_result.dart';
 import 'package:humanity_vs_nature/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/base_tutorial.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 import 'package:humanity_vs_nature/utils/game_sprites.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
 
@@ -145,6 +146,10 @@ class CityComponent extends SpriteComponent
   @override
   void onTapUp(TapUpEvent event) {
     super.onTapUp(event);
+    AudioManager.play(
+      GameSounds.cityTapped(),
+      position: event.canvasPosition,
+    );
     awareness += 0.001;
     if (awareness > 1) awareness = 1;
     textAwarenessValue.text = '${(awareness * 100).round()}';

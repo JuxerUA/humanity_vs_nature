@@ -6,6 +6,7 @@ import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/game/modules/tree/tree_component.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class TreeModule extends Component with HasGameRef<SimulationGame> {
   final List<TreeComponent> trees = [];
@@ -65,9 +66,17 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
     add(tree);
     game.matrix.markBlocksForSpot(tree.spot, BlockType.tree);
     updateTopmostTree(tree);
+    AudioManager.play(
+      isMature ? GameSounds.treeSpawned() : GameSounds.coneSpawned(),
+      position: position,
+    );
   }
 
   void removeTree(TreeComponent tree) {
+    AudioManager.play(
+      GameSounds.treeDestroyed(),
+      position: tree.position,
+    );
     remove(tree);
     trees.remove(tree);
     game.matrix.markBlocksForSpot(tree.spot, BlockType.empty);
