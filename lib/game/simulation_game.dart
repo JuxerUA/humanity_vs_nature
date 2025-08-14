@@ -20,13 +20,13 @@ import 'package:humanity_vs_nature/game/modules/matrix/blocks_matrix.dart';
 import 'package:humanity_vs_nature/game/modules/tree/tree_module.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorial_module.dart';
 import 'package:humanity_vs_nature/game/playing_field.dart';
-import 'package:humanity_vs_nature/generated/assets.dart';
 import 'package:humanity_vs_nature/generated/l10n.dart';
 import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/lost_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/win_overlay.dart';
 import 'package:humanity_vs_nature/utils/audio_manager.dart';
 import 'package:humanity_vs_nature/utils/game_sprites.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class SimulationGame extends FlameGame
     with HasCollisionDetection, TapCallbacks, DragCallbacks, ScaleDetector {
@@ -65,13 +65,7 @@ class SimulationGame extends FlameGame
     await Future.delayed(const Duration(seconds: 1));
 
     AudioManager.initialize(this);
-    await AudioManager.preload([
-      Assets.soundsBulldozer,
-      Assets.soundsRustlingGrass1,
-      Assets.soundsRustlingGrass2,
-      Assets.soundsRustlingGrass3,
-    ]);
-
+    await GameSounds.load();
     await GameSprites.load();
 
     matrix = BlocksMatrix(worldSize);
