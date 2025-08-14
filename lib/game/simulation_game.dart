@@ -26,7 +26,7 @@ import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/lost_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/win_overlay.dart';
 import 'package:humanity_vs_nature/utils/audio_manager.dart';
-import 'package:humanity_vs_nature/utils/sprite_utils.dart';
+import 'package:humanity_vs_nature/utils/game_sprites.dart';
 
 class SimulationGame extends FlameGame
     with HasCollisionDetection, TapCallbacks, DragCallbacks, ScaleDetector {
@@ -40,13 +40,6 @@ class SimulationGame extends FlameGame
 
   late final S strings;
 
-  late final Sprite spriteCone;
-  late final Sprite spriteYoungTree;
-  late final Sprite spriteMatureTree;
-  late final Sprite spriteFarm;
-  late final Sprite spriteCity;
-  late final Sprite spriteBulldozer1;
-  late final Sprite spriteBulldozer2;
 
   final playingField = PlayingField();
   final tutorial = TutorialModule();
@@ -79,13 +72,7 @@ class SimulationGame extends FlameGame
       Assets.soundsRustlingGrass3,
     ]);
 
-    spriteCone = await getSpriteFromAsset(Assets.spritesCone);
-    spriteMatureTree = await getSpriteFromAsset(Assets.spritesMatureTree);
-    spriteYoungTree = await getSpriteFromAsset(Assets.spritesYoungTree);
-    spriteFarm = await getSpriteFromAsset(Assets.spritesFarm);
-    spriteCity = await getSpriteFromAsset(Assets.spritesCity);
-    spriteBulldozer1 = await getSpriteFromAsset(Assets.spritesBulldozer1);
-    spriteBulldozer2 = await getSpriteFromAsset(Assets.spritesBulldozer2);
+    await GameSprites.load();
 
     matrix = BlocksMatrix(worldSize);
 

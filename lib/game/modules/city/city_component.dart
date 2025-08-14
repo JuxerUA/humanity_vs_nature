@@ -16,6 +16,7 @@ import 'package:humanity_vs_nature/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/base_tutorial.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
+import 'package:humanity_vs_nature/utils/game_sprites.dart';
 
 class CityComponent extends SpriteComponent
     with TapCallbacks, HasGameRef<SimulationGame>, AnimationOnTap, BlinkEffect {
@@ -70,7 +71,7 @@ class CityComponent extends SpriteComponent
 
   @override
   FutureOr<void> onLoad() async {
-    sprite = game.spriteCity;
+    sprite = GameSprites.city;
     anchor = Anchor.center;
     size *= 0.5;
 
