@@ -29,6 +29,7 @@ class TutorialsListOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = context.strings;
     return PauseBackground(
       child: PrettyMenuLine(
         color: Colors.black54,
@@ -38,7 +39,7 @@ class TutorialsListOverlay extends StatelessWidget {
             const SizedBox(height: 30),
             Center(
               child: Text(
-                context.strings.tutorial,
+                strings.tutorial,
                 style: Styles.white20,
               ),
             ),
@@ -47,79 +48,37 @@ class TutorialsListOverlay extends StatelessWidget {
             Expanded(
               child: ListView(
                 children: [
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(context.strings.welcome, style: Styles.white16),
-                    onTap: () => _popAndShowTutorial(WelcomeTutorial(game)),
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title:
-                        Text(context.strings.interface, style: Styles.white16),
-                    onTap: () => _popAndShowTutorial(InterfaceTutorial(game)),
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title:
-                        Text(context.strings.gameGoal, style: Styles.white16),
-                    onTap: () => _popAndShowTutorial(GoalTutorial(game)),
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(context.strings.trees, style: Styles.white16),
-                    onTap: () => _popAndShowTutorial(TreesTutorial(game)),
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title:
-                        Text(context.strings.bulldozers, style: Styles.white16),
-                    onTap: () => _popAndShowTutorial(BulldozerTutorial(game)),
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(context.strings.cities, style: Styles.white16),
-                    onTap: () => _popAndShowTutorial(CityTutorial(game)),
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(context.strings.farms, style: Styles.white16),
-                    onTap: () => _popAndShowTutorial(FarmTutorial(game)),
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(context.strings.fields, style: Styles.white16),
-                    onTap: () => _popAndShowTutorial(FieldTutorial(game)),
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(context.strings.carbonDioxideCo2,
-                        style: Styles.white16),
-                    onTap: () => _popAndShowTutorial(CO2Tutorial(game)),
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title:
-                        Text(context.strings.methaneCh4, style: Styles.white16),
-                    onTap: () => _popAndShowTutorial(CH4Tutorial(game)),
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title:
-                        Text(context.strings.disasters, style: Styles.white16),
-                    onTap: () => _popAndShowTutorial(DisastersTutorial(game)),
-                  ),
+                  _makeListTile(strings.welcome, WelcomeTutorial(game)),
+                  _makeListTile(strings.interface, InterfaceTutorial(game)),
+                  _makeListTile(strings.gameGoal, GoalTutorial(game)),
+                  _makeListTile(strings.trees, TreesTutorial(game)),
+                  _makeListTile(strings.bulldozers, BulldozerTutorial(game)),
+                  _makeListTile(strings.cities, CityTutorial(game)),
+                  _makeListTile(strings.farms, FarmTutorial(game)),
+                  _makeListTile(strings.fields, FieldTutorial(game)),
+                  _makeListTile(strings.carbonDioxideCo2, CO2Tutorial(game)),
+                  _makeListTile(strings.methaneCh4, CH4Tutorial(game)),
+                  _makeListTile(strings.disasters, DisastersTutorial(game)),
                 ],
               ),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: _onResumeTap,
-              child: Text(context.strings.resume),
+              child: Text(strings.resume),
             ),
             const SizedBox(height: 20),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _makeListTile(String title, BaseTutorial tutorial) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(title, style: Styles.white16),
+      onTap: () => _popAndShowTutorial(tutorial),
     );
   }
 

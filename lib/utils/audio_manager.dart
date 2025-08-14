@@ -1,7 +1,5 @@
-import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame_audio/flame_audio.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 /// Handles playing audio effects within the game.
 ///
@@ -11,7 +9,7 @@ import 'package:audioplayers/audioplayers.dart';
 class AudioManager {
   AudioManager(this.game) {
     // All game audio files are expected to live under `assets/sounds/`.
-    FlameAudio.audioCache.prefix = 'assets/sounds/';
+    FlameAudio.audioCache.prefix = '';
   }
 
   final FlameGame game;
@@ -21,7 +19,7 @@ class AudioManager {
   /// Calculates volume factor depending on how close [position] is to the
   /// centre of the screen. Returns a value in the 0-1 range.
   double _volumeFor(Vector2 position) {
-    final cameraCentre = game.camera.position;
+    final cameraCentre = game.camera.viewport.position;
     final maxDistance = game.size.length; // Distance at which volume becomes 0
     final distance = position.distanceTo(cameraCentre);
     final normalized = 1 - distance / maxDistance;

@@ -58,13 +58,12 @@ class _MainMenuPageState extends State<MainMenuPage> {
                     width: 230,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           'KEEP',
                           style: TextStyle(
                             fontFamily: 'ArchivoBlack',
-                            fontSize: 70,
+                            fontSize: 74,
                             height: 0.8,
                             color: Colors.orange,
                             shadows: [Shadow(blurRadius: 10)],
@@ -76,8 +75,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
                           'GROWING',
                           style: TextStyle(
                             fontFamily: 'ArchivoBlack',
-                            fontSize: 50,
-                            height: 0.8,
+                            fontSize: 40,
                             color: Colors.lime,
                             shadows: [Shadow(blurRadius: 10)],
                           ),

@@ -8,7 +8,6 @@ import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/math.dart';
 import 'package:flutter/material.dart';
-import 'package:humanity_vs_nature/game/audio/audio_manager.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/modules/bulldozer/bulldozer_module.dart';
 import 'package:humanity_vs_nature/game/modules/city/city_module.dart';
@@ -26,6 +25,7 @@ import 'package:humanity_vs_nature/generated/l10n.dart';
 import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/you_lost_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/you_win_overlay.dart';
+import 'package:humanity_vs_nature/utils/audio_manager.dart';
 import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
 class SimulationGame extends FlameGame

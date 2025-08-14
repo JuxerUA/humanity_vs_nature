@@ -12,13 +12,13 @@
 .history
 .svn/
 
-# IntelliJ related
+# IntelliJ / IDEA related
 *.iml
 *.ipr
 *.iws
 .idea/
 
-# Flutter/Dart/Pub related
+# Flutter / Dart / Pub related
 **/doc/api/
 .dart_tool/
 .flutter-plugins
@@ -29,6 +29,13 @@
 .lock/
 /build/
 
+# FVM SDK (оставляем только конфиг)
+.fvm/flutter_sdk/
+!.fvm/fvm_config.json
+
+# Generated code
+lib/generated/**
+
 # Web related
 
 # Exceptions to above rules.
@@ -37,7 +44,7 @@
 !android/gradlew.bat
 !android/gradle/wrapper/gradle-wrapper.jar
 
-# iOS
+# iOS / Android fastlane reports
 /ios/fastlane/report.xml
 /ios/Flutter/.last_build_id
 /android/fastlane/report.xml
