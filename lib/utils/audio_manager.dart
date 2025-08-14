@@ -17,7 +17,6 @@ class AudioManager {
   /// Must be called before any sounds are played.
   static void initialize(FlameGame game) {
     _game = game;
-    // All game audio files are expected to live under `assets/sounds/`.
     FlameAudio.audioCache.prefix = '';
   }
 
