@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/extensions/context_extension.dart';
 import 'package:humanity_vs_nature/generated/l10n.dart';
 import 'package:humanity_vs_nature/pages/game_page.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 import 'package:humanity_vs_nature/utils/prefs.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
 import 'package:humanity_vs_nature/widgets/language_selector.dart';
 import 'package:humanity_vs_nature/widgets/pretty_menu_line.dart';
-import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class MainMenuPage extends StatefulWidget {
   const MainMenuPage({

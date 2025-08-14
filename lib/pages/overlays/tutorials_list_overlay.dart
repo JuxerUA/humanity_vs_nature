@@ -13,10 +13,10 @@ import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/trees_tutoria
 import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/welcome_tutorial.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/pages/overlays/tutorial_overlay.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
 import 'package:humanity_vs_nature/widgets/pause_background.dart';
 import 'package:humanity_vs_nature/widgets/pretty_menu_line.dart';
-import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class TutorialsListOverlay extends StatelessWidget {
   const TutorialsListOverlay({
@@ -31,7 +31,7 @@ class TutorialsListOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final strings = context.strings;
-    
+
     return PauseBackground(
       child: PrettyMenuLine(
         color: Colors.black54,

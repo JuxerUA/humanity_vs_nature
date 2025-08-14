@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/extensions/context_extension.dart';
 import 'package:humanity_vs_nature/pages/game_page.dart';
 import 'package:humanity_vs_nature/pages/main_menu_page.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
 import 'package:humanity_vs_nature/widgets/pause_background.dart';
 import 'package:humanity_vs_nature/widgets/tutorial_window.dart';
-import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class WinOverlay extends StatelessWidget {
   const WinOverlay({super.key});

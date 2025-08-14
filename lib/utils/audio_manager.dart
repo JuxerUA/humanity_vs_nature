@@ -46,8 +46,7 @@ class AudioManager {
   /// volume.
   static Future<void> play(String fileName,
       {Vector2? position, double baseVolume = 1}) async {
-    final volume =
-        (position != null ? _volumeFor(position) : 1) * baseVolume;
+    final volume = (position != null ? _volumeFor(position) : 1) * baseVolume;
     await FlameAudio.play(fileName, volume: volume);
   }
 

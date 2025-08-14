@@ -3,10 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:humanity_vs_nature/extensions/context_extension.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
 import 'package:humanity_vs_nature/widgets/tutorial_background.dart';
 import 'package:humanity_vs_nature/widgets/tutorial_window.dart';
-import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class TutorialOverlay extends StatelessWidget {
   const TutorialOverlay({

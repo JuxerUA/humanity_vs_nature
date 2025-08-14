@@ -16,8 +16,8 @@ import 'package:humanity_vs_nature/game/modules/tutorial/tutorials/welcome_tutor
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/pages/overlays/tutorial_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/tutorials_list_overlay.dart';
-import 'package:humanity_vs_nature/utils/prefs.dart';
 import 'package:humanity_vs_nature/utils/game_sounds.dart';
+import 'package:humanity_vs_nature/utils/prefs.dart';
 
 class TutorialModule extends Component with HasGameRef<SimulationGame> {
   late final unShownTutorials = <BaseTutorial>[
