@@ -67,12 +67,17 @@ class SimulationGame extends FlameGame
 
   double timerToLoss = timeToStopCountdown;
 
-  /// Centralised audio controller used by modules to play sound effects.
-  late final AudioManager audio = AudioManager(this);
-
   @override
   FutureOr<void> onLoad() async {
     await Future.delayed(const Duration(seconds: 1));
+
+    AudioManager.initialize(this);
+    await AudioManager.preload([
+      Assets.soundsBulldozer,
+      Assets.soundsRustlingGrass1,
+      Assets.soundsRustlingGrass2,
+      Assets.soundsRustlingGrass3,
+    ]);
 
     spriteCone = await getSpriteFromAsset(Assets.spritesCone);
     spriteMatureTree = await getSpriteFromAsset(Assets.spritesMatureTree);

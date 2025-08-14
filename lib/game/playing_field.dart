@@ -8,6 +8,7 @@ import 'package:humanity_vs_nature/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/game/modules/tree/tree_component.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
+import 'package:humanity_vs_nature/utils/audio_manager.dart';
 
 class PlayingField extends RectangleComponent
     with HasGameRef<SimulationGame>, TapCallbacks {
@@ -40,7 +41,14 @@ class PlayingField extends RectangleComponent
     if (game.matrix.getBlockTypeAtPosition(tapPosition) == BlockType.tree) {
       game.treeModule.expandForest(tapPosition);
     } else {
-      game.audio.playOnce(Assets.soundsRustlingGrass1, tapPosition);
+      AudioManager.playRandom(
+        [
+          Assets.soundsRustlingGrass1,
+          Assets.soundsRustlingGrass2,
+          Assets.soundsRustlingGrass3,
+        ],
+        tapPosition,
+      );
       _timeForSpawnTree /= 2;
       _preferredPositionForSpawnTree = tapPosition;
     }
