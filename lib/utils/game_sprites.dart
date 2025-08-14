@@ -13,7 +13,7 @@ class GameSprites {
   static late final Sprite bulldozer1;
   static late final Sprite bulldozer2;
 
-  static Future<void> load() async {
+  static Future<void> preload() async {
     cone = await getSpriteFromAsset(Assets.spritesCone);
     youngTree = await getSpriteFromAsset(Assets.spritesYoungTree);
     matureTree = await getSpriteFromAsset(Assets.spritesMatureTree);

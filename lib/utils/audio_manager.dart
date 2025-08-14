@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame_audio/flame_audio.dart';
 
@@ -14,7 +11,6 @@ class AudioManager {
 
   static FlameGame? _game;
   static final Map<String, AudioPlayer> _loopingPlayers = {};
-  static final _random = Random();
 
   /// Initialises the audio manager with a reference to the [game].
   ///
@@ -52,17 +48,6 @@ class AudioManager {
       {double baseVolume = 1}) async {
     final volume = _volumeFor(position) * baseVolume;
     await FlameAudio.play(fileName, volume: volume);
-  }
-
-  /// Plays a random sound from [fileNames].
-  static Future<void> playRandom(
-    List<String> fileNames,
-    Vector2 position, {
-    double baseVolume = 1,
-  }) async {
-    if (fileNames.isEmpty) return;
-    final choice = fileNames[_random.nextInt(fileNames.length)];
-    await playOnce(choice, position, baseVolume: baseVolume);
   }
 
   /// Starts playing a looping sound. The sound is identified by [key] so that

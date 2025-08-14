@@ -15,8 +15,8 @@ import 'package:humanity_vs_nature/game/modules/farm/farm_expand_result.dart';
 import 'package:humanity_vs_nature/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/game/modules/tutorial/base_tutorial.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
-import 'package:humanity_vs_nature/utils/styles.dart';
 import 'package:humanity_vs_nature/utils/game_sprites.dart';
+import 'package:humanity_vs_nature/utils/styles.dart';
 
 class CityComponent extends SpriteComponent
     with TapCallbacks, HasGameRef<SimulationGame>, AnimationOnTap, BlinkEffect {

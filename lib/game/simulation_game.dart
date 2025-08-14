@@ -25,8 +25,8 @@ import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/lost_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/win_overlay.dart';
 import 'package:humanity_vs_nature/utils/audio_manager.dart';
-import 'package:humanity_vs_nature/utils/game_sprites.dart';
 import 'package:humanity_vs_nature/utils/game_sounds.dart';
+import 'package:humanity_vs_nature/utils/game_sprites.dart';
 
 class SimulationGame extends FlameGame
     with HasCollisionDetection, TapCallbacks, DragCallbacks, ScaleDetector {
@@ -39,7 +39,6 @@ class SimulationGame extends FlameGame
   Vector2 worldSize = Vector2(600, 600);
 
   late final S strings;
-
 
   final playingField = PlayingField();
   final tutorial = TutorialModule();
@@ -65,8 +64,8 @@ class SimulationGame extends FlameGame
     await Future.delayed(const Duration(seconds: 1));
 
     AudioManager.initialize(this);
-    await GameSounds.load();
-    await GameSprites.load();
+    await GameSounds.preload();
+    await GameSprites.preload();
 
     matrix = BlocksMatrix(worldSize);
 
