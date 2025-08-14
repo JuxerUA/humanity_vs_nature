@@ -24,7 +24,6 @@ import 'package:humanity_vs_nature/generated/l10n.dart';
 import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/lost_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/win_overlay.dart';
-import 'package:humanity_vs_nature/utils/game_sounds.dart';
 import 'package:humanity_vs_nature/utils/game_sprites.dart';
 
 class SimulationGame extends FlameGame
@@ -63,7 +62,6 @@ class SimulationGame extends FlameGame
     await Future.delayed(const Duration(seconds: 1));
 
     AudioManager.initialize(this);
-    await GameSounds.preload();
     await GameSprites.preload();
 
     matrix = BlocksMatrix(worldSize);

@@ -3,12 +3,18 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:humanity_vs_nature/generated/l10n.dart';
 import 'package:humanity_vs_nature/pages/game_page.dart';
 import 'package:humanity_vs_nature/pages/main_menu_page.dart';
+import 'package:flame_audio/flame_audio.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 import 'package:humanity_vs_nature/utils/prefs.dart';
 import 'package:humanity_vs_nature/utils/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Prefs.init();
+  FlameAudio.audioCache.prefix = '';
+  await Future.wait([
+    Prefs.init(),
+    GameSounds.preload(),
+  ]);
 
   runApp(App());
 }
