@@ -10,6 +10,7 @@ import 'package:humanity_vs_nature/game/mixins/vehicle.dart';
 import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/game/modules/tree/tree_component.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
+import 'package:humanity_vs_nature/utils/game_sprites.dart';
 
 class BulldozerComponent extends SpriteComponent
     with
@@ -38,7 +39,7 @@ class BulldozerComponent extends SpriteComponent
 
   @override
   FutureOr<void> onLoad() async {
-    sprite = game.spriteBulldozer1;
+    sprite = GameSprites.bulldozer1;
     size *= 0.5;
     anchor = Anchor.center;
     add(CircleHitbox(radius: radius));

@@ -8,6 +8,7 @@ import 'package:humanity_vs_nature/game/mixins/blink_mixin.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
+import 'package:humanity_vs_nature/utils/game_sprites.dart';
 
 class TreeComponent extends SpriteComponent
     with TapCallbacks, HasGameRef<SimulationGame>, BlinkEffect {
@@ -75,14 +76,14 @@ class TreeComponent extends SpriteComponent
     needCO2toNextPhase = _phase.volumeCO2toNextPhase;
     switch (_phase) {
       case _TreePhase.cone:
-        sprite = game.spriteCone;
-        size = game.spriteCone.originalSize * 0.2;
+        sprite = GameSprites.cone;
+        size = GameSprites.cone.originalSize * 0.2;
       case _TreePhase.young:
-        sprite = game.spriteYoungTree;
-        size = game.spriteYoungTree.originalSize * 0.5;
+        sprite = GameSprites.youngTree;
+        size = GameSprites.youngTree.originalSize * 0.5;
       case _TreePhase.mature:
-        sprite = game.spriteMatureTree;
-        size = game.spriteMatureTree.originalSize * 0.5;
+        sprite = GameSprites.matureTree;
+        size = GameSprites.matureTree.originalSize * 0.5;
     }
   }
 

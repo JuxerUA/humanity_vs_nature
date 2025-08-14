@@ -9,6 +9,7 @@ import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/game/modules/farm/farm_expand_result.dart';
 import 'package:humanity_vs_nature/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
+import 'package:humanity_vs_nature/utils/game_sprites.dart';
 
 class FarmComponent extends SpriteComponent
     with TapCallbacks, HasGameRef<SimulationGame>, AnimationOnTap, BlinkEffect {
@@ -37,7 +38,7 @@ class FarmComponent extends SpriteComponent
 
   @override
   FutureOr<void> onLoad() async {
-    sprite = game.spriteFarm;
+    sprite = GameSprites.farm;
     anchor = Anchor.bottomCenter;
     size *= 0.5;
     return super.onLoad();
