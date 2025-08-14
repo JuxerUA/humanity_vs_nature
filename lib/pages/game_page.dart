@@ -4,11 +4,11 @@ import 'package:humanity_vs_nature/game/modules/tutorial/base_tutorial.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/pages/loading_page.dart';
 import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
+import 'package:humanity_vs_nature/pages/overlays/lost_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/pause_menu_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/tutorial_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/tutorials_list_overlay.dart';
-import 'package:humanity_vs_nature/pages/overlays/you_lost_overlay.dart';
-import 'package:humanity_vs_nature/pages/overlays/you_win_overlay.dart';
+import 'package:humanity_vs_nature/pages/overlays/win_overlay.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -47,10 +47,9 @@ class _GamePageState extends State<GamePage> {
                       TutorialOverlay(game: _game),
                   TutorialsListOverlay.overlayName: (context, game) =>
                       TutorialsListOverlay(game: _game),
-                  YouWinOverlay.overlayName: (context, game) =>
-                      const YouWinOverlay(),
-                  YouLostOverlay.overlayName: (context, game) =>
-                      const YouLostOverlay(),
+                  WinOverlay.overlayName: (context, game) => const WinOverlay(),
+                  LostOverlay.overlayName: (context, game) =>
+                      const LostOverlay(),
                 },
               ),
             ),

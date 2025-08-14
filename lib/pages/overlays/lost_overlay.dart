@@ -6,8 +6,8 @@ import 'package:humanity_vs_nature/utils/styles.dart';
 import 'package:humanity_vs_nature/widgets/pause_background.dart';
 import 'package:humanity_vs_nature/widgets/tutorial_window.dart';
 
-class YouLostOverlay extends StatelessWidget {
-  const YouLostOverlay({super.key});
+class LostOverlay extends StatelessWidget {
+  const LostOverlay({super.key});
 
   static const overlayName = 'you_lost';
 

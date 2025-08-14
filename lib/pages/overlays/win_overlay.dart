@@ -6,8 +6,8 @@ import 'package:humanity_vs_nature/utils/styles.dart';
 import 'package:humanity_vs_nature/widgets/pause_background.dart';
 import 'package:humanity_vs_nature/widgets/tutorial_window.dart';
 
-class YouWinOverlay extends StatelessWidget {
-  const YouWinOverlay({super.key});
+class WinOverlay extends StatelessWidget {
+  const WinOverlay({super.key});
 
   static const overlayName = 'you_win';
 

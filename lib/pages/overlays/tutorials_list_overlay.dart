@@ -30,6 +30,7 @@ class TutorialsListOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final strings = context.strings;
+    
     return PauseBackground(
       child: PrettyMenuLine(
         color: Colors.black54,

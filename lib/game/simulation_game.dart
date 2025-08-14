@@ -23,8 +23,8 @@ import 'package:humanity_vs_nature/game/playing_field.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
 import 'package:humanity_vs_nature/generated/l10n.dart';
 import 'package:humanity_vs_nature/pages/overlays/game_interface_overlay.dart';
-import 'package:humanity_vs_nature/pages/overlays/you_lost_overlay.dart';
-import 'package:humanity_vs_nature/pages/overlays/you_win_overlay.dart';
+import 'package:humanity_vs_nature/pages/overlays/lost_overlay.dart';
+import 'package:humanity_vs_nature/pages/overlays/win_overlay.dart';
 import 'package:humanity_vs_nature/utils/audio_manager.dart';
 import 'package:humanity_vs_nature/utils/sprite_utils.dart';
 
@@ -126,13 +126,13 @@ class SimulationGame extends FlameGame
     /// Check win/lose conditions
     if (awarenessPercentage.value >= 100) {
       paused = true;
-      overlays.add(YouWinOverlay.overlayName);
+      overlays.add(WinOverlay.overlayName);
     } else {
       if (pollutionPercentage.value >= 100) {
         timerToLoss -= dt;
         if (timerToLoss <= 0) {
           paused = true;
-          overlays.add(YouLostOverlay.overlayName);
+          overlays.add(LostOverlay.overlayName);
         }
       } else {
         timerToLoss = timeToStopCountdown;
