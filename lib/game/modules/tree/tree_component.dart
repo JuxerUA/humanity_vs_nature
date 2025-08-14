@@ -8,6 +8,7 @@ import 'package:humanity_vs_nature/game/mixins/blink_mixin.dart';
 import 'package:humanity_vs_nature/game/models/spot.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/generated/assets.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 import 'package:humanity_vs_nature/utils/game_sprites.dart';
 
 class TreeComponent extends SpriteComponent
@@ -59,8 +60,16 @@ class TreeComponent extends SpriteComponent
         // Grow up to next phase
         if (_phase == _TreePhase.cone) {
           _phase = _TreePhase.young;
+          AudioManager.play(
+            GameSounds.treeGrown(),
+            position: position,
+          );
         } else {
           _phase = _TreePhase.mature;
+          AudioManager.play(
+            GameSounds.treeGrown(),
+            position: position,
+          );
           final saplingCount = randomFallback.nextInt(3);
           for (var i = 0; i < saplingCount; i++) {
             game.treeModule.expandForest(position);
@@ -90,6 +99,10 @@ class TreeComponent extends SpriteComponent
   @override
   void onTapDown(TapDownEvent event) {
     super.onTapDown(event);
+    AudioManager.play(
+      GameSounds.treeTapped(),
+      position: event.canvasPosition,
+    );
     game.treeModule.expandForest(position);
   }
 

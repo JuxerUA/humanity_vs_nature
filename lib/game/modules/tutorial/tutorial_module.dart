@@ -17,6 +17,7 @@ import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/pages/overlays/tutorial_overlay.dart';
 import 'package:humanity_vs_nature/pages/overlays/tutorials_list_overlay.dart';
 import 'package:humanity_vs_nature/utils/prefs.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class TutorialModule extends Component with HasGameRef<SimulationGame> {
   late final unShownTutorials = <BaseTutorial>[
@@ -71,6 +72,10 @@ class TutorialModule extends Component with HasGameRef<SimulationGame> {
 
   void showTutorial(BaseTutorial tutorial) {
     showingTutorial = tutorial;
+    AudioManager.play(
+      GameSounds.tutorialShown(),
+      position: game.camera.viewport.position,
+    );
     game
       ..overlays.add(TutorialOverlay.overlayName)
       ..setCameraBounds(tutorialBounds: true);

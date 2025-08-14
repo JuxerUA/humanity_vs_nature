@@ -6,6 +6,7 @@ import 'package:humanity_vs_nature/game/simulation_game.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
 import 'package:humanity_vs_nature/widgets/tutorial_background.dart';
 import 'package:humanity_vs_nature/widgets/tutorial_window.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class TutorialOverlay extends StatelessWidget {
   const TutorialOverlay({
@@ -77,5 +78,10 @@ class TutorialOverlay extends StatelessWidget {
     );
   }
 
-  void _onGotItTap() => game.tutorial.closeTutorial();
+  void _onGotItTap() {
+    AudioManager.play(
+      GameSounds.buttonTapped(),
+    );
+    game.tutorial.closeTutorial();
+  }
 }

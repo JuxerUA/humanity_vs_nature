@@ -16,6 +16,7 @@ import 'package:humanity_vs_nature/pages/overlays/tutorial_overlay.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
 import 'package:humanity_vs_nature/widgets/pause_background.dart';
 import 'package:humanity_vs_nature/widgets/pretty_menu_line.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class TutorialsListOverlay extends StatelessWidget {
   const TutorialsListOverlay({
@@ -84,6 +85,9 @@ class TutorialsListOverlay extends StatelessWidget {
   }
 
   void _popAndShowTutorial(BaseTutorial tutorial) {
+    AudioManager.play(
+      GameSounds.buttonTapped(),
+    );
     game.overlays.remove(overlayName);
     game.paused = false;
 
@@ -95,6 +99,9 @@ class TutorialsListOverlay extends StatelessWidget {
   }
 
   void _onResumeTap() {
+    AudioManager.play(
+      GameSounds.buttonTapped(),
+    );
     game.paused = false;
     game.overlays.remove(overlayName);
   }

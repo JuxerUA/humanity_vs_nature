@@ -9,6 +9,7 @@ import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/game/modules/farm/farm_expand_result.dart';
 import 'package:humanity_vs_nature/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 import 'package:humanity_vs_nature/utils/game_sprites.dart';
 
 class FarmComponent extends SpriteComponent
@@ -120,6 +121,10 @@ class FarmComponent extends SpriteComponent
   @override
   void onTapUp(TapUpEvent event) {
     super.onTapUp(event);
+    AudioManager.play(
+      GameSounds.farmTapped(),
+      position: event.canvasPosition,
+    );
     hp -= 1;
     if (hp < 1) {
       game.farmModule.removeFarm(this);

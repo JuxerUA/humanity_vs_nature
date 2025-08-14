@@ -10,6 +10,7 @@ import 'package:humanity_vs_nature/game/mixins/vehicle.dart';
 import 'package:humanity_vs_nature/game/modules/city/city_component.dart';
 import 'package:humanity_vs_nature/game/modules/tree/tree_component.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 import 'package:humanity_vs_nature/utils/game_sprites.dart';
 
 class BulldozerComponent extends SpriteComponent
@@ -77,6 +78,7 @@ class BulldozerComponent extends SpriteComponent
     } else {
       goHome();
     }
+
   }
 
   void goHome() {
@@ -106,6 +108,10 @@ class BulldozerComponent extends SpriteComponent
   @override
   void onTapUp(TapUpEvent event) {
     super.onTapUp(event);
+    AudioManager.play(
+      GameSounds.bulldozerTapped(),
+      position: event.canvasPosition,
+    );
     hp -= 1;
     if (hp < 1) game.bulldozerModule.removeBulldozer(this);
     animateOnTap();

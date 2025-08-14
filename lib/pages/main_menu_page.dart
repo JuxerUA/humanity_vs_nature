@@ -6,6 +6,7 @@ import 'package:humanity_vs_nature/utils/prefs.dart';
 import 'package:humanity_vs_nature/utils/styles.dart';
 import 'package:humanity_vs_nature/widgets/language_selector.dart';
 import 'package:humanity_vs_nature/widgets/pretty_menu_line.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class MainMenuPage extends StatefulWidget {
   const MainMenuPage({
@@ -90,8 +91,12 @@ class _MainMenuPageState extends State<MainMenuPage> {
 
                 /// Start button
                 ElevatedButton(
-                  onPressed: () =>
-                      context.pushNamedAndRemoveAll(GamePage.routeName),
+                  onPressed: () {
+                    AudioManager.play(
+                      GameSounds.buttonTapped(),
+                    );
+                    context.pushNamedAndRemoveAll(GamePage.routeName);
+                  },
                   child: Text(S.current.start),
                 ),
                 const SizedBox(height: 22),
@@ -106,9 +111,14 @@ class _MainMenuPageState extends State<MainMenuPage> {
                 const SizedBox(height: 2),
 
                 ElevatedButton(
-                  onPressed: () => setState(
-                    () => Prefs.tutorialEnabled = !Prefs.tutorialEnabled,
-                  ),
+                  onPressed: () {
+                    AudioManager.play(
+                      GameSounds.buttonTapped(),
+                    );
+                    setState(
+                      () => Prefs.tutorialEnabled = !Prefs.tutorialEnabled,
+                    );
+                  },
                   child: Text(
                     tutorialEnabled
                         ? context.strings.disable

@@ -11,6 +11,7 @@ import 'package:humanity_vs_nature/game/modules/farm/farm_component.dart';
 import 'package:humanity_vs_nature/game/modules/field/field_component.dart';
 import 'package:humanity_vs_nature/game/modules/matrix/block_type.dart';
 import 'package:humanity_vs_nature/game/simulation_game.dart';
+import 'package:humanity_vs_nature/utils/game_sounds.dart';
 
 class FieldModule extends Component with HasGameRef<SimulationGame> {
   static const double maxFieldClearanceTime = 5;
@@ -86,6 +87,10 @@ class FieldModule extends Component with HasGameRef<SimulationGame> {
     fields.add(field);
     add(field);
     game.matrix.markBlocksForField(field);
+    AudioManager.play(
+      GameSounds.fieldSpawned(),
+      position: field.position + field.size / 2,
+    );
     return field;
   }
 
