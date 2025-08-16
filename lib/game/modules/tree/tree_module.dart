@@ -11,16 +11,16 @@ import 'package:humanity_vs_nature/utils/game_sounds.dart';
 class TreeModule extends Component with HasGameRef<SimulationGame> {
   final List<TreeComponent> trees = [];
 
-  TreeComponent? topmostTreeAddedDuringThisUpdate;
+  TreeComponent? _treePendingSorting;
 
   Iterable<Spot> get spots => trees.map((e) => e.spot);
 
   @override
   void update(double dt) {
-    final topmostTree = topmostTreeAddedDuringThisUpdate;
-    if (topmostTree != null) {
-      sortTreesByY(topmostTree);
-      topmostTreeAddedDuringThisUpdate = null;
+    final pendingTree = _treePendingSorting;
+    if (pendingTree != null) {
+      _sortTreesByVerticalPosition(pendingTree);
+      _treePendingSorting = null;
     }
     super.update(dt);
   }
@@ -65,7 +65,7 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
     trees.add(tree);
     add(tree);
     game.matrix.markBlocksForSpot(tree.spot, BlockType.tree);
-    updateTopmostTree(tree);
+    _markTreeForSorting(tree);
     AudioManager.play(
       isMature ? GameSounds.treeSpawned() : GameSounds.coneSpawned(),
       position: position,
@@ -82,18 +82,18 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
     game.matrix.markBlocksForSpot(tree.spot, BlockType.empty);
   }
 
-  void updateTopmostTree(TreeComponent tree) {
-    final topmostTree = topmostTreeAddedDuringThisUpdate;
-    if (topmostTree != null) {
-      if (tree.position.y > topmostTree.position.y) {
-        topmostTreeAddedDuringThisUpdate = tree;
+  void _markTreeForSorting(TreeComponent tree) {
+    final currentTree = _treePendingSorting;
+    if (currentTree != null) {
+      if (tree.position.y > currentTree.position.y) {
+        _treePendingSorting = tree;
       }
     } else {
-      topmostTreeAddedDuringThisUpdate = tree;
+      _treePendingSorting = tree;
     }
   }
 
-  void sortTreesByY(TreeComponent tree) {
+  void _sortTreesByVerticalPosition(TreeComponent tree) {
     trees.sort((a, b) => a.position.y.compareTo(b.position.y));
     final allTreesBelow = trees.where((e) => e.position.y > tree.position.y);
     removeWhere((e) => e is TreeComponent && e.position.y > tree.position.y);
@@ -154,7 +154,7 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
     );
   }
 
-  TreeComponent? findFreeNearestTree(
+  TreeComponent? findNearestFreeTree(
     Vector2 targetPosition, [
     List<TreeComponent>? treeList,
   ]) {
@@ -172,8 +172,8 @@ class TreeModule extends Component with HasGameRef<SimulationGame> {
     return findNearestTree(targetPosition, freeTrees);
   }
 
-  TreeComponent? findFreeMatureNearestTree(Vector2 targetPosition) {
-    return findFreeNearestTree(
+  TreeComponent? findNearestFreeMatureTree(Vector2 targetPosition) {
+    return findNearestFreeTree(
       targetPosition,
       trees.where((tree) => tree.isMature).toList(),
     );

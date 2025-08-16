@@ -30,7 +30,7 @@ class SimulationGame extends FlameGame
     with HasCollisionDetection, TapCallbacks, DragCallbacks, ScaleDetector {
   static const gameBackgroundColor = Colors.lightBlueAccent;
   static const double blockSize = 10;
-  static const double timeToStopCountdown = 30.1;
+  static const double initialLossCountdown = 30.1;
 
   late BlocksMatrix matrix;
 
@@ -55,7 +55,7 @@ class SimulationGame extends FlameGame
   final ValueNotifier<int> awarenessPercentage = ValueNotifier(0);
   final ValueNotifier<int> countdownToLoss = ValueNotifier(0);
 
-  double timerToLoss = timeToStopCountdown;
+  double lossCountdown = initialLossCountdown;
 
   @override
   FutureOr<void> onLoad() async {
@@ -111,15 +111,15 @@ class SimulationGame extends FlameGame
       overlays.add(WinOverlay.overlayName);
     } else {
       if (pollutionPercentage.value >= 100) {
-        timerToLoss -= dt;
-        if (timerToLoss <= 0) {
+        lossCountdown -= dt;
+        if (lossCountdown <= 0) {
           paused = true;
           overlays.add(LostOverlay.overlayName);
         }
       } else {
-        timerToLoss = timeToStopCountdown;
+        lossCountdown = initialLossCountdown;
       }
-      countdownToLoss.value = timerToLoss.ceil();
+      countdownToLoss.value = lossCountdown.ceil();
     }
   }
 

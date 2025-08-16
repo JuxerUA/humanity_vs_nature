@@ -30,8 +30,8 @@ class BulldozerComponent extends SpriteComponent
 
   final CityComponent city;
 
-  double hp = 7;
-  int killCount = 0;
+  double healthPoints = 7;
+  int treesDestroyed = 0;
   TreeComponent? targetTree;
   bool isReturningToBase = false;
   bool isAngry = false;
@@ -70,7 +70,7 @@ class BulldozerComponent extends SpriteComponent
     if (target != null) {
       if (position.distanceTo(target.position) < workingDistance) {
         if (target.doDamage(damagePerSecond * dt)) {
-          if (++killCount >= (isAngry ? killTarget * 2 : killTarget)) goHome();
+          if (++treesDestroyed >= (isAngry ? killTarget * 2 : killTarget)) goHome();
         }
       } else {
         goToPosition(target.position, workingDistance, dt);
@@ -101,7 +101,7 @@ class BulldozerComponent extends SpriteComponent
     } else if (other is BulldozerComponent) {
       final collisionVector = position - other.position;
       position += collisionVector * 0.1;
-      hp -= 0.1;
+      healthPoints -= 0.1;
     }
   }
 
@@ -112,16 +112,16 @@ class BulldozerComponent extends SpriteComponent
       GameSounds.bulldozerTapped(),
       position: event.canvasPosition,
     );
-    hp -= 1;
-    if (hp < 1) game.bulldozerModule.removeBulldozer(this);
+    healthPoints -= 1;
+    if (healthPoints < 1) game.bulldozerModule.removeBulldozer(this);
     animateOnTap();
   }
 
   void _updateTargetTree() {
     if (targetTree == null || targetTree?.isMounted == false) {
       final tree = isAngry
-          ? game.treeModule.findFreeNearestTree(city.position)
-          : game.treeModule.findFreeMatureNearestTree(position);
+          ? game.treeModule.findNearestFreeTree(city.position)
+          : game.treeModule.findNearestFreeMatureTree(position);
       targetTree = tree != targetTree && tree?.isMounted == true ? tree : null;
       state = VehicleState.stop;
     }
