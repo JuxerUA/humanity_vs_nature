@@ -14,8 +14,8 @@ class PlayingField extends RectangleComponent
   static const double maxTreeSpawnTime = 10;
   static const Color grassColor = Colors.lightGreen;
 
-  var _timeForSpawnTree = 0.0;
-  Vector2? _preferredPositionForSpawnTree;
+  var _treeSpawnTimer = 0.0;
+  Vector2? _preferredTreeSpawnPosition;
 
   @override
   FutureOr<void> onLoad() {
@@ -29,7 +29,7 @@ class PlayingField extends RectangleComponent
   @override
   void update(double dt) {
     super.update(dt);
-    _trySpawnTree(dt);
+    _spawnTreeIfReady(dt);
   }
 
   @override
@@ -44,16 +44,16 @@ class PlayingField extends RectangleComponent
         GameSounds.grassTapped(),
         position: tapPosition,
       );
-      _timeForSpawnTree /= 2;
-      _preferredPositionForSpawnTree = tapPosition;
+      _treeSpawnTimer /= 2;
+      _preferredTreeSpawnPosition = tapPosition;
     }
   }
 
-  void _trySpawnTree(double dt) {
-    _timeForSpawnTree -= dt;
-    if (_timeForSpawnTree < 0) {
-      _timeForSpawnTree = randomFallback.nextDouble() * maxTreeSpawnTime;
-      final targetPosition = _preferredPositionForSpawnTree ??
+  void _spawnTreeIfReady(double dt) {
+    _treeSpawnTimer -= dt;
+    if (_treeSpawnTimer < 0) {
+      _treeSpawnTimer = randomFallback.nextDouble() * maxTreeSpawnTime;
+      final targetPosition = _preferredTreeSpawnPosition ??
           Vector2(
             size.x * randomFallback.nextDouble(),
             size.y * randomFallback.nextDouble(),
@@ -66,7 +66,7 @@ class PlayingField extends RectangleComponent
       if (treePosition != null) {
         game.treeModule.addTree(treePosition);
       }
-      _preferredPositionForSpawnTree = null;
+      _preferredTreeSpawnPosition = null;
     }
   }
 }

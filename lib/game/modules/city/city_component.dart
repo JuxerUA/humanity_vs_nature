@@ -272,7 +272,7 @@ class CityComponent extends SpriteComponent
               game.treeModule.trees.length) {
         final farm = forFarm;
         if (farm != null) {
-          final tree = game.treeModule.findFreeMatureNearestTree(farm.position);
+          final tree = game.treeModule.findNearestFreeMatureTree(farm.position);
           bulldozers.add(game.bulldozerModule.addBulldozer(this, target: tree));
         } else {
           bulldozers.add(game.bulldozerModule.addBulldozer(this));
