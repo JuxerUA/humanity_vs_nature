@@ -1,6 +1,6 @@
 import 'package:flame/components.dart';
 
-extension ContextExt on PositionComponent {
+extension PositionComponentExt on PositionComponent {
   bool isOutOfScreen(Vector2 screenSize) =>
       position.x - width / 2 > screenSize.x ||
       position.x + width / 2 < 0 ||
